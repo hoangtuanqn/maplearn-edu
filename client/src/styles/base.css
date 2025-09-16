@@ -1,0 +1,95 @@
+@layer base {
+    /* reset styles, font-family, etc. */
+    :root {
+        --primary: #155e94;
+        --primary-light: #2470aa;
+        --background: #f3f4f5;
+        --block: #ffffff;
+        --primary-typo: #1b1b1b;
+        --secondary-typo: #295779;
+
+        --tooltip-bg: #333;
+        --tooltip-text-color: #fff;
+    }
+
+    /* Start: Custom scrollbar */
+    .scrollbar {
+        overflow: auto;
+    }
+
+    /* Webkit (Chrome, Edge, Safari) */
+    .scrollbar::-webkit-scrollbar {
+        width: 6px;
+        background-color: transparent;
+    }
+
+    .scrollbar::-webkit-scrollbar-track {
+        /* background-color: transparent; */
+        border-radius: 10px;
+        box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-image: linear-gradient(to top, rgb(122, 153, 217) 44%, rgb(73, 125, 189) 72%, rgb(28, 58, 148) 86%);
+        visibility: hidden; /* Ẩn ban đầu */
+    }
+
+    /* Hiển thị thumb khi hover */
+    .scrollbar:hover::-webkit-scrollbar-thumb {
+        visibility: visible;
+    }
+
+    /* Firefox */
+    .scrollbar {
+        scrollbar-width: thin; /* Luôn chiếm không gian như thin, nhưng thumb ẩn */
+        scrollbar-color: transparent transparent;
+    }
+
+    /* Hiển thị màu khi hover */
+    .scrollbar:hover {
+        scrollbar-color: rgb(28, 58, 148) transparent;
+    }
+    /* End: Custom scrollbar */
+    .padding-scrollbar {
+        --scrollbar-w: 15px;
+        padding-right: calc(var(--scrollbar-w) - calc(100vw - 100%));
+    }
+
+    html body {
+        font-size: 14px;
+        font-family: "Inter", "Roboto", sans-serif;
+        background-color: #f7f8f9;
+    }
+    svg {
+        width: 16px;
+        height: 20px;
+    }
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    #action-to-print,
+    #action-to-print * {
+        visibility: visible;
+    }
+
+    #action-to-print {
+        position: absolute;
+        font-size: 10px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        box-shadow: none;
+    }
+
+    /* Ẩn nút in khi in */
+    .no-print {
+        display: none;
+    }
+}

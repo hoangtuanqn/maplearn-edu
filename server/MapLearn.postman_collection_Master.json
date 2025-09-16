@@ -1,0 +1,3172 @@
+{
+	"info": {
+		"_postman_id": "b701ea4a-1fe6-4164-b2b4-e32f2e41c0c4",
+		"name": "MapLearn",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32909581",
+		"_collection_link": "https://maplearn.postman.co/workspace/MapLearn-Workspace~b426ffcb-a6d7-49fc-841f-8fd4634f89bf/collection/32909581-b701ea4a-1fe6-4164-b2b4-e32f2e41c0c4?action=share&source=collection_link&creator=32909581"
+	},
+	"item": [
+		{
+			"name": "Admin Manager",
+			"item": [
+				{
+					"name": "Users",
+					"item": [
+						{
+							"name": "Import Data",
+							"item": [
+								{
+									"name": "Import students",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n  \"error_handling\": \"strict\",\r\n  \"data\": [\r\n    {\r\n      \"username\": \"nguyenv2ana\",\r\n      \"email\": \"nguyenv2ana@example.com\",\r\n      \"password\": \"12345678\",\r\n      \"full_name\": \"Nguyễn Văn A\",\r\n      \"phone_number\": \"0912345678\",\r\n      \"gender\": \"male\",\r\n      \"birth_year\": 2005,\r\n      \"school\": \"THPT Hà Nội\",\r\n      \"city\": \"Hà Nội\",\r\n      \"facebook_link\": \"https://facebook.com/nguyenvana\"\r\n    },\r\n    {\r\n      \"username\": \"tranthi2b\",\r\n      \"email\": \"tranth2ib@example.com\",\r\n      \"password\": \"password123\",\r\n      \"full_name\": \"Trần Thị B\",\r\n      \"phone_number\": \"0987654321\",\r\n      \"gender\": \"female\",\r\n      \"birth_year\": 2006,\r\n      \"school\": \"THPT Hồ Chí Minh\",\r\n      \"city\": \"TP. Hồ Chí Minh\",\r\n      \"facebook_link\": \"https://facebook.com/tranthib\"\r\n    }\r\n  ]\r\n}\r\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{DOMAIN}}/api/v1/students/import",
+											"host": [
+												"{{DOMAIN}}"
+											],
+											"path": [
+												"api",
+												"v1",
+												"students",
+												"import"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Get Detail Student",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/students/18",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"students",
+										"18"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Students",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/students",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"students"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get History Activities",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/students/:id/activity-history?page=2&limit=1",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"students",
+										":id",
+										"activity-history"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2"
+										},
+										{
+											"key": "limit",
+											"value": "1"
+										}
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "8"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Student Copy",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"password\": \"bH)W_F2)t%GD\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/students/18/reset-password",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"students",
+										"18",
+										"reset-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Student",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"full_name\": \"Tuấn nè\",\r\n    \"banned\": 0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/students/18",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"students",
+										"18"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/posts?filter[courses]=hoa,toan",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts"
+							],
+							"query": [
+								{
+									"key": "filter[courses]",
+									"value": "hoa,toan"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/posts/goi-y-dap-an-mon-toan-tot-nghiep-thpt-2025-chnw530zyjgs",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								"goi-y-dap-an-mon-toan-tot-nghiep-thpt-2025-chnw530zyjgs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Post",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/posts/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"okkkk\",\r\n  \"content\": \"2323\",\r\n  \"thumbnail\": \"https://mapstudy.edu.vn/assets/images/logo/logo-64.png\",\r\n  \"category_id\": 1,\r\n  \"tags_id\": [1, 2]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/posts",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Increment View",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/posts/goi-y-dap-an-mon-toan-tot-nghiep-thpt-2025-chnw530zyjgs/view",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								"goi-y-dap-an-mon-toan-tot-nghiep-thpt-2025-chnw530zyjgs",
+								"view"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Show Data AI",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"okkkk\",\r\n  \"content\": \"2323\",\r\n  \"thumbnail\": \"https://mapstudy.edu.vn/assets/images/logo/logo-64.png\",\r\n  \"category_id\": 1,\r\n  \"tags_id\": [1, 2]\r\n}"
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/posts/search/ai?limit=10&page=1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"posts",
+								"search",
+								"ai"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"search\": \"sắp thi thpt rồi, môi muốn luyện đề, tìm mấy đề thi mới nhất\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://{{DOMAIN}}:3000/api/chat/search/post",
+							"protocol": "http",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"chat",
+								"search",
+								"post"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tags",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/tags?filter[name]=",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tags"
+							],
+							"query": [
+								{
+									"key": "filter[name]",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/tags/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tags",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/tags/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tags",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Lớp 12",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/tags",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "tuan2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/tags/2",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"tags",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Create Account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "full_name",
+									"value": "Pham Hoang Tuan",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "phamhoangtuanqn@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "htuanqn",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/register",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/refresh",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/logout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "nguyen_thi_thanh_thuy_8",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/login",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Info Me",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "htuanqn",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/me",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"anhquat644@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/forgot-password",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify 2Fa",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "user_id",
+									"value": "7",
+									"type": "text"
+								},
+								{
+									"key": "otp",
+									"value": "949388",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/verify-2fa",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"verify-2fa"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check token reset password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"34b6b7729bb9d891c754e463580a65ca5b6f9028a3d066a50c5ec6725d73852e\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/check-token-reset-password",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"check-token-reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"token\": \"fe89cca296ddeef036315145e88c33ad1fb2a5f6b34cf048921f2a54ca88b4c44cf750f73835f42b605cd718830b655c7717\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/verify-email",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"verify-email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"anhquat644@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/auth/resend-verify-email",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"resend-verify-email"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Chat",
+			"item": [
+				{
+					"name": "Chat",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "message",
+									"value": "Cách thiết kế website hay",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/chat-bot-ai",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat-bot-ai"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category Documents",
+			"item": [
+				{
+					"name": "Get Document",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/category-documents?page=1&limit=10",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category-documents"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/category-documents/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"category-documents",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/documents?sort=download_count",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"documents"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "download_count"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/documents/thi-thu-tot-nghiep-thpt-toan-lan-2-2025-gia-lai-lu1ugwnzbcm9",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"documents",
+								"thi-thu-tot-nghiep-thpt-toan-lan-2-2025-gia-lai-lu1ugwnzbcm9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Document",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"Đề thi mới\",\r\n  \"category_id\": 1,\r\n  \"tags_id\": [2,3,2]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/documents",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"documents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/documents/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"documents",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "title",
+									"value": "THI THỬ TỐT NGHIỆP THPT TOÁN 2025 - HÀ TĨNH",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/documents/8",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"documents",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Increment Download",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/documents/2/download",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"documents",
+								"2",
+								"download"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Document Same Category",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Lớp 12",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/documents/same-category/thi-thu-tot-nghiep-thpt-toan-lan-2-2025-gia-lai-lu1ugwnzbcm9",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"documents",
+								"same-category",
+								"thi-thu-tot-nghiep-thpt-toan-lan-2-2025-gia-lai-lu1ugwnzbcm9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Audiences",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/audiences",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"audiences"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/audiences/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"audiences",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "OTP",
+					"item": [
+						{
+							"name": "Generate Secret 2FA",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/profile/2fa/generate",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"profile",
+										"2fa",
+										"generate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify OTP 2FA",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"active\",\r\n    \"otp\": \"411450\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/profile/2fa/toggle",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"profile",
+										"2fa",
+										"toggle"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n    \"full_name\": \"Phạm Hoàng Tuấn Demo\",\r\n    \"phone_number\": \"08126650012\",\r\n    \"gender\": \"male\",\r\n    \"birth_year\": \"2006\",\r\n    \"school\": \"Trần Quang Diệu\",\r\n    \"city\": \"Quảng Ngãi\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/profile/update",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password_old\": \"passwordpassword\",\r\n    \"password_new\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/profile/change-password",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Course Me",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/profile/courses",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Question Wrong",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/profile/wrong-questions",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"wrong-questions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/comments?type=post&slug=goi-y-dap-an-mon-vat-ly-tot-nghiep-thpt-2025-fd3fk9vr0zm2",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"comments"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "post"
+								},
+								{
+									"key": "slug",
+									"value": "goi-y-dap-an-mon-vat-ly-tot-nghiep-thpt-2025-fd3fk9vr0zm2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Comment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"type\": \"post\",\r\n    \"slug\": \"goi-y-dap-an-mon-vat-ly-tot-nghiep-thpt-2025-gmje80vuar0a\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/comments",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/comments/2",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"comments",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Comment",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"cc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/comments/38",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"comments",
+								"38"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subjects",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/subjects",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subjects"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Subject",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Tiếng Pháp\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/subjects",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"subjects"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Grades Level",
+			"item": [
+				{
+					"name": "Get All",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Tiếng Pháp\"\r\n}"
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/grade-levels",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"grade-levels"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Course By Grade Level",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Tiếng Pháp\"\r\n}"
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/grade-levels/courses",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"grade-levels",
+								"courses"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Add report",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"reportable_id\": 11,\r\n    \"reportable_type\": \"document\",\r\n    \"reason\": \"Tài liệu bị lỗi font\",\r\n    \"message\": \"Mình mở tài liệu này trên điện thoại thì bị lỗi font không đọc được.\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/reports",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"reports"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Course Categories",
+			"item": [
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/course-categories",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"course-categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/course-categories/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"course-categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Course",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/course-categories/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"course-categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Tuan Ori IT",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/course-categories",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"course-categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "2K9 - Xuất phát sớm lớp 11",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/course-categories/2",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"course-categories",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Courses",
+			"item": [
+				{
+					"name": "Favorite Course",
+					"item": [
+						{
+							"name": "Get All Course Favorite",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/courses/favorites",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"courses",
+										"favorites"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add favorite",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/courses/1/favorite",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"courses",
+										"1",
+										"favorite"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Check Favorite",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/courses/1/favorite",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"courses",
+										"1",
+										"favorite"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Favorite",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/courses/1/favorite",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"courses",
+										"1",
+										"favorite"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Course Chapter",
+					"item": [
+						{
+							"name": "Get Chapter and Lesson",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "name",
+											"value": "Lớp 12",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/chapters/khoa-o-thuc-chien-luyen-de-mon-sinh-nam-2026-aXwCwDR4GeSY",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"chapters",
+										"khoa-o-thuc-chien-luyen-de-mon-sinh-nam-2026-aXwCwDR4GeSY"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Course Review",
+					"item": [
+						{
+							"name": "Get Review by Course",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "name",
+											"value": "Lớp 12",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/course-reviews/khoa-luyen-thi-danh-gia-tu-duy-bach-khoa-tsa-2026-WIRJyxdGvLCy",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"course-reviews",
+										"khoa-luyen-thi-danh-gia-tu-duy-bach-khoa-tsa-2026-WIRJyxdGvLCy"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Rating Distribution",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/course-reviews/sach-10-de-thuc-chien-ky-thi-danh-gia-nang-luc-hsa-2025-2WCXYLW8xh5Q/ratings/distribution",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"course-reviews",
+										"sach-10-de-thuc-chien-ky-thi-danh-gia-nang-luc-hsa-2025-2WCXYLW8xh5Q",
+										"ratings",
+										"distribution"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vote",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"is_like\": false\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/course-reviews/35/vote",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"course-reviews",
+										"35",
+										"vote"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/courses",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/courses/sach-10-de-thuc-chien-ky-thi-danh-gia-nang-luc-hsa-2025-dkd7cm3fqktf",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"courses",
+								"sach-10-de-thuc-chien-ky-thi-danh-gia-nang-luc-hsa-2025-dkd7cm3fqktf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Course Recommend",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"course_id\": 22\r\n}"
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/courses/recommended",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"courses",
+								"recommended"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Data đưa cho AI",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ids\": [1,2]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/v1/courses/ai-data",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"courses",
+								"ai-data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Data dành riêng cho AI",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ids\": [1,2]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8000/api/v1/courses/ai-data",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"v1",
+								"courses",
+								"ai-data"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Teacher",
+			"item": [
+				{
+					"name": "Get All",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Lớp 12",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/teachers",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"teachers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/teachers/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"teachers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Carts",
+			"item": [
+				{
+					"name": "Coupon",
+					"item": [
+						{
+							"name": "Check coupon",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"code\": \"UGQWMXOBD0\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/discounts/check-coupon",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"discounts",
+										"check-coupon"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get All",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Lớp 12",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/carts",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"carts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Cart",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"course_id\": 22\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/carts",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"carts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Cart",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cart_id\": [1,2,8, 11]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/carts/cleanup",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"carts",
+								"cleanup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Item",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Lớp 12",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/carts/1",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"carts",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Item",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"is_active\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/cart-items/1/toggle",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart-items",
+								"1",
+								"toggle"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle All",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"is_active\": true\r\n}   ",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/cart-items/toggle-all",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart-items",
+								"toggle-all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Summary",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cart_id\": []\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/cart-items/summary",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cart-items",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Checkout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"payment_method\": \"vnpay\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/carts/checkout",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"carts",
+								"checkout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment / Invoice",
+			"item": [
+				{
+					"name": "Invoices",
+					"item": [
+						{
+							"name": "Get All",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"payment_method\": \"transfer\"\r\n}"
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/invoices",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"invoices"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Detail",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/invoices/6897FEEDEFDC3",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"invoices",
+										"6897FEEDEFDC3"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cancel Invoice",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"payment_method\": \"vnpay\"\r\n}"
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/invoices/68955E2D2C720/cancel",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"invoices",
+										"68955E2D2C720",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Confirm Invoice",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/invoices/689675A1E1367/confirm",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"invoices",
+										"689675A1E1367",
+										"confirm"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Cards",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"payment_method\": \"vnpay\"\r\n}"
+								},
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/invoices/689A26CC162B6/cards",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"invoices",
+										"689A26CC162B6",
+										"cards"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Add Payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"invoice_ids\": [1,2],\r\n    \"payment_method\" : \"transfer\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/payments",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SePay",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "VHEXV2FKTUKHCUGPWJVMOI6JXUWKSZNRTES1723H8T5YAJUYBDLA6PCFN3NHD9IR",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://my.sepay.vn/userapi/transactions/list?account_number=259876543210&limit=20",
+							"protocol": "https",
+							"host": [
+								"my",
+								"sepay",
+								"vn"
+							],
+							"path": [
+								"userapi",
+								"transactions",
+								"list"
+							],
+							"query": [
+								{
+									"key": "account_number",
+									"value": "259876543210"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail Payment",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/payments/TUAN",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payments",
+								"TUAN"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pay with Card",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cards\": [\r\n        {\r\n            \"telco\": \"GATE\",\r\n            \"amount\": \"200000\",\r\n            \"serial\": \"23213123\",\r\n            \"code\": \"23232323\"\r\n        },\r\n        {\r\n            \"telco\": \"VINAPHONE\",\r\n            \"amount\": \"50000\",\r\n            \"serial\": \"2323\",\r\n            \"code\": \"2321323\"\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/invoices/6898012F86041/pay-with-card",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"invoices",
+								"6898012F86041",
+								"pay-with-card"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Upload Image",
+			"item": [
+				{
+					"name": "Upload",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/D:/avt 3 x 4 .jpg"
+								},
+								{
+									"key": "folder",
+									"value": "avatar",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN_FRONTEND}}/api/media/upload",
+							"host": [
+								"{{DOMAIN_FRONTEND}}"
+							],
+							"path": [
+								"api",
+								"media",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Image",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"publicId\": \"avatar/kv86rsywyfm3gqneco3y\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN_FRONTEND}}/api/media/delete",
+							"host": [
+								"{{DOMAIN_FRONTEND}}"
+							],
+							"path": [
+								"api",
+								"media",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Exam",
+			"item": [
+				{
+					"name": "Ranking",
+					"item": [
+						{
+							"name": "Get Ranking Paper",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/exams/de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-xq4mybv4tdl5/ranking",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"exams",
+										"de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-xq4mybv4tdl5",
+										"ranking"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Ranking Me",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{DOMAIN}}/api/v1/exams/de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-xq4mybv4tdl5/check-ranking",
+									"host": [
+										"{{DOMAIN}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"exams",
+										"de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-xq4mybv4tdl5",
+										"check-ranking"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "AI",
+					"item": [
+						{
+							"name": "Explain",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"contents\": [\r\n       \r\n        {\r\n            \"role\": \"user\",\r\n            \"parts\": [\r\n                {\r\n                    \"text\": \"Câu hỏi: 1 + 2 = ?\"\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/api/chat/explain",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"api",
+										"chat",
+										"explain"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get List Paper",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/exams?filter[categories]=dgnl-hsa",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams"
+							],
+							"query": [
+								{
+									"key": "filter[categories]",
+									"value": "dgnl-hsa"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail Paper",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "username",
+									"value": "nguyen_thi_thanh_thuy_8",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/exams/:slug",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								":slug"
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-k1qydnmiojlo"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attempts Exam",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/exams/:slug/attempts",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								":slug",
+								"attempts"
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-k1qydnmiojlo"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start Exam",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/exams/de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-nl5bxgkbhazr/start",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								"de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-nl5bxgkbhazr",
+								"start"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Exam",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"data\": {\r\n        \"answers\": {\r\n            \"2\": [\r\n                \"\\\\( P \\\\lor \\neg P \\\\)\"\r\n            ],\r\n            \"3\": [\r\n                \"\\\\( \\neg P \\\\land \\neg Q \\\\)\"\r\n            ],\r\n            \"4\": [\r\n                \"Luôn đúng\"\r\n            ],\r\n            \"5\": [\r\n                \"\\\\( P \\\\lor \\neg P \\\\)\"\r\n            ],\r\n            \"7\": [\r\n                \"1\"\r\n            ],\r\n            \"9\": [\r\n                \"Mọi số nguyên \\\\( n \\\\) chia hết cho 9 là số lẻ\"\r\n            ],\r\n            \"11\": [\r\n                \"\\\\( Q \\\\implies R \\\\)\"\r\n            ],\r\n            \"12\": [\r\n                \"Đúng\"\r\n            ],\r\n            \"14\": [\r\n                \"\\\\( P \\\\land R \\to \\text{Đúng} \\\\)\"\r\n            ],\r\n            \"15\": [\r\n                \"\\\\( P \\\\land R \\to \\text{Đúng} \\\\)\"\r\n            ],\r\n            \"16\": [\r\n                \"Mọi số nguyên \\\\( n \\\\) chia hết cho 2 thì \\\\( n \\\\) là số chẵn\"\r\n            ],\r\n            \"18\": [\r\n                \"\\\\( P \\\\land \\neg P \\\\)\"\r\n            ],\r\n            \"20\": [\r\n                \"0\"\r\n            ],\r\n            \"22\": [\r\n                \"\\\\( Q \\\\lor R \\\\)\"\r\n            ],\r\n            \"24\": [\r\n                \"\\\\( P \\\\land \\neg Q \\\\)\"\r\n            ],\r\n            \"25\": [\r\n                \"Có số thực \\\\( x \\\\) sao cho \\\\( x^2 = 25 \\\\)\"\r\n            ],\r\n            \"26\": [\r\n                \"Sai\"\r\n            ],\r\n            \"27\": [\r\n                \"Nếu \\\\( n \\\\) không là số nguyên tố thì \\\\( n \\\\) không là số lẻ\"\r\n            ]\r\n        },\r\n        \"start\": 1755833990350,\r\n        \"questionActive\": 26\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/exams/:slug/submit",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								":slug",
+								"submit"
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-xzgwc0wpdgi1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deteced Cheat Exam",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/exams/de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-nl5bxgkbhazr/detect-cheat",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								"de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-nl5bxgkbhazr",
+								"detect-cheat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Result Exam",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/exams/:slug/results",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								":slug",
+								"results"
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-k1qydnmiojlo"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Result + Answer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{DOMAIN}}/api/v1/exams/:slug/:idAttemp/my-attempts",
+							"host": [
+								"{{DOMAIN}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"exams",
+								":slug",
+								":idAttemp",
+								"my-attempts"
+							],
+							"variable": [
+								{
+									"key": "slug",
+									"value": "de-minh-hoa-thi-tot-nghiep-thpt-2025-mon-toan-xzgwc0wpdgi1"
+								},
+								{
+									"key": "idAttemp",
+									"value": "9"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Check card",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"telco\": \"VIETTEL\",\r\n  \"code\": \"293045869705652\",\r\n  \"serial\": \"29304586970565\",\r\n  \"amount\": 50000,\r\n  \"request_id\": \"178800959\",\r\n  \"partner_id\": \"13113605845\",\r\n  \"sign\": \"c610e133b98e5cc6906fff5da347e5c6\",\r\n  \"command\": \"check\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://cardvip.vn/chargingws/v2",
+					"protocol": "https",
+					"host": [
+						"cardvip",
+						"vn"
+					],
+					"path": [
+						"chargingws",
+						"v2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "nguyen_thi_thanh_thuy_8",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{DOMAIN}}/api/v1/auth/login",
+					"host": [
+						"{{DOMAIN}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Demo AI",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "ê",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/chat/search/post",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"chat",
+						"search",
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test API MOMO",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"partnerCode\": \"MOMONPMB20210629\",\r\n  \"partnerName\": \"Tên doanh nghiệp SDK4ME\",\r\n  \"storeId\": \"MOMONPMB20210629_1\",\r\n  \"requestId\": \"requestId_1624943052612\",\r\n  \"amount\": 1100,\r\n  \"orderId\": \"orderId_1624943052612\",\r\n  \"orderInfo\": \"Demo tích hợp SDK MOMO\",\r\n  \"redirectUrl\": \"http(s)://domain.partner.vn/redirect/\",\r\n  \"ipnUrl\": \"http(s)://domain.partner.vn/ipn/\",\r\n  \"requestType\": \"captureWallet\",\r\n  \"extraData\": \"eyJ1c2VybmFtZSI6ICJtb21vIn0=\",\r\n  \"lang\": \"vi\",\r\n  \"signature\": \"3084afbc257bc556d60efbffab14b4358874572a30d9e3ed7676b9d96dd27c91\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://test-payment.momo.vn/v2/gateway/api/create",
+					"protocol": "https",
+					"host": [
+						"test-payment",
+						"momo",
+						"vn"
+					],
+					"path": [
+						"v2",
+						"gateway",
+						"api",
+						"create"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "DOMAIN",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "DOMAIN_FRONTEND",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

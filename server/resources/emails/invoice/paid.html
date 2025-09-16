@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Hóa đơn thanh toán</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="background-color:#f8fafc; font-family:Arial, sans-serif; margin:0; padding:20px;">
+
+  <!-- Container -->
+  <table align="center" role="presentation" cellspacing="0" cellpadding="0" style="max-width:800px; width:100%; background:#ffffff; border-radius:8px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+
+    <!-- Header -->
+    <tr>
+      <td style="padding-bottom:20px; border-bottom:2px solid #e5e7eb;">
+        <table width="100%" cellspacing="0" cellpadding="0">
+          <tr>
+            <td style="font-size:20px; font-weight:bold; color:#111827;">
+              Hóa đơn <span style="color:#2563eb;">#__INVOICE_ID__</span>
+             __STATUS_INVOICE__
+            </td>
+            <td align="right" style="font-size:13px; color:#6b7280;">
+              Ngày tạo hóa đơn: __INVOICE_DATE__<br>
+              Ngày đến hạn: <strong>__DUE_DATE__</strong>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Info Section -->
+    <tr>
+      <td style="padding-top:20px; padding-bottom:20px;">
+        <table width="100%" cellspacing="0" cellpadding="0">
+          <tr>
+            <!-- Thanh toán cho -->
+            <td valign="top" style="width:50%; background-color:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding:16px; font-size:14px; color:#1f2937;">
+              <strong style="color:#1e40af;">Thanh toán cho:</strong><br>
+              __COMPANY_NAME__<br>
+              Địa chỉ: __COMPANY_ADDRESS__<br>
+              Hotline: __COMPANY_PHONE__<br>
+              Email: __COMPANY_EMAIL__<br>
+              Khiếu nại/Góp ý: __COMPANY_SUPPORT__<br>
+              Mã số Thuế: __COMPANY_TAX__
+            </td>
+
+            <td style="width:20px;"></td>
+
+            <!-- Hóa đơn gửi đến -->
+            <td valign="top" style="width:50%; background-color:#f9fafb; border:1px solid #e5e7eb; border-radius:6px; padding:16px; font-size:14px; color:#1f2937;">
+              <strong style="color:#1e40af;">Hóa đơn gửi đến:</strong><br>
+              __CUSTOMER_NAME__<br>
+              __CUSTOMER_EMAIL__<br>
+              __CUSTOMER_COUNTRY__<br>
+              Loại chủ thể: __CUSTOMER_TYPE__
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Danh sách sản phẩm -->
+    <tr>
+      <td>
+        <table width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+          <thead>
+            <tr>
+              <th align="left" style="background-color:#f1f5f9; padding:10px; font-size:14px; border-bottom:1px solid #e5e7eb;">Mô tả</th>
+              <th align="right" style="background-color:#f1f5f9; padding:10px; font-size:14px; border-bottom:1px solid #e5e7eb;">Số tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            __ITEM_LIST__
+
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <!-- Nút xem chi tiết hóa đơn -->
+    <tr>
+        <td align="center" style="padding-top:24px; padding-bottom:8px;">
+            <a href="__INVOICE_DETAIL_URL__" style="display:inline-block; background-color:#2563eb; color:#fff; text-decoration:none; padding:12px 28px; border-radius:6px; font-size:16px; font-weight:bold;">
+                Xem chi tiết hóa đơn
+            </a>
+        </td>
+    </tr>
+
+    <!-- Tổng cộng -->
+    <tr>
+      <td align="right" style="padding-top:20px;">
+        <table cellspacing="0" cellpadding="0" style="background-color:#f0f9ff; border:1px solid #e5e7eb; border-radius:6px; padding:12px; font-size:14px; color:#1f2937;">
+          <tr>
+            <td style="padding:6px 12px;">Tổng phụ</td>
+            <td style="padding:6px 12px; text-align:right;">__SUBTOTAL__</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 12px;">VAT</td>
+            <td style="padding:6px 12px; text-align:right;">__VAT__</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 12px; font-weight:bold; color:#0f172a;">Tổng cộng</td>
+            <td style="padding:6px 12px; font-weight:bold; color:#0f172a;">__TOTAL__</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+  </table>
+
+</body>
+</html>

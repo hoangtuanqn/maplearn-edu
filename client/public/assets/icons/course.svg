@@ -1,0 +1,51 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-[23px]">
+    <g clip-path="url(#clip0_4331_11153)">
+        <path d="M20.604 2.508H3.408c-1.163 0-2.11.946-2.11 2.11V18.68c0 .388.315.703.704.703H22.01a.703.703 0 00.703-.703V4.617c0-1.163-.946-2.11-2.109-2.11z" fill="url(#paint0_linear_4331_11153)"></path>
+        <path d="M20.604 2.508H3.408c-1.163 0-2.11.946-2.11 2.11V18.68c0 .388.315.703.704.703H22.01a.703.703 0 00.703-.703V4.617c0-1.163-.946-2.11-2.109-2.11z" fill="url(#paint1_radial_4331_11153)" fill-opacity="0.2"></path>
+        <path d="M23.293 18.68H.715c-.457 0-.826.438-.684.872a2.818 2.818 0 002.674 1.94h18.602c1.299 0 2.296-.869 2.652-1.868a.707.707 0 00-.666-.944z" fill="url(#paint2_linear_4331_11153)"></path>
+        <path d="M23.293 18.68H.715c-.457 0-.826.438-.684.872a2.818 2.818 0 002.674 1.94h18.602c1.299 0 2.296-.869 2.652-1.868a.707.707 0 00-.666-.944z" fill="url(#paint3_radial_4331_11153)" fill-opacity="0.2"></path>
+        <g filter="url(#filter0_d_4331_11153)">
+            <path d="M15.585 9.727a.892.892 0 010 1.546l-6.247 3.606A.892.892 0 018 14.106V6.894a.892.892 0 011.338-.773l6.247 3.606z" fill="url(#paint4_linear_4331_11153)"></path>
+            <path d="M15.585 9.727a.892.892 0 010 1.546l-6.247 3.606A.892.892 0 018 14.106V6.894a.892.892 0 011.338-.773l6.247 3.606z" fill="url(#paint5_radial_4331_11153)" fill-opacity="0.2"></path>
+        </g>
+    </g>
+    <defs>
+        <filter id="filter0_d_4331_11153" x="6" y="5" width="12.0312" height="13" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feColorMatrix in="SourceAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"></feColorMatrix>
+            <feOffset dy="1"></feOffset>
+            <feGaussianBlur stdDeviation="1"></feGaussianBlur>
+            <feComposite in2="hardAlpha" operator="out"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.239216 0 0 0 0 0.0784314 0 0 0 0 0.00392157 0 0 0 0.2 0"></feColorMatrix>
+            <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_4331_11153"></feBlend>
+            <feBlend in="SourceGraphic" in2="effect1_dropShadow_4331_11153" result="shape"></feBlend>
+        </filter>
+        <linearGradient id="paint0_linear_4331_11153" x1="-4" y1="-1.5" x2="13.8526" y2="31.22" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FFB948"></stop>
+            <stop offset="1" stop-color="#EE1E8B"></stop>
+        </linearGradient>
+        <radialGradient id="paint1_radial_4331_11153" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="rotate(38.239 -6.585 7.674) scale(12.9832 8.58403)">
+            <stop stop-color="#fff"></stop>
+            <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+        </radialGradient>
+        <linearGradient id="paint2_linear_4331_11153" x1="14.5" y1="18.5" x2="15" y2="24.5" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FF9152"></stop>
+            <stop offset="1" stop-color="#FF6142"></stop>
+        </linearGradient>
+        <radialGradient id="paint3_radial_4331_11153" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(5.5 3 -2.171 3.98015 .5 19)">
+            <stop stop-color="#fff"></stop>
+            <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+        </radialGradient>
+        <linearGradient id="paint4_linear_4331_11153" x1="8" y1="3" x2="14.4035" y2="20.6438" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FED55A"></stop>
+            <stop offset="1" stop-color="#F6BA3C"></stop>
+        </linearGradient>
+        <radialGradient id="paint5_radial_4331_11153" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(3.8243 4.2858 -2.8956 2.5838 8.764 7.714)">
+            <stop stop-color="#fff"></stop>
+            <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+        </radialGradient>
+        <clipPath id="clip0_4331_11153">
+            <path fill="#fff" d="M0 0H24V24H0z"></path>
+        </clipPath>
+    </defs>
+</svg>

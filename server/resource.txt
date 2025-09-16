@@ -1,0 +1,44 @@
+- JWT
+    composer require tymon/jwt-auth
+    php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+    php artisan jwt:secret
+
+- Chạy nền công việc: php artisan queue:work
+- QueryBuilder: https://querybuilder.js.org/
+- pragmarx/google2fa: https://github.com/antonioribeiro/google2fa
+
+
+
+- Tạo model để API: php artisan make:model DocumentCategory -mcrfs --api
+- Tạo policy theo model: php artisan make:policy DocumentPolicy --model=Document
+
+
+- Dọn dẹp cache và tái tạo autoload:
+    php artisan optimize:clear
+    composer dump-autoload
+
+- Tạo trigger khi thêm, sửa, xóa data: php artisan make:observer DocumentCategoryObserver --model=DocumentCategory
+- preline table
+
+- VNPay test
+Ngân hàng	NCB
+Số thẻ	9704198526191432198
+Tên chủ thẻ	NGUYEN VAN A
+Ngày phát hành	07/15
+Mật khẩu OTP	123456
+
+
+- MOMO test: https://developers.momo.vn/v3/vi/docs/payment/onboarding/test-instructions/
+- Tài liệu tích hợp: https://github.com/toancongdang/sdk-for-me
+
+- Clear cachce
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+php artisan config:cache
+php artisan route:cache
+
+- Chạy ngầm: php artisan queue:work
+
+
+- php artisan code:check-imports --fix (clean code, xóa import thừa)

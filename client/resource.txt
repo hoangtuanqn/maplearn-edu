@@ -1,0 +1,2 @@
+- Rating : https://www.npmjs.com/package/@smastrom/react-rating
+- Plyr: https://plyr.io/

@@ -1,0 +1,14 @@
+@layer components {
+    /* custom reusable components (e.g. buttons, cards) */
+    .t1-flex-center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .t1-gradient-text {
+        background: linear-gradient(90deg, #3899d1 13.99%, #1c51ca 104.92%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+}

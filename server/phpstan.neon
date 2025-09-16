@@ -1,0 +1,10 @@
+parameters:
+  level: max
+  paths:
+    - app
+    - database
+    - routes
+  tmpDir: var/phpstan
+  checkMissingIterableValueType: false
+  treatPhpDocTypesAsCertain: false
+  inferPrivatePropertyTypeFromConstructor: true

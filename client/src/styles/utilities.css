@@ -1,0 +1,24 @@
+@layer utilities {
+    /* custom utility classes (e.g. .text-shadow, .scrollbar-none) */
+    .block-heading {
+        font-size: 15.75px;
+        font-weight: 600;
+        color: var(--secondary-typo);
+    }
+    /* sidebar.css hoặc trong tailwind config layer */
+    .has-submenu .submenu {
+        @apply hidden transition-all;
+    }
+
+    .has-submenu.open .submenu {
+        @apply block;
+    }
+
+    .has-submenu .chevron {
+        @apply inline-block transition-transform;
+    }
+
+    .has-submenu.open .chevron {
+        @apply rotate-180;
+    }
+}
