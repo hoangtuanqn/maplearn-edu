@@ -64,8 +64,9 @@ const VideoPage = async ({ params }: { params: Promise<{ courseSlug: string; lec
                                         <p className="mt-1 flex items-center gap-2 text-sm text-gray-600">
                                             <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-700">
                                                 Bài {lesson.position}/{" "}
-                                                {course.chapters[course.chapters.findIndex((item) => item.id === lesson.chapter.id)].lessons
-                                                    .length ?? 0}
+                                                {course.chapters[
+                                                    course.chapters.findIndex((item) => item.id === lesson.chapter.id)
+                                                ].lessons.length ?? 0}
                                             </span>
                                             <span className="text-gray-400">•</span>
                                             <span>Chương {lesson.chapter.title}</span>

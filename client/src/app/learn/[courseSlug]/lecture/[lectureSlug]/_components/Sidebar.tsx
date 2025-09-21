@@ -5,7 +5,6 @@ import {
     Play,
     CheckCircle,
     Clock,
-    Users,
     MessageCircle,
     BookOpen,
     Award,
@@ -13,12 +12,16 @@ import {
     PlayCircle,
     CircleCheckBig,
     Brain,
+    Trophy,
+    ExternalLink,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CourseDetailResponse, LessonDetailResponse } from "~/schemaValidate/courseDetail.schema";
 import { formatter } from "~/libs/format";
 import Link from "next/link";
-// Types
+import ChatBotAI from "./ChatBotAI";
+import { useAuth } from "~/hooks/useAuth";
+import CertificateButton from "./CertificateButton";
 
 const Sidebar = ({
     course,
@@ -27,6 +30,7 @@ const Sidebar = ({
     course: CourseDetailResponse["data"];
     lesson: LessonDetailResponse["data"];
 }) => {
+    const { user } = useAuth();
     const [openChapter, setOpenChapter] = useState(lesson.chapter_id);
     const [activeTab, setActiveTab] = useState("lessons"); // "lessons" | "comments" | "resources"
 
@@ -46,41 +50,47 @@ const Sidebar = ({
         return "Chưa hoàn thành";
     };
     return (
-        <div className="border-l border-gray-200 bg-white max-lg:border-t max-lg:border-l-0 lg:w-[500px]">
-            {/* Tabs */}
-            <div className="flex border-b border-gray-200">
+        <div className="border-l border-gray-200 bg-white shadow-sm max-lg:border-t max-lg:border-l-0 lg:w-[500px]">
+            {/* Modern Tabs */}
+            <div className="flex border-b border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
                 <button
                     onClick={() => setActiveTab("lessons")}
-                    className={`flex-1 cursor-pointer px-4 py-3 text-sm font-medium transition-colors ${
+                    className={`relative flex-1 cursor-pointer px-4 py-4 text-sm font-semibold ${
                         activeTab === "lessons"
-                            ? "border-b-2 border-blue-600 bg-blue-50 text-blue-600"
-                            : "text-gray-600 hover:text-gray-900"
+                            ? "text-primary bg-white"
+                            : "text-gray-600 hover:bg-white/60 hover:text-gray-900"
                     }`}
                 >
-                    <BookOpen className="mr-2 inline h-4 w-4" />
-                    Nội dung
+                    <div className="flex items-center justify-center gap-2">
+                        <BookOpen className="h-4 w-4" />
+                        <span>Nội dung</span>
+                    </div>
                 </button>
                 <button
                     onClick={() => setActiveTab("comments")}
-                    className={`flex-1 cursor-pointer px-4 py-3 text-sm font-medium transition-colors ${
+                    className={`relative flex-1 cursor-pointer px-4 py-4 text-sm font-semibold ${
                         activeTab === "comments"
-                            ? "border-b-2 border-blue-600 bg-blue-50 text-blue-600"
-                            : "text-gray-600 hover:text-gray-900"
+                            ? "text-primary bg-white"
+                            : "text-gray-600 hover:bg-white/60 hover:text-gray-900"
                     }`}
                 >
-                    <MessageCircle className="mr-2 inline h-4 w-4" />
-                    Bình luận
+                    <div className="flex items-center justify-center gap-2">
+                        <MessageCircle className="h-4 w-4" />
+                        <span>Bình luận</span>
+                    </div>
                 </button>
                 <button
                     onClick={() => setActiveTab("resources")}
-                    className={`flex-1 cursor-pointer px-4 py-3 text-sm font-medium transition-colors ${
+                    className={`relative flex-1 cursor-pointer px-4 py-4 text-sm font-semibold ${
                         activeTab === "resources"
-                            ? "border-b-2 border-blue-600 bg-blue-50 text-blue-600"
-                            : "text-gray-600 hover:text-gray-900"
+                            ? "text-primary bg-white"
+                            : "text-gray-600 hover:bg-white/60 hover:text-gray-900"
                     }`}
                 >
-                    <Brain className="mr-2 inline h-4 w-4" />
-                    Trợ lý AI
+                    <div className="flex items-center justify-center gap-2">
+                        <Brain className="h-4 w-4" />
+                        <span>Trợ lý AI</span>
+                    </div>
                 </button>
             </div>
 
@@ -104,35 +114,32 @@ const Sidebar = ({
                     <span>{course.percent_completed}% hoàn thành</span>
                     <span>Còn {course.lesson_count - course.completed_lessons} bài</span>
                 </div>
+
+                {/* Certificate Button - Only show when course is 100% completed */}
+                {course.percent_completed === 100 && user?.email_verified_at ? (
+                    <div className="mt-4">
+                        <Link
+                            href={`/certificate/${course.slug}/${user?.email}`}
+                            target="_blank"
+                            className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl"
+                        >
+                            <Trophy className="h-4 w-4" />
+                            <span>Chứng chỉ của bạn</span>
+                            <ExternalLink className="h-3 w-3" />
+                        </Link>
+                        <p className="mt-2 text-center text-xs font-medium text-emerald-600">
+                            🎉 Chúc mừng! Bạn đã hoàn thành khóa học
+                        </p>
+                    </div>
+                ) : (
+                    <CertificateButton />
+                )}
             </div>
 
             {/* Tab Content */}
             <div className="sticky top-10">
                 {activeTab === "lessons" && (
-                    <div className="p-4">
-                        {/* Course Overview */}
-                        <div className="mb-6 rounded-lg bg-gray-50 p-4">
-                            <h3 className="mb-2 font-semibold text-gray-900">Tổng quan khóa học</h3>
-                            <div className="grid grid-cols-2 gap-3 text-sm">
-                                <div className="flex items-center gap-2">
-                                    <BookOpen className="h-4 w-4 text-gray-500" />
-                                    <span>{formatter.number(course.lesson_count)} bài học</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Clock className="h-4 w-4 text-gray-500" />
-                                    <span>{formatter.duration(course.duration)}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Award className="h-4 w-4 text-gray-500" />
-                                    <span>Chứng chỉ</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Users className="h-4 w-4 text-gray-500" />
-                                    <span>Trọn đời</span>
-                                </div>
-                            </div>
-                        </div>
-
+                    <div className="p-6">
                         {/* Chapters */}
                         <div className="space-y-2">
                             {course.chapters.map((chapter, chapterIndex) => (
@@ -292,14 +299,7 @@ const Sidebar = ({
                     </div>
                 )}
 
-                {activeTab === "resources" && (
-                    <div className="p-4">
-                        <div className="py-8 text-center">
-                            <FileText className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-                            <p className="text-gray-600">Chức năng tài liệu đang được phát triển</p>
-                        </div>
-                    </div>
-                )}
+                {activeTab === "resources" && <ChatBotAI lesson={lesson} courseName={course.name} />}
             </div>
         </div>
     );

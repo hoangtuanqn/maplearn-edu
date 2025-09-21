@@ -134,12 +134,12 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
 
                             <div className="rounded-xl border border-gray-200 bg-white px-5 py-5 shadow-lg">
                                 <h3 className="text-base leading-snug font-semibold text-gray-900">
-                                    <Link href={url} className="transition-colors duration-200 hover:text-blue-600">
+                                    <Link href={url} className="hover:text-primary transition-colors duration-200">
                                         {course.name}
                                     </Link>
                                 </h3>
                                 <div className="mt-2 flex items-center gap-2">
-                                    <span className="inline-block rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600">
+                                    <span className="text-primary inline-block rounded-full bg-blue-50 px-2 py-1 text-xs font-medium">
                                         Cập nhật 4/2025
                                     </span>
                                     <span className="text-xs text-gray-400">•</span>
@@ -169,7 +169,7 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
                                         <div className="flex items-center justify-between pt-2">
                                             <span className="text-xs text-gray-500">Học phí</span>
                                             <div className="text-right">
-                                                <span className="text-lg font-bold text-blue-600">
+                                                <span className="text-primary text-lg font-bold">
                                                     {course.price === 0
                                                         ? "Miễn phí"
                                                         : formatter.number(course.price ?? 0) + "đ"}

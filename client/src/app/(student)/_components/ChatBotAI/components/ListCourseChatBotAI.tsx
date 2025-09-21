@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import Skeleton from "react-loading-skeleton";
+import { ExternalLink, BookOpen } from "lucide-react";
 import publicApi from "~/libs/apis/publicApi";
 import { formatter } from "~/libs/format";
 
@@ -25,58 +26,70 @@ const ListCourseChatBotAI = ({ course_id }: { course_id: number[] }) => {
 
     return (
         <>
-            <div className="mt-3 flex flex-col gap-1">
-                {course_id.length > 0 &&
-                    isLoading &&
-                    [...Array(course_id.length)].map((_, index) => (
-                        <div key={index} className="flex items-start gap-3 py-3">
-                            {/* Ảnh thumbnail (hình vuông) */}
-                            <Skeleton width={80} height={80} className="shrink-0 rounded-md" />
-                            {/* Nội dung bên phải */}
-                            <div className="flex h-full flex-1 flex-col">
-                                {/* Tiêu đề */}
-                                <Skeleton className="h-10 w-[80%]" />
+            {course_id.length > 0 && (
+                <div className="mt-4 space-y-3 ml-2">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <BookOpen className="text-primary h-4 w-4" />
+                        <span className="font-medium">Khóa học được đề xuất</span>
+                    </div>
 
-                                <Skeleton className="h-3 w-[40%]" width={70} />
-                                <Skeleton className="h-5 w-[40%]" width={80} />
-                            </div>
-                        </div>
-                    ))}
-
-                {data?.map((course: CourseChatBotAI) => (
-                    <div
-                        key={course.name}
-                        className="border-primary rounded-lg border bg-white p-3 transition hover:shadow"
-                    >
-                        <Link href={`/courses/${course.slug}`} className="flex items-center">
-                            <Image
-                                src={course.thumbnail || "/maplearn.png"}
-                                alt={course.name}
-                                width={80}
-                                height={80}
-                                className="rounded-md border border-gray-100 object-cover"
-                            />
-                            <div className="ml-3 flex-1">
-                                <h2 className="mb-0.5 line-clamp-2 text-sm font-semibold text-gray-800">
-                                    {course.name}
-                                </h2>
-                                <div className="flex flex-col gap-0.5">
-                                    {/* Giá cũ */}
-                                    {course.price > course.price && (
-                                        <span className="text-[11.125px] font-semibold text-gray-400 line-through">
-                                            {formatter.number(course.price)}đ
-                                        </span>
-                                    )}
-                                    {/* Giá mới */}
-                                    <span className="text-primary text-sm font-bold">
-                                        {formatter.number(course.price)}đ
-                                    </span>
+                    {isLoading &&
+                        [...Array(course_id.length)].map((_, index) => (
+                            <div
+                                key={index}
+                                className="flex items-start gap-3 rounded-xl border border-gray-100 bg-white p-4"
+                            >
+                                <Skeleton width={80} height={80} className="shrink-0 rounded-lg" />
+                                <div className="flex h-full flex-1 flex-col gap-2">
+                                    <Skeleton className="h-4 w-[90%]" />
+                                    <Skeleton className="h-3 w-[60%]" />
+                                    <Skeleton className="h-4 w-[40%]" />
                                 </div>
                             </div>
-                        </Link>
-                    </div>
-                ))}
-            </div>
+                        ))}
+
+                    {data?.map((course: CourseChatBotAI) => (
+                        <div
+                            key={course.name}
+                            className="group hover:border-primary/30 rounded-xl border border-gray-100 bg-white p-4 transition-all hover:shadow-md"
+                        >
+                            <Link href={`/courses/${course.slug}`} className="flex items-start gap-4">
+                                <div className="relative flex-shrink-0">
+                                    <Image
+                                        src={course.thumbnail || "/maplearn.png"}
+                                        alt={course.name}
+                                        width={80}
+                                        height={80}
+                                        className="rounded-lg border border-gray-100 object-cover transition-transform group-hover:scale-105"
+                                    />
+                                    <div className="absolute inset-0 rounded-lg bg-black/0 transition-colors group-hover:bg-black/5"></div>
+                                </div>
+
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="group-hover:text-primary mb-2 line-clamp-2 text-sm font-semibold text-gray-900 transition-colors">
+                                        {course.name}
+                                    </h3>
+
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex flex-col gap-1">
+                                            {/* {course.price > 0 && (
+                                                <span className="text-xs text-gray-500 line-through">
+                                                    {formatter.number(course.price)}đ
+                                                </span>
+                                            )} */}
+                                            <span className="text-primary text-sm font-bold">
+                                                {course.price === 0 ? "Miễn phí" : `${formatter.number(course.price)}đ`}
+                                            </span>
+                                        </div>
+
+                                        <ExternalLink className="group-hover:text-primary h-4 w-4 text-gray-400 transition-colors" />
+                                    </div>
+                                </div>
+                            </Link>
+                        </div>
+                    ))}
+                </div>
+            )}
         </>
     );
 };

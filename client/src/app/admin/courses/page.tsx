@@ -23,7 +23,9 @@ const CoursePage = () => {
                             <h3 className="text-primary text-xl font-bold">Danh sách khóa học</h3>
                             <p className="text-sm text-slate-500">Danh sách khóa học sẽ được hiển thị ở đây.</p>
                         </div>
-                        <FilterCourses />
+                        <Suspense>
+                            <FilterCourses />
+                        </Suspense>
                     </div>
                 </div>
                 <Suspense>

@@ -1,4 +1,3 @@
-import { Check } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 
 import { Label } from "~/components/ui/label";
@@ -42,36 +41,54 @@ const TrueFalseAnswer = ({
     }, [activeAnswer, answers.length, idQuestion, handleChoiceAnswer]);
 
     return (
-        <RadioGroup
-            value={activeAnswer?.[0] || ""} // controlled component
-            onValueChange={(value) => handleChoiceAnswer(idQuestion, value)}
-            className="flex flex-col"
-        >
-            {[
-                {
-                    name: "Đúng",
-                    value: "Đúng",
-                },
-                {
-                    name: "Sai",
-                    value: "Sai",
-                },
-            ]?.map((answer) => {
-                return (
-                    <div key={answer.name} className="relative flex items-center gap-2">
-                        <RadioGroupItem
-                            value={answer.value}
-                            id={answer.name}
-                            className="peer data-[state=checked]:bg-primary size-7 rounded-full border-0 bg-slate-300"
-                        />
-                        <Label htmlFor={answer.name} className="cursor-pointer leading-8">
-                            {answer.name}
-                        </Label>
-                        <Check className="pointer-events-none absolute top-1.5 left-1 size-5 text-white opacity-0 peer-data-[state=checked]:opacity-100" />
-                    </div>
-                );
-            })}
-        </RadioGroup>
+        <div className="space-y-3">
+            <RadioGroup
+                value={activeAnswer?.[0] || ""} // controlled component
+                onValueChange={(value) => handleChoiceAnswer(idQuestion, value)}
+            >
+                {[
+                    {
+                        name: "Đúng",
+                        value: "Đúng",
+                        color: "bg-emerald-500",
+                        hoverColor: "hover:bg-emerald-50 hover:border-emerald-300",
+                        selectedColor: "border-emerald-500 bg-emerald-50",
+                    },
+                    {
+                        name: "Sai",
+                        value: "Sai",
+                        color: "bg-red-500",
+                        hoverColor: "hover:bg-red-50 hover:border-red-300",
+                        selectedColor: "border-red-500 bg-red-50",
+                    },
+                ]?.map((answer) => {
+                    const isSelected = activeAnswer?.[0] === answer.value;
+                    return (
+                        <div key={answer.name} className="relative">
+                            <div
+                                className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${
+                                    isSelected ? answer.selectedColor : `border-gray-200 bg-white ${answer.hoverColor}`
+                                }`}
+                            >
+                                <RadioGroupItem
+                                    value={answer.value}
+                                    id={answer.name}
+                                    className={`peer size-5 rounded-full border-2 ${
+                                        isSelected ? `${answer.color} border-transparent` : "border-gray-300 bg-white"
+                                    }`}
+                                />
+                                <Label
+                                    htmlFor={answer.name}
+                                    className="flex-1 cursor-pointer font-medium text-gray-900"
+                                >
+                                    {answer.name}
+                                </Label>
+                            </div>
+                        </div>
+                    );
+                })}
+            </RadioGroup>
+        </div>
     );
 };
 

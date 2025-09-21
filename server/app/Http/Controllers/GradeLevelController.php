@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
 
-
 class GradeLevelController extends BaseApiController
 {
 
@@ -14,11 +13,11 @@ class GradeLevelController extends BaseApiController
     public function getCoursesByGradeLevel()
     {
         $gradeLevels = config('constants.grade_level');
-        $response = [];
+        $response    = [];
         // Chỉ lấy các khóa học đang active
         foreach ($gradeLevels as $gradeLevel) {
             $response[] = [
-                'slug' => $gradeLevel,
+                'slug'    => $gradeLevel,
                 'courses' => Course::where('grade_level', $gradeLevel)
                     ->where('status', true)
                     ->select([
@@ -30,7 +29,7 @@ class GradeLevelController extends BaseApiController
                         'thumbnail',
                         'price',
                         'grade_level',
-                    ])->orderBy('id', 'desc')->take(8)->get() // Giới hạn 8 khóa học mỗi khối lớp
+                    ])->orderBy('id', 'desc')->take(8)->get(), // Giới hạn 8 khóa học mỗi khối lớp
             ];
         }
 

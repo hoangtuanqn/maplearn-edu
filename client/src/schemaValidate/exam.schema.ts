@@ -20,7 +20,7 @@ const examSchema = z.object({
     id: z.number(),
     exam_category_id: z.number(),
     subject_id: z.number(),
-    grade_level: z.number(),
+    grade_level: z.string(),
     title: z.string(),
     slug: z.string(),
     province: z.string(),
@@ -59,8 +59,8 @@ const _examDetailResponseSchema = z.object({
 export type ExamDetailResponse = z.infer<typeof _examDetailResponseSchema>;
 
 const answersSchema = z.object({
-    id: z.number(),
     content: z.string(),
+    is_correct: z.boolean(),
 });
 export type Answers = z.infer<typeof answersSchema>;
 const questionSchema = z.object({
@@ -176,4 +176,3 @@ const _resultDetailExamResponseSchema = z.object({
     data: z.array(resultDetailSchema),
 });
 export type ResultDetailExamResponse = z.infer<typeof _resultDetailExamResponseSchema>;
-

@@ -29,7 +29,7 @@ const headerLinks = [
         macher: ["/courses"],
     },
     {
-        label: "Thi thử",
+        label: "Đề thi thử",
         icon: DocumentIcon,
         href: "/exams",
         macher: ["/exams"],
@@ -86,12 +86,9 @@ const HeaderLaptop = () => {
                             <div className="flex items-center justify-end gap-3">
                                 {user ? (
                                     <div className="flex items-center gap-3">
-                                        {/* Notification Bell */}
-                                        <Notification />
-
                                         {/* User Dropdown */}
                                         <div className="group relative">
-                                            <div className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200/50 bg-white/80 p-2 shadow-sm backdrop-blur-sm transition-all duration-200 hover:border-gray-300 hover:bg-gray-50">
+                                            <div className="flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-all duration-200">
                                                 <DisplayAvatar
                                                     avatar={user.avatar}
                                                     fullName={user.full_name}
@@ -135,6 +132,17 @@ const HeaderLaptop = () => {
                                                             <div className="flex items-center gap-2">
                                                                 <Shield className="h-4 w-4" />
                                                                 Quản lý hệ thống
+                                                            </div>
+                                                        </Link>
+                                                    )}
+                                                    {user.role === "teacher" && (
+                                                        <Link
+                                                            href="/teacher"
+                                                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                        >
+                                                            <div className="flex items-center gap-2">
+                                                                <Shield className="h-4 w-4" />
+                                                                Quản lý giảng dạy
                                                             </div>
                                                         </Link>
                                                     )}
@@ -184,6 +192,8 @@ const HeaderLaptop = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        {/* Notification Bell */}
+                                        <Notification />
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-3">

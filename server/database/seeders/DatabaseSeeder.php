@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Course;
-use App\Models\CourseReview;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder

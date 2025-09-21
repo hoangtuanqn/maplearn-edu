@@ -62,8 +62,8 @@ export type FormChangePasswordType = z.infer<typeof changePasswordSchema>;
 export const profileSchema = z.object({
     full_name: z
         .string()
-        .min(2, "Họ và tên phải có ít nhất 2 ký tự")
-        .max(50, "Họ và tên không được vượt quá 50 ký tự")
+        .min(5, "Họ và tên phải có ít nhất 5 ký tự")
+        .max(100, "Họ và tên không được vượt quá 100 ký tự")
         .nonempty("Vui lòng không bỏ trống họ và tên"),
     birth_year: z
         .number()
@@ -88,13 +88,14 @@ export const profileSchema = z.object({
     facebook_link: z
         .string()
         .url("URL Facebook không hợp lệ")
+        .max(255, "URL Facebook không được vượt quá 255 ký tự")
         .optional()
         .or(z.literal("").transform(() => undefined)),
     phone_number: z
         .string()
         .min(10, "Số điện thoại phải có ít nhất 10 chữ số")
         .max(15, "Số điện thoại không hợp lệ")
-        .regex(/^[0-9+() -]+$/, "Số điện thoại không hợp lệ")
+        .regex(/^0(?!0+$)[0-9+() -]{9,11}$/, "Số điện thoại phải bắt đầu bằng 0 và không được toàn bộ là số 0")
         .optional()
         .or(z.literal("").transform(() => undefined)),
     avatar: z

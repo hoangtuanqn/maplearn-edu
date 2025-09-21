@@ -2,7 +2,10 @@ import z from "zod";
 
 const formSchema = z
     .object({
-        title: z.string().min(2, { message: "Tên đề thi phải có ít nhất 2 ký tự." }),
+        title: z
+            .string()
+            .min(10, { message: "Tên đề thi phải có ít nhất 10 ký tự." })
+            .max(255, { message: "Tên đề thi không được vượt quá 255 ký tự." }),
         exam_category: z.string().min(1, { message: "Vui lòng chọn loại đề thi." }),
         subject: z.string().min(1, { message: "Vui lòng chọn môn học." }),
         grade_level: z.string().min(1, { message: "Vui lòng chọn cấp bậc." }),
@@ -10,9 +13,15 @@ const formSchema = z
         difficulty: z.enum(["easy", "normal", "hard", "very_hard"], {
             message: "Vui lòng chọn độ khó.",
         }),
-        max_score: z.number().min(1, { message: "Điểm tối đa phải lớn hơn 0." }),
+        max_score: z
+            .number()
+            .min(1, { message: "Điểm tối đa phải lớn hơn 0." })
+            .max(100, { message: "Điểm tối đa không được vượt quá 100." }),
         pass_score: z.number().min(0, { message: "Điểm qua môn phải lớn hơn hoặc bằng 0." }),
-        duration_minutes: z.number().min(1, { message: "Thời gian làm bài phải lớn hơn 0 phút." }),
+        duration_minutes: z
+            .number()
+            .min(1, { message: "Thời gian làm bài phải lớn hơn 0 phút." })
+            .max(300, { message: "Thời gian làm bài không được vượt quá 300 phút." }),
         start_time: z.string().min(1, { message: "Vui lòng chọn thời gian bắt đầu." }),
         end_time: z.string(),
         description: z.string().optional(),
@@ -22,15 +31,15 @@ const formSchema = z
         is_shuffle_answers: z.boolean(),
         is_show_result: z.boolean(),
         is_retakeable: z.boolean(),
-        max_attempts: z.number().min(1, { message: "Số lần làm bài tối đa phải lớn hơn 0." }).optional(),
+        max_attempts: z.number().min(0, { message: "Số lần làm bài tối đa phải lớn hơn 0`." }).optional(),
     })
     .refine(
         (data) => {
-            // Kiểm tra pass_score không vượt quá max_score
-            return data.pass_score <= data.max_score;
+            // pass_score không được vượt quá 70% max_score
+            return data.pass_score <= data.max_score * 0.7;
         },
         {
-            message: "Điểm qua môn không được vượt quá điểm tối đa.",
+            message: "Điểm qua môn không được vượt quá 70% điểm tối đa.",
             path: ["pass_score"],
         },
     )

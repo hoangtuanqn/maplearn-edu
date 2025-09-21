@@ -46,45 +46,76 @@ const CourseDetailPage = async ({ params }: { params: Promise<{ slug: string }> 
     }
 
     return (
-        <div className="min-h-screen">
-            <div className="flex max-lg:flex-col lg:gap-3.5">
-                {/* Layout Bên trái */}
-                <div className="w-full flex-9/12 max-lg:order-2">
-                    <ContentLesson course={course as CourseDetail} />
-                    <ListLessonCourse />
+        <div className="min-h-scree">
+            <div className="mx-auto px-4 py-6">
+                <div className="flex gap-6 max-lg:flex-col">
+                    {/* Layout Bên trái */}
+                    <div className="flex-1 space-y-6 max-lg:order-2">
+                        <ContentLesson course={course as CourseDetail} />
+                        <ListLessonCourse />
+                        <RelatedCourses category={course.category} />
+                    </div>
 
-                    {/* Các khóa học cùng danh mục */}
-                    <RelatedCourses category={course.category} />
-                </div>
-                {/* Layout Bên phải */}
-                <div className="h-fit w-full flex-3/12 rounded-xl bg-white p-8 shadow-sm max-lg:order-1 lg:sticky lg:top-[70px]">
-                    <div className="flex flex-col gap-2.5">
-                        <div className="flex justify-center">
-                            <IntroCourse thumbnail={course.thumbnail} video={course.intro_video} />
-                        </div>
-                        <div className="mt-2 flex flex-col gap-2 text-center text-base">
-                            <h2 className="t1-gradient-text font-bold">Giáo viên: {course.teacher.full_name}</h2>
-                            <div className="mt-1">
-                                {/* Giá tiền cũ, dạng bị gạch bỏ */}
-                                <span className="text-sm text-slate-500 line-through">
-                                    {course.price < course.price && formatter.number(course.price) + "đ"}
-                                </span>
-                                <span className="block font-bold text-black">
-                                    Học phí: {formatter.number(course.price) + "đ"}
-                                </span>
+                    {/* Layout Bên phải */}
+                    <div className="w-full max-w-sm max-lg:order-1">
+                        <div className="sticky top-20 space-y-4">
+                            {/* Course Info Card */}
+                            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+                                <div className="space-y-4">
+                                    {/* Video/Thumbnail */}
+                                    <div className="flex justify-center">
+                                        <IntroCourse thumbnail={course.thumbnail} video={course.intro_video} />
+                                    </div>
+
+                                    {/* Teacher Info */}
+                                    <div className="text-center">
+                                        <h3 className="text-base font-semibold text-gray-900">
+                                            Giáo viên: {course.teacher.full_name}
+                                        </h3>
+                                    </div>
+
+                                    {/* Pricing */}
+                                    <div className="text-center">
+                                        <div className="text-primary text-2xl font-bold">
+                                            {formatter.number(course.price)}đ
+                                        </div>
+                                        {course.price < course.price && (
+                                            <div className="text-sm text-gray-500 line-through">
+                                                {formatter.number(course.price)}đ
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Action Button */}
+                                    <ButtonAction />
+                                </div>
                             </div>
-                        </div>
 
-                        <ButtonAction />
-
-                        <div className="rounded-lg bg-gray-50 p-4">
-                            <span className="mb-2 block text-sm font-semibold text-gray-700">Khóa này bao gồm</span>
-                            <ul className="list-inside list-disc space-y-1 text-sm text-gray-600">
-                                <li>{formatter.durationToHours(course.duration)} tổng thời lượng học</li>
-                                <li>{course.lesson_count} bài giảng</li>
-                                <li>Tất cả tài nguyên có thể tải xuống</li>
-                                <li>Truy cập trên thiết bị di động</li>
-                            </ul>
+                            {/* Course Includes Card */}
+                            <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+                                <h4 className="mb-4 flex items-center gap-2 font-semibold text-gray-900">
+                                    <div className="bg-primary h-2 w-2 rounded-full"></div>
+                                    Khóa này bao gồm
+                                </h4>
+                                <ul className="space-y-3 text-sm text-gray-600">
+                                    <li className="flex items-center gap-3">
+                                        <div className="bg-primary/60 h-1.5 w-1.5 rounded-full"></div>
+                                        {formatter.durationToHours(course.duration)} tổng thời lượng học
+                                    </li>
+                                    <li className="flex items-center gap-3">
+                                        <div className="bg-primary/60 h-1.5 w-1.5 rounded-full"></div>
+                                        {course.lesson_count} bài giảng
+                                    </li>
+                                    <li className="flex items-center gap-3">
+                                        <div className="bg-primary/60 h-1.5 w-1.5 rounded-full"></div>
+                                        Tất cả tài nguyên có thể tải xuống
+                                    </li>
+                                    <li className="flex items-center gap-3">
+                                        <div className="bg-primary/60 h-1.5 w-1.5 rounded-full"></div>
+                                        Truy cập trên thiết bị di động
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Course;
 use App\Models\CourseReview;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class CourseReviewSeeder extends Seeder
@@ -40,15 +39,15 @@ class CourseReviewSeeder extends Seeder
             'Môi trường học tập tích cực và thân thiện',
             'Em đã đạt được mục tiêu điểm số đề ra',
             'Khóa học giúp em chuẩn bị tốt cho kỳ thi đại học',
-            'Rất hài lòng với chất lượng giảng dạy tại đây'
+            'Rất hài lòng với chất lượng giảng dạy tại đây',
         ];
         $faker = \Faker\Factory::create();
         for ($i = 0; $i < 200; $i++) {
             CourseReview::create([
                 'course_id' => Course::inRandomOrder()->first()->id,
-                'user_id' => User::where('role', 'student')->inRandomOrder()->first()->id,
-                'rating' =>  rand(2, 5),
-                'comment' => $faker->randomElement($comments),
+                'user_id'   => User::where('role', 'student')->inRandomOrder()->first()->id,
+                'rating'    => rand(2, 5),
+                'comment'   => $faker->randomElement($comments),
             ]);
         }
     }

@@ -27,7 +27,7 @@ const CoursePage = () => {
                     <Suspense fallback={<Skeleton height={44} className="!w-full !rounded-xl" />}>
                         <SelectCourse url="/courses" />
                     </Suspense>
-                    <div className="flex w-full flex-1 gap-2 max-lg:mt-6 lg:min-w-[400px]">
+                    <div className="flex w-full flex-1 gap-2 pb-1 max-lg:mt-6 lg:min-w-[400px]">
                         <Suspense fallback={<Skeleton height={44} className="!w-full !rounded-xl" />}>
                             <SearchCourse url="/courses" />
                             <FilterCourses />

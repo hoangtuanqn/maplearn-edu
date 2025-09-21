@@ -38,7 +38,8 @@ php artisan view:clear
 php artisan config:cache
 php artisan route:cache
 
-- Chạy ngầm: php artisan queue:work
+- Chạy gửi email ngầm: php artisan queue:work
 
 
 - php artisan code:check-imports --fix (clean code, xóa import thừa)
+

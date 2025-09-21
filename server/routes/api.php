@@ -12,7 +12,6 @@ Route::prefix('v1')->group(function () {
     require __DIR__ . '/exams.php';
     require __DIR__ . '/posts.php';
     require __DIR__ . '/users.php';
-    require __DIR__ . '/chat.php';
 
     require __DIR__ . '/payment.php';
     require __DIR__ . '/others.php';

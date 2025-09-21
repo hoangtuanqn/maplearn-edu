@@ -158,7 +158,7 @@ class ProfileController extends BaseApiController
         $isValid = GoogleAuthenService::verify2FA($secret, $otp);
 
         if (!$isValid) {
-            return $this->errorResponse(null, "Mã xác thực không chính xác. Vui lòng thử lại.", 401);
+            return $this->errorResponse(null, "Mã xác thực không chính xác. Vui lòng thử lại.", 400);
         }
 
         // Nếu đúng thì lưu flag bật 2FA

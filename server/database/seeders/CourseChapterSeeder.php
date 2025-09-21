@@ -23,8 +23,8 @@ class CourseChapterSeeder extends Seeder
                         'Cực trị của hàm số',
                         'Giá trị lớn nhất, nhỏ nhất của hàm số',
                         'Tiếp tuyến của đồ thị hàm số',
-                        'Khảo sát và vẽ đồ thị hàm số'
-                    ]
+                        'Khảo sát và vẽ đồ thị hàm số',
+                    ],
                 ],
                 [
                     'chapter' => 'Hàm số mũ và hàm số logarit',
@@ -33,9 +33,9 @@ class CourseChapterSeeder extends Seeder
                         'Tính chất logarit',
                         'Phương trình mũ',
                         'Phương trình logarit',
-                        'Bất phương trình mũ và logarit'
-                    ]
-                ]
+                        'Bất phương trình mũ và logarit',
+                    ],
+                ],
             ],
             'ly' => [
                 [
@@ -44,8 +44,8 @@ class CourseChapterSeeder extends Seeder
                         'Con lắc lò xo',
                         'Con lắc đơn',
                         'Dao động tắt dần, dao động cưỡng bức',
-                        'Tổng hợp dao động điều hòa'
-                    ]
+                        'Tổng hợp dao động điều hòa',
+                    ],
                 ],
                 [
                     'chapter' => 'Sóng cơ và sóng âm',
@@ -53,9 +53,9 @@ class CourseChapterSeeder extends Seeder
                         'Sự truyền sóng cơ',
                         'Giao thoa sóng',
                         'Sóng dừng',
-                        'Âm học: âm cơ bản, họa âm, cường độ và độ cao'
-                    ]
-                ]
+                        'Âm học: âm cơ bản, họa âm, cường độ và độ cao',
+                    ],
+                ],
             ],
             'hoa' => [
                 [
@@ -63,17 +63,17 @@ class CourseChapterSeeder extends Seeder
                     'lessons' => [
                         'Tính chất và điều chế este',
                         'Ứng dụng của este',
-                        'Cấu tạo và tính chất của lipit'
-                    ]
+                        'Cấu tạo và tính chất của lipit',
+                    ],
                 ],
                 [
                     'chapter' => 'Cacbohiđrat',
                     'lessons' => [
                         'Glucozơ – tính chất và ứng dụng',
                         'Saccarozơ',
-                        'Tinh bột và Xenlulozơ'
-                    ]
-                ]
+                        'Tinh bột và Xenlulozơ',
+                    ],
+                ],
             ],
             'sinh' => [
                 [
@@ -82,17 +82,17 @@ class CourseChapterSeeder extends Seeder
                         'Cấu trúc và chức năng ADN, ARN',
                         'Nhân đôi ADN',
                         'Phiên mã – Dịch mã',
-                        'Đột biến gen'
-                    ]
+                        'Đột biến gen',
+                    ],
                 ],
                 [
                     'chapter' => 'Quy luật di truyền',
                     'lessons' => [
                         'Các quy luật Menđen',
                         'Tương tác gen',
-                        'Liên kết gen và hoán vị gen'
-                    ]
-                ]
+                        'Liên kết gen và hoán vị gen',
+                    ],
+                ],
             ],
             'tieng-anh' => [
                 [
@@ -102,8 +102,8 @@ class CourseChapterSeeder extends Seeder
                         'Speaking',
                         'Listening',
                         'Writing',
-                        'Language Focus'
-                    ]
+                        'Language Focus',
+                    ],
                 ],
                 [
                     'chapter' => 'Unit 2: Cultural Diversity',
@@ -112,9 +112,9 @@ class CourseChapterSeeder extends Seeder
                         'Speaking',
                         'Listening',
                         'Writing',
-                        'Language Focus'
-                    ]
-                ]
+                        'Language Focus',
+                    ],
+                ],
             ],
             'van' => [
                 [
@@ -124,8 +124,8 @@ class CourseChapterSeeder extends Seeder
                         'Đọc hiểu văn bản',
                         'Phân tích nhân vật Tràng và Thị',
                         'Giá trị hiện thực và nhân đạo',
-                        'Luyện tập – vận dụng'
-                    ]
+                        'Luyện tập – vận dụng',
+                    ],
                 ],
                 [
                     'chapter' => 'Vợ chồng A Phủ – Tô Hoài',
@@ -134,10 +134,10 @@ class CourseChapterSeeder extends Seeder
                         'Hình tượng nhân vật Mị',
                         'Hình tượng nhân vật A Phủ',
                         'Giá trị nghệ thuật – nội dung',
-                        'Luyện tập – vận dụng'
-                    ]
-                ]
-            ]
+                        'Luyện tập – vận dụng',
+                    ],
+                ],
+            ],
         ];
         // Giả sử bạn đã có một số Course trong cơ sở dữ liệu
         $courses = Course::all();
@@ -148,18 +148,19 @@ class CourseChapterSeeder extends Seeder
                 foreach ($data[$courseSlug] as $chapterIndex => $chapterData) {
                     $chapter = CourseChapter::create([
                         'course_id' => $course->id,
-                        'title' => $chapterData['chapter'],
-                        'position' => $chapterIndex + 1
+                        'title'     => $chapterData['chapter'],
+                        'position'  => $chapterIndex + 1,
                     ]);
 
                     foreach ($chapterData['lessons'] as $lessonIndex => $lessonTitle) {
                         CourseLesson::create([
                             'chapter_id' => $chapter->id,
-                            'title' => $lessonTitle,
-                            'content' => 'Học sinh được làm quen với khái niệm cực đại, cực tiểu của hàm số. Bài học trình bày cách dùng đạo hàm bậc nhất và đạo hàm bậc hai để tìm cực trị, cũng như ý nghĩa hình học của chúng. Đây là phần kiến thức quan trọng thường xuyên xuất hiện trong đề thi, có nhiều ứng dụng trong tối ưu hóa và giải quyết các bài toán thực tế.',
-                            'position' => $lessonIndex + 1,
-                            'video_url' => '/video.mp4',
-                            'duration' => 273
+                            'title'      => $lessonTitle,
+                            'content'    => 'Học sinh được làm quen với khái niệm cực đại, cực tiểu của hàm số. Bài học trình bày cách dùng đạo hàm bậc nhất và đạo hàm bậc hai để tìm cực trị, cũng như ý nghĩa hình học của chúng. Đây là phần kiến thức quan trọng thường xuyên xuất hiện trong đề thi, có nhiều ứng dụng trong tối ưu hóa và giải quyết các bài toán thực tế.',
+                            'position'   => $lessonIndex + 1,
+                            'is_free'    => $lessonIndex === 0 || $lessonIndex === 1 ? true : false,
+                            'video_url'  => '/video.mp4',
+                            'duration'   => 273,
                         ]);
                     }
                 }

@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { useInput } from "~/hooks/useInput";
 import axios from "axios";
 import Image from "next/image";
-import { ArrowUp, ChevronDown, MessageSquare, MessageSquareOff, SendHorizontal } from "lucide-react";
+import { ArrowUp, ChevronDown, MessageSquare, MessageSquareOff, SendHorizontal, Bot, Sparkles } from "lucide-react";
 import { useAuth } from "~/hooks/useAuth";
 import { ChatHistoriesType } from "../../../api/chat/ai/types/ChatBotType.type";
 import ChatBubble from "./components/ChatBubble";
@@ -106,50 +106,65 @@ const ChatBotAI = () => {
         <>
             {!isOpen && (
                 <div
-                    className="fixed right-10 bottom-44 z-2 hidden w-fit cursor-pointer rounded-xl bg-white px-4 py-2 font-semibold text-gray-600 shadow xl:bottom-42 xl:block"
+                    className="fixed right-10 bottom-44 z-50 hidden w-fit cursor-pointer rounded-2xl border border-gray-100 bg-white px-6 py-3 font-medium text-gray-700 shadow-lg transition-all duration-200 hover:shadow-xl xl:bottom-42 xl:block"
                     onClick={() => setIsOpen(!isOpen)}
                 >
-                    <span>Xin chào! Bạn cần hỗ trợ gì không?</span>
+                    <div className="flex items-center gap-2">
+                        <Bot className="text-primary h-4 w-4" />
+                        <span>Xin chào! Bạn cần hỗ trợ gì không?</span>
+                        <Sparkles className="h-4 w-4 text-yellow-500" />
+                    </div>
                 </div>
             )}
+
             <button
-                className="t1-flex-center fixed right-5 bottom-30 size-12 cursor-pointer rounded-full bg-blue-400 text-white md:bottom-30 md:size-15 xl:bottom-24"
+                id="ai-chatbot"
+                className="from-primary to-primary/80 fixed right-5 bottom-30 flex h-14 w-14 cursor-pointer items-center justify-center rounded-full bg-gradient-to-r text-white shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-xl md:bottom-30 md:h-16 md:w-16 xl:bottom-24"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                {isOpen ? <MessageSquareOff className="!h-6 !w-6" /> : <MessageSquare className="!h-6 !w-6" />}
+                {isOpen ? <MessageSquareOff className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
             </button>
+
             {isOpen && (
-                <section className="fixed z-100000 min-h-[600px] rounded-xl bg-white shadow-sm max-xl:inset-0 xl:right-32 xl:bottom-15 xl:max-w-[420px]">
-                    <div className="flex h-[80px] w-full items-center rounded-t-xl bg-gradient-to-r from-blue-500 to-blue-400 text-white">
-                        <div className="flex w-full items-center justify-between px-5 py-4">
+                <section className="fixed z-[100000] min-h-[600px] rounded-2xl border border-gray-100 bg-white shadow-2xl max-xl:inset-0 xl:right-32 xl:bottom-15 xl:min-h-[650px] xl:max-w-[440px]">
+                    {/* Header */}
+                    <div className="from-primary to-primary/90 flex h-20 w-full items-center rounded-t-2xl bg-gradient-to-r text-white">
+                        <div className="flex w-full items-center justify-between px-6 py-4">
                             <div className="flex flex-row items-center gap-3">
-                                <Image
-                                    width={48}
-                                    height={48}
-                                    className="h-12 rounded-full object-cover"
-                                    alt=""
-                                    src="/assets/images/logo/logo-64.png"
-                                />
+                                <div className="relative">
+                                    <Image
+                                        width={48}
+                                        height={48}
+                                        className="h-12 w-12 rounded-full border-2 border-white/20 object-cover"
+                                        alt="AI Assistant"
+                                        src="/assets/images/logo/logo-64.png"
+                                    />
+                                    <div className="absolute -right-1 -bottom-1 h-4 w-4 rounded-full border-2 border-white bg-green-400"></div>
+                                </div>
                                 <div className="flex flex-col">
-                                    <span className="text-xs">Trò chuyện với</span>
-                                    <span className="text-lg font-bold">Trợ Lý Ảo</span>
+                                    <span className="text-xs text-white/80">Trò chuyện với</span>
+                                    <span className="text-lg font-bold">Trợ Lý Ảo AI</span>
                                 </div>
                             </div>
-                            <div
-                                className="cursor-pointer rounded-full p-2 duration-100 hover:bg-blue-500"
+                            <button
+                                className="cursor-pointer rounded-full p-2 transition-colors duration-200 hover:bg-white/10"
                                 onClick={() => setIsOpen(!isOpen)}
                             >
-                                <ChevronDown className="!h-6 !w-6" />
-                            </div>
+                                <ChevronDown className="h-6 w-6" />
+                            </button>
                         </div>
                     </div>
+
+                    {/* Chat Messages */}
                     <div
-                        className="flex h-[calc(100%-120px)] flex-col gap-3 overflow-y-auto px-8 pt-6 pb-10 xl:h-[445px]"
+                        className="flex h-[calc(100%-140px)] flex-col gap-3 overflow-y-auto bg-gray-50/50 px-2 pt-6 pb-4 xl:h-[465px]"
                         ref={frameChat}
-                        style={{ scrollbarWidth: "thin", scrollbarColor: "#a5a5a5 transparent" }}
+                        style={{
+                            scrollbarWidth: "thin",
+                            scrollbarColor: "#cbd5e1 transparent",
+                        }}
                     >
                         {chatHistories.map((history, index) => {
-                            // nếu ids.includes(index + 1) = true thì truyền dataParse?.course_id ngược thì lại truyền về []
                             return (
                                 <ChatBubble
                                     key={index}
@@ -165,38 +180,41 @@ const ChatBotAI = () => {
                         })}
                         {isPending && <ChatLoading />}
                     </div>
+
+                    {/* Input Form */}
                     <form
-                        className="absolute right-0 bottom-0 left-0 flex min-h-[75px] rounded-b-xl bg-white px-8"
+                        className="absolute right-0 bottom-0 left-0 flex min-h-[85px] rounded-b-2xl border-t border-gray-100 bg-white px-6"
                         onSubmit={handleSubmit}
                     >
-                        <div className="flex-1">
-                            <div className="h-[0.5px] w-full bg-gray-300"></div>
-                            <div className="flex">
+                        <div className="flex flex-1 items-center">
+                            <div className="focus-within:border-primary flex w-full items-center gap-3 rounded-full border border-gray-200 bg-gray-50 px-4 py-3 transition-all focus-within:bg-white">
                                 <input
                                     onChange={onChange}
                                     value={message}
                                     type="text"
-                                    placeholder="Tin nhắn của bạn ...."
-                                    className="h-15 w-full border-none px-0.5 pr-5 outline-none"
+                                    placeholder="Nhập tin nhắn của bạn..."
+                                    className="flex-1 border-none bg-transparent text-gray-700 outline-none placeholder:text-gray-400"
                                 />
-                                {/* Screen < XL */}
+
+                                {/* Mobile Send Button */}
                                 {message && (
                                     <button
                                         type="submit"
-                                        className="t1-flex-center mt-2 size-12 cursor-pointer rounded-full bg-blue-500 p-2 text-white shadow-2xl shadow-blue-800 xl:hidden"
+                                        className="bg-primary hover:bg-primary/90 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-white shadow-lg transition-colors xl:hidden"
                                     >
-                                        <ArrowUp className="!h-5 !w-5" />
+                                        <ArrowUp className="h-5 w-5" />
                                     </button>
                                 )}
                             </div>
                         </div>
-                        {/* Screen >= XL */}
+
+                        {/* Desktop Send Button */}
                         {message && (
                             <button
                                 type="submit"
-                                className="t1-flex-center absolute -right-[5%] bottom-[20%] hidden aspect-square w-12.5 cursor-pointer rounded-full bg-blue-500 text-white shadow-2xl shadow-blue-800 xl:flex"
+                                className="bg-primary hover:bg-primary/90 absolute -right-[3%] bottom-[25%] hidden h-12 w-12 cursor-pointer items-center justify-center rounded-full text-white shadow-lg transition-all hover:scale-105 xl:flex"
                             >
-                                <SendHorizontal className="!h-6 !w-6" />
+                                <SendHorizontal className="h-5 w-5" />
                             </button>
                         )}
                     </form>

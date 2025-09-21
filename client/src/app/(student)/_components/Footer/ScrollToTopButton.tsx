@@ -21,7 +21,6 @@ export default function ScrollToTopButton() {
             behavior: "smooth",
         });
     };
-
     return (
         isVisible && (
             <button

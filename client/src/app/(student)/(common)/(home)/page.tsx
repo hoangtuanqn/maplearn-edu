@@ -6,10 +6,15 @@ import ListCourseRecommended from "./_components/ListCourseRecommended";
 import SidebarLeft from "../../_components/SidebarLeft";
 import SidebarRight from "../../_components/SidebarRight";
 import TopStudents from "../../_components/SidebarRight/TopStudents";
+import TutorialUsing from "~/components/TutorialUsing";
+import { Suspense } from "react";
 
 const StudentHomePage = () => {
     return (
         <>
+            <Suspense>
+                <TutorialUsing />
+            </Suspense>
             <section className="flex gap-2">
                 <SidebarLeft />
                 <div className="mx-auto w-[100%] sm:m-0 sm:mr-auto md:w-[80%] lg:mx-auto lg:w-[85%] xl:w-[70%] 2xl:w-[52%]">
@@ -20,8 +25,8 @@ const StudentHomePage = () => {
                         {/* <CourseActive className="xl:hidden" /> */}
                         <TopStudents className="max-2xl:mt-4 2xl:hidden" />
                     </div>
-                    {/* Dashboard Stats */}
 
+                    {/* Dashboard Stats */}
                     <DashboardStats />
                     {/* Giáo viên */}
                     <Teachers />

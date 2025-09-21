@@ -24,7 +24,7 @@ const DisplayAvatar = ({
                 />
             ) : (
                 <div
-                    className={`flex h-full w-full items-center justify-center size-${ratio} shrink-0 rounded-full bg-gradient-to-b from-[#dadada] to-[#bebebe] text-3xl font-medium text-white`}
+                    className={`size-${ratio} border-primary aspect-square shrink-0 items-center justify-center rounded-full border-2 object-cover`}
                 >
                     {getCharacterName(fullName || "Vô Danh")}
                 </div>

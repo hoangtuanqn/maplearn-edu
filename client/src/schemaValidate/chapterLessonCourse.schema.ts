@@ -8,6 +8,7 @@ const lessonSchema = z.object({
     position: z.number(),
     duration: z.number(),
     is_free: z.boolean(),
+    video_url: z.string(), // chỉ tồn tại nếu is_free = true
 });
 const chapterSchema = z.object({
     id: z.number(),

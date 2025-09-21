@@ -33,7 +33,7 @@ class ExamAttempt extends Model
     }
     public function paper()
     {
-        return $this->belongsTo(ExamPaper::class);
+        return $this->belongsTo(ExamPaper::class, 'exam_paper_id');
     }
 
     protected static function booted()

@@ -40,7 +40,7 @@ export function ShareButton() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="view_tooltip" data-tooltip-content={"Chia sẻ"}>
+                <Button variant="primary" className="view_tooltip border" data-tooltip-content={"Chia sẻ"}>
                     <Share2 className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>

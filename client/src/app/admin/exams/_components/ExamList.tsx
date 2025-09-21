@@ -1,5 +1,5 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Trash2, Clock, Users, Target } from "lucide-react";
 import Link from "next/link";
 import React, { Suspense } from "react";
@@ -16,26 +16,58 @@ import { getStatusBadge } from "~/libs/statusBadge";
 import { examCategories } from "~/mockdata/exam/examCategories.data";
 import { gradeLevelsMock } from "~/mockdata/gradeLevels";
 import { subjectsMock } from "~/mockdata/subject.data";
-import { FilterExams } from "./FilterExams";
+import DisplayTotalResult from "../../_components/DisplayTotalResult";
+import { notificationErrorApi } from "~/libs/apis/http";
 
-const allowedFields = ["search", "page", "categories", "provinces", "difficulties", "subject"] as const;
+const allowedFields = [
+    "search",
+    "page",
+    "categories",
+    "difficulty",
+    "provinces",
+    "difficulties",
+    "subject",
+    "grade_level",
+    "exam_category",
+    "sort",
+] as const;
 
 const ExamList = () => {
-    const { page, search, provinces, categories, difficulties, subject } = useGetSearchQuery(allowedFields);
+    const queryClient = useQueryClient();
+    const { page, search, provinces, categories, difficulties, subject, difficulty, grade_level, exam_category, sort } =
+        useGetSearchQuery(allowedFields);
 
     const { data: exams, isLoading } = useQuery({
-        queryKey: ["exam", "list", { page, search, provinces, categories, difficulties, subject }],
+        queryKey: [
+            "exam",
+            "list",
+            {
+                page,
+                search,
+                provinces,
+                categories,
+                difficulties,
+                subject,
+                difficulty,
+                grade_level,
+                exam_category,
+                sort,
+            },
+        ],
         queryFn: async () => {
             const res = await examApi.getExams(
                 +page,
                 EXAM_PER_PAGE,
                 search,
-                "",
+                sort,
                 buildLaravelFilterQuery({
                     provinces,
                     categories,
                     difficulties,
                     subject,
+                    difficulty,
+                    grade_level,
+                    exam_category,
                 }),
             );
             return res.data.data;
@@ -76,9 +108,20 @@ const ExamList = () => {
         );
     };
 
+    const mutationDeleteExam = useMutation({
+        mutationFn: (slug: string) => examApi.deletePaperExam(slug),
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["exam", "list", { page, search, provinces, categories, difficulties, subject, difficulty }],
+            });
+            toast.success("Xóa đề thi thành công!");
+        },
+        onError: notificationErrorApi,
+    });
     return (
         <>
             <div className="mt-8 overflow-x-auto">
+                <DisplayTotalResult total={total} />
                 <table className="min-w-full rounded-xl bg-white shadow-sm">
                     <thead>
                         <tr className="border-b border-gray-200">
@@ -208,7 +251,7 @@ const ExamList = () => {
                                               <DangerConfirm
                                                   message="Bạn có chắc chắn muốn xóa đề thi này?."
                                                   action={() => {
-                                                      toast.success("Xóa đề thi thành công!");
+                                                      mutationDeleteExam.mutate(exam.slug);
                                                   }}
                                               >
                                                   <Button variant="ghost" size="sm" className="hover:bg-red-50">

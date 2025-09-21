@@ -23,7 +23,9 @@ const ExamPage = () => {
                             <h3 className="text-primary text-xl font-bold">Danh sách đề thi</h3>
                             <p className="text-sm text-slate-500">Quản lý và theo dõi các đề thi trong hệ thống.</p>
                         </div>
-                        <FilterExams />
+                        <Suspense>
+                            <FilterExams />
+                        </Suspense>
                     </div>
                 </div>
 

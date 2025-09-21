@@ -18,6 +18,7 @@ import { useUnsavedChangesWarning } from "~/hooks/useUnsavedChangesWarning";
 import Loading from "~/app/(student)/_components/Loading";
 import { useRouter } from "next/navigation";
 import { exitFullscreen } from "~/libs/hepler";
+import { AlertTriangle, Clock, Shield } from "lucide-react";
 
 const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: QuestionsExamResponse["data"] }) => {
     const [mounted, setMounted] = useState(false);
@@ -79,11 +80,13 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
     // Submit bài thi
     const submitAnswerMutation = useMutation({
         mutationFn: (data: AnswerLocalStorage) => examApi.submitAnswer(slug, data),
-        onSuccess: () => {
+        onSuccess: (data) => {
+            console.log("Nộp bài rồi: ", data);
+
             toast.success("Đã nộp bài làm thành công");
             exitFullscreen();
             removeLocalStorage(slug); // Xóa dữ liệu localStorage sau khi nộp bài
-            router.push(`/exams/${slug}/results`);
+            router.push(`/exams/${slug}/results/${data.data.data.id_attempt}`);
         },
         onError: () => {
             toast.error("Đã có lỗi xảy ra khi nộp bài");
@@ -186,59 +189,88 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
                 <FullScreen violationCount={violationCount} onDetected={handleCheatingDetected} />
             )}
 
-            <section className="mt-5 h-screen pl-4 max-xl:pr-4">
-                <h2 className="text-primary mb-4 text-xl font-bold">{questionsRes.title}</h2>
-
-                {questionsRes.anti_cheat_enabled && violationCount > 0 && (
-                    <div className="mb-4 flex items-center gap-3 rounded-lg bg-yellow-100 px-4 py-2">
-                        <span className="font-semibold text-yellow-700">Cảnh báo vi phạm:</span>
-                        <span className="font-bold text-red-600">
-                            {violationCount}/{questionsRes.max_violation_attempts}
-                        </span>
-                        <span className="text-sm text-yellow-800">
-                            Nếu bạn vi phạm quá {questionsRes.max_violation_attempts} lần, hệ thống sẽ tự động hủy bài
-                            thi.
-                        </span>
+            <div className="min-h-screen">
+                <div className="mx-auto px-4 py-6">
+                    {/* Header */}
+                    <div className="mb-6 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+                        <h2 className="text-primary text-2xl font-bold">{questionsRes.title}</h2>
+                        <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                            <Shield className="text-primary h-4 w-4" />
+                            <span>Đang làm bài thi - Vui lòng không rời khỏi trang</span>
+                        </div>
                     </div>
-                )}
-                {/* Hiển thị cảnh báo khi còn 3p là hết giờ làm bài */}
-                {timeLeft > 1 && timeLeft <= 180 && (
-                    <div className="mb-4 flex items-center gap-3 rounded-lg bg-red-100 px-4 py-2">
-                        <span className="font-semibold text-red-700">Cảnh báo:</span>
-                        <span className="font-bold text-red-600">
-                            Thời gian làm bài còn lại: {formatter.parseMinutesSeconds(timeLeft)}
-                        </span>
-                        <span className="ml-4 text-xs text-yellow-600">Hệ thống sẽ tự động nộp bài khi hết giờ.</span>
+
+                    {/* Alerts */}
+                    <div className="mb-6 space-y-4">
+                        {questionsRes.anti_cheat_enabled && violationCount > 0 && (
+                            <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 shadow-sm">
+                                <div className="flex items-center gap-3">
+                                    <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3">
+                                            <span className="font-semibold text-yellow-800">Cảnh báo vi phạm:</span>
+                                            <span className="rounded-full bg-red-100 px-2 py-1 text-sm font-bold text-red-700">
+                                                {violationCount}/{questionsRes.max_violation_attempts}
+                                            </span>
+                                        </div>
+                                        <p className="mt-1 text-sm text-yellow-700">
+                                            Nếu bạn vi phạm quá {questionsRes.max_violation_attempts} lần, hệ thống sẽ
+                                            tự động hủy bài thi.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {timeLeft > 1 && timeLeft <= 180 && (
+                            <div className="rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm">
+                                <div className="flex items-center gap-3">
+                                    <Clock className="h-5 w-5 text-red-600" />
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3">
+                                            <span className="font-semibold text-red-800">Cảnh báo:</span>
+                                            <span className="rounded-full bg-red-100 px-3 py-1 text-sm font-bold text-red-700">
+                                                {formatter.parseMinutesSeconds(timeLeft)}
+                                            </span>
+                                        </div>
+                                        <p className="mt-1 text-sm text-red-700">
+                                            Hệ thống sẽ tự động nộp bài khi hết giờ.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
 
-                <div className="flex flex-col gap-4 xl:flex-row">
-                    {/* Nội dung câu hỏi */}
-                    <Questions
-                        payload={{
-                            questions,
-                            questionActive,
-                            answers,
-                            handleChoiceAnswer,
-                            mounted,
-                            setQuestionActive,
-                        }}
-                    />
+                    {/* Main Content */}
+                    <div className="flex flex-col gap-6 xl:flex-row">
+                        <Questions
+                            payload={{
+                                questions,
+                                questionActive,
+                                answers,
+                                handleChoiceAnswer,
+                                mounted,
+                                setQuestionActive,
+                            }}
+                        />
 
-                    <Sidebar
-                        payload={{
-                            handleSubmitExam,
-                            setQuestionActive,
-                            questions,
-                            countdownSubmit,
-                            timeLeft,
-                            questionActive,
-                            answers,
-                        }}
-                    />
+                        <Sidebar
+                            payload={{
+                                handleSubmitExam,
+                                setQuestionActive,
+                                questions,
+                                countdownSubmit,
+                                timeLeft,
+                                questionActive,
+                                answers,
+                            }}
+                        />
+                    </div>
+
+                    <Footer payload={{ setQuestionActive, questionActive, countQuestion: questions.length, answers }} />
                 </div>
-                <Footer payload={{ setQuestionActive, questionActive, countQuestion: questions.length, answers }} />
-            </section>
+            </div>
         </>
     );
 };

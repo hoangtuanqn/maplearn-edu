@@ -5,7 +5,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { difficulties } from "~/apiRequest/exam";
-import { ChevronDown, GraduationCap } from "lucide-react";
+import { ChevronDown, Search, Filter } from "lucide-react";
 import MultiSelectDropdown from "../../../_components/MultiSelectDropdown";
 import { useFilterQuery } from "~/hooks/useFilterQuery";
 import { useRouter } from "next/navigation";
@@ -20,120 +20,136 @@ const FilterExam = () => {
     const [resetKey, setResetKey] = useState(0);
 
     return (
-        <div className="top-[70px] h-fit rounded-xl bg-white px-6 py-4 shadow-sm lg:sticky lg:w-96">
+        <div className="scrollbar sticky top-20 h-fit max-h-[85vh] overflow-y-auto rounded-xl border border-gray-100 bg-white px-6 py-5 shadow-sm lg:w-96">
+            {/* Search Section */}
             <div className="mb-6">
-                <h2 className="text-primary mb-2 text-base font-bold">Tìm kiếm</h2>
+                <div className="mb-3 flex items-center gap-2">
+                    <Search className="text-primary h-4 w-4" />
+                    <h2 className="text-primary text-base font-semibold">Tìm kiếm</h2>
+                </div>
                 <Input
                     name="search"
-                    placeholder="Tìm kiếm đề thi ...."
+                    placeholder="Tìm kiếm đề thi..."
                     value={formValues.filter.search ?? ""}
                     onChange={(e) => setFieldValue("search", e.target.value, "filter")}
+                    className="focus:border-primary focus:ring-primary/20 border-gray-200"
                 />
             </div>
+
             <div className="space-y-6" key={resetKey}>
-                <h2 className="text-primary mb-3 text-base font-bold">Bộ lọc</h2>
-                <div className="border-t border-gray-200 pt-4">
+                <div className="mb-4 flex items-center gap-2">
+                    <Filter className="text-primary h-4 w-4" />
+                    <h2 className="text-primary text-base font-semibold">Bộ lọc</h2>
+                </div>
+
+                {/* Subject Filter */}
+                <div className="border-t border-gray-100 pt-4">
                     <div className="flex items-center justify-between text-[15.725px]">
                         <div className="flex items-center gap-2">
-                            <GraduationCap className="size-5" />
-                            <span className="font-semibold text-gray-800">Môn học</span>
+                            <div className="bg-primary h-2 w-2 rounded-full"></div>
+                            <span className="font-medium text-gray-800">Môn học</span>
                         </div>
                         <button
                             type="button"
-                            className="flex items-center rounded-md px-2 py-1 transition-colors hover:bg-gray-100 focus:outline-none"
+                            className="flex items-center rounded-md px-2 py-1 transition-colors hover:bg-gray-50 focus:outline-none"
                         >
-                            <ChevronDown className="size-5 text-gray-500" />
+                            <ChevronDown className="size-4 text-gray-400" />
                         </button>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-3">
-                        <>
-                            {subjectsMock.map((subject) => (
-                                <div key={subject.slug} className="flex items-center gap-2">
-                                    <Checkbox
-                                        id={subject.name}
-                                        checked={formValues.filterMultiple.subject?.includes(subject.name) || false}
-                                        onCheckedChange={(checked) => {
-                                            const current = formValues.filterMultiple.subject || [];
-                                            if (checked) {
-                                                setFieldValue(
-                                                    "subject",
-                                                    [...current.filter((s) => s !== ""), subject.name],
-                                                    "filterMultiple",
-                                                );
-                                            } else {
-                                                setFieldValue(
-                                                    "subject",
-                                                    current.filter((s) => s !== subject.name && s !== ""),
-                                                    "filterMultiple",
-                                                );
-                                            }
-                                        }}
-                                    />
-                                    <Label htmlFor={subject.name} className="w-full text-sm text-gray-700">
-                                        {subject.name}
-                                    </Label>
-                                </div>
-                            ))}
-                        </>
+                        {subjectsMock.map((subject) => (
+                            <div key={subject.slug} className="flex items-center gap-2">
+                                <Checkbox
+                                    id={subject.name}
+                                    checked={formValues.filterMultiple.subject?.includes(subject.name) || false}
+                                    onCheckedChange={(checked) => {
+                                        const current = formValues.filterMultiple.subject || [];
+                                        if (checked) {
+                                            setFieldValue(
+                                                "subject",
+                                                [...current.filter((s) => s !== ""), subject.name],
+                                                "filterMultiple",
+                                            );
+                                        } else {
+                                            setFieldValue(
+                                                "subject",
+                                                current.filter((s) => s !== subject.name && s !== ""),
+                                                "filterMultiple",
+                                            );
+                                        }
+                                    }}
+                                />
+                                <Label
+                                    htmlFor={subject.name}
+                                    className="w-full cursor-pointer text-sm text-gray-700 hover:text-gray-900"
+                                >
+                                    {subject.name}
+                                </Label>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-4">
+                {/* Category Filter */}
+                <div className="border-t border-gray-100 pt-4">
                     <div className="flex items-center justify-between text-[15.725px]">
                         <div className="flex items-center gap-2">
-                            <GraduationCap className="size-5" />
-                            <span className="font-semibold text-gray-800">Phân loại đề</span>
+                            <div className="bg-primary h-2 w-2 rounded-full"></div>
+                            <span className="font-medium text-gray-800">Phân loại đề</span>
                         </div>
                         <button
                             type="button"
-                            className="flex items-center rounded-md px-2 py-1 transition-colors hover:bg-gray-100 focus:outline-none"
+                            className="flex items-center rounded-md px-2 py-1 transition-colors hover:bg-gray-50 focus:outline-none"
                         >
-                            <ChevronDown className="size-5 text-gray-500" />
+                            <ChevronDown className="size-4 text-gray-400" />
                         </button>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-3">
-                        <>
-                            {examCategories.map((category) => (
-                                <div key={category.slug} className="flex items-center gap-2">
-                                    <Checkbox
-                                        id={category.slug}
-                                        checked={formValues.filterMultiple.categories?.includes(category.slug) || false}
-                                        onCheckedChange={(checked) => {
-                                            const current = formValues.filterMultiple.categories || [];
-                                            if (checked) {
-                                                setFieldValue(
-                                                    "categories",
-                                                    [...current.filter((s) => s !== ""), category.slug],
-                                                    "filterMultiple",
-                                                );
-                                            } else {
-                                                setFieldValue(
-                                                    "categories",
-                                                    current.filter((s) => s !== category.slug && s !== ""),
-                                                    "filterMultiple",
-                                                );
-                                            }
-                                        }}
-                                    />
-                                    <Label htmlFor={category.name} className="w-full text-sm text-gray-700">
-                                        {category.name}
-                                    </Label>
-                                </div>
-                            ))}
-                        </>
+                        {examCategories.map((category) => (
+                            <div key={category.slug} className="flex items-center gap-2">
+                                <Checkbox
+                                    id={category.slug}
+                                    checked={formValues.filterMultiple.categories?.includes(category.slug) || false}
+                                    onCheckedChange={(checked) => {
+                                        const current = formValues.filterMultiple.categories || [];
+                                        if (checked) {
+                                            setFieldValue(
+                                                "categories",
+                                                [...current.filter((s) => s !== ""), category.slug],
+                                                "filterMultiple",
+                                            );
+                                        } else {
+                                            setFieldValue(
+                                                "categories",
+                                                current.filter((s) => s !== category.slug && s !== ""),
+                                                "filterMultiple",
+                                            );
+                                        }
+                                    }}
+                                />
+                                <Label
+                                    htmlFor={category.name}
+                                    className="w-full cursor-pointer text-sm text-gray-700 hover:text-gray-900"
+                                >
+                                    {category.name}
+                                </Label>
+                            </div>
+                        ))}
                     </div>
                 </div>
-                <div className="border-t border-gray-200 pt-4">
+
+                {/* Difficulty Filter */}
+                <div className="border-t border-gray-100 pt-4">
                     <div className="flex items-center justify-between text-[15.725px]">
                         <div className="flex items-center gap-2">
-                            <GraduationCap className="size-5" />
-                            <span className="font-semibold text-gray-800">Độ khó</span>
+                            <div className="bg-primary h-2 w-2 rounded-full"></div>
+                            <span className="font-medium text-gray-800">Độ khó</span>
                         </div>
                         <button
                             type="button"
-                            className="flex items-center rounded-md px-2 py-1 transition-colors hover:bg-gray-100 focus:outline-none"
+                            className="flex items-center rounded-md px-2 py-1 transition-colors hover:bg-gray-50 focus:outline-none"
                         >
-                            <ChevronDown className="size-5 text-gray-500" />
+                            <ChevronDown className="size-4 text-gray-400" />
                         </button>
                     </div>
                     <div className="mt-4 grid grid-cols-2 gap-3">
@@ -159,7 +175,10 @@ const FilterExam = () => {
                                         }
                                     }}
                                 />
-                                <Label htmlFor={difficulty.slug} className="w-full text-sm text-gray-700">
+                                <Label
+                                    htmlFor={difficulty.slug}
+                                    className="w-full cursor-pointer text-sm text-gray-700 hover:text-gray-900"
+                                >
                                     {difficulty.name}
                                 </Label>
                             </div>
@@ -167,24 +186,24 @@ const FilterExam = () => {
                     </div>
                 </div>
 
-                <div className="border-t border-gray-200 pt-4">
+                {/* Province Filter */}
+                <div className="border-t border-gray-100 pt-4">
                     <div className="flex items-center justify-between text-[15.725px]">
                         <div className="flex items-center gap-2">
-                            <GraduationCap className="size-5" />
-                            <span className="font-semibold text-gray-800">Tỉnh/Thành phố</span>
+                            <div className="bg-primary h-2 w-2 rounded-full"></div>
+                            <span className="font-medium text-gray-800">Tỉnh/Thành phố</span>
                         </div>
                         <button
                             type="button"
-                            className="flex items-center rounded-md px-2 py-1 transition-colors hover:bg-gray-100 focus:outline-none"
+                            className="flex items-center rounded-md px-2 py-1 transition-colors hover:bg-gray-50 focus:outline-none"
                         >
-                            <ChevronDown className="size-5 text-gray-500" />
+                            <ChevronDown className="size-4 text-gray-400" />
                         </button>
                     </div>
                     <div className="mt-4 w-full space-y-3">
                         <MultiSelectDropdown
                             onChange={(value) => setFieldValue("provinces", value, "filter")}
                             label="Tỉnh / Thành phố ra đề"
-                            // Chuyển value từ dạng 1,2,3 sang mảng
                             values={formValues.filterMultiple.province || []}
                             options={provinces.map((item) => ({
                                 label: item.name,
@@ -194,23 +213,29 @@ const FilterExam = () => {
                     </div>
                 </div>
             </div>
-            <div className="mt-5 flex gap-2 border-t border-gray-200 pt-4">
+
+            {/* Action Buttons */}
+            <div className="mt-6 flex gap-3 border-t border-gray-100 pt-4">
                 <Button
-                    className="flex-1 py-4"
-                    variant={"outline"}
+                    variant="outline"
                     disabled={!isFiltered}
                     onClick={() => {
                         if (isFiltered) {
                             resetFields();
                             setResetKey((prev) => prev + 1);
-                            router.push("/exams"); // Reset URL to base path
+                            router.push("/exams");
                         }
                     }}
+                    className="flex-1 border-gray-200 py-3 hover:bg-gray-50"
                 >
                     Đặt lại
                 </Button>
 
-                <Button className="bg-primary flex-1 py-4 text-white" onClick={handleSubmit} disabled={!isFiltered}>
+                <Button
+                    onClick={handleSubmit}
+                    disabled={!isFiltered}
+                    className="bg-primary hover:bg-primary/90 flex-1 py-3 text-white"
+                >
                     Xác nhận lọc
                 </Button>
             </div>

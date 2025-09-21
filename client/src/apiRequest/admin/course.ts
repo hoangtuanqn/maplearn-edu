@@ -1,10 +1,30 @@
 import privateApi from "~/libs/apis/privateApi";
+import { StudentCompletedResponse } from "~/schemaValidate/admin/course.schema";
 import { ChapterLesson } from "~/schemaValidate/chapterLessonCourse.schema";
-import { CourseGetDetailResponse, CourseStats } from "~/schemaValidate/course.schema";
+import { CourseGetDetailResponse, CourseListResponse, CourseStats } from "~/schemaValidate/course.schema";
 import { LessonResponse } from "~/schemaValidate/courseDetail.schema";
 import { ResponseSchemaBasic } from "~/schemaValidate/response.schema";
-
+const COURSE_PER_PAGE = 20;
 const courseAdminApi = {
+    getCourses: (
+        page: number = 1,
+        limit: number = COURSE_PER_PAGE,
+        search: string = "",
+        querySortOther: string = "",
+        queryOther: string = "",
+    ) => {
+        let query = `/courses-admin?page=${page}&limit=${limit}`;
+        if (search) {
+            query += `&filter[name]=${search}`;
+        }
+        if (querySortOther) {
+            query += `&sort=${querySortOther}`; // Các value cần sort: -created_at, download_count, ...
+        }
+        if (queryOther) {
+            query += `&${queryOther}`; // Các value khác nếu cần
+        }
+        return privateApi.get<CourseListResponse>(query);
+    },
     addChapter: (data: { course_slug: string; title: string; position: number }) =>
         privateApi.post<ChapterLesson>(`/chapters/`, data),
     // Admin
@@ -23,5 +43,9 @@ const courseAdminApi = {
 
     // get thống kê học viên đăng ký khóa học trong 7 ngày
     getCourseStudentStats: (slug: string) => privateApi.get<CourseStats>(`/courses/${slug}/stats-enrollments`),
+
+    // get học sinh đã hoàn thành khóa học
+    getStudentsCompletedCourse: (slug: string) =>
+        privateApi.get<StudentCompletedResponse>(`/courses/${slug}/completions`),
 };
 export default courseAdminApi;

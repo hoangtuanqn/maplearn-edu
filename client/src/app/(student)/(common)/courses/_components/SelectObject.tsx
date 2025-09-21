@@ -6,9 +6,9 @@ import { gradeLevelsMock } from "~/mockdata/gradeLevels";
 
 const SelectObject = ({ url }: { url: string }) => {
     const searchParams = useSearchParams();
-
     const router = useRouter();
     const [activeTab, setActiveTab] = useState(searchParams.get("grade_level") || "all");
+
     const handleChoiceTab = (tab: string) => {
         const params = new URLSearchParams(window.location.search);
         const isSameTab = tab === activeTab;
@@ -26,6 +26,7 @@ const SelectObject = ({ url }: { url: string }) => {
         router.push(`${url}?${params.toString()}`);
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
+
     useEffect(() => {
         const onPopState = () => {
             const params = new URLSearchParams(window.location.search);
@@ -36,19 +37,34 @@ const SelectObject = ({ url }: { url: string }) => {
     }, []);
 
     return (
-        <>
-            <div className="mt-6 flex flex-wrap gap-2 text-xs lg:text-sm xl:gap-4 [&>button]:flex [&>button]:gap-2">
-                {gradeLevelsMock?.map((tab) => (
-                    <button
-                        key={tab.slug}
-                        className={`t1-flex-center flex w-fit cursor-pointer rounded-xl bg-[#F0F3F7] px-5 py-3 font-semibold text-gray-600 ${activeTab === tab.slug ? "bg-primary text-white" : ""}`}
-                        onClick={() => handleChoiceTab(tab.slug)}
-                    >
-                        <GraduationCap /> {tab.name}
-                    </button>
-                ))}
+        <div className="space-y-4">
+            {/* Grade Level Tags */}
+            <div className="mt-5 flex flex-wrap gap-3">
+                {gradeLevelsMock?.map((level) => {
+                    const isActive = activeTab === level.slug;
+                    return (
+                        <button
+                            key={level.slug}
+                            onClick={() => handleChoiceTab(level.slug)}
+                            className={`group flex cursor-pointer items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                                isActive
+                                    ? "border-primary/20 bg-primary/10 text-primary shadow-sm"
+                                    : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50 hover:shadow-sm"
+                            }`}
+                        >
+                            <GraduationCap
+                                size={16}
+                                className={`transition-colors ${
+                                    isActive ? "text-primary" : "text-gray-500 group-hover:text-gray-600"
+                                }`}
+                            />
+                            <span>{level.name}</span>
+                            {isActive && <div className="bg-primary h-1.5 w-1.5 rounded-full"></div>}
+                        </button>
+                    );
+                })}
             </div>
-        </>
+        </div>
     );
 };
 

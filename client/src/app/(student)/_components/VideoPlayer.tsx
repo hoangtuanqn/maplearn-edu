@@ -7,14 +7,12 @@ type Props = {
     type?: "video/mp4" | "youtube";
     poster?: string;
     ratio?: string;
-    /** Thời gian lấy từ DB (giây) */
     defaultTime?: number;
-    /** Callback lưu DB */
     onTimeUpdate?: (time: number) => void;
-    /** Callback khi hoàn thành video */
     onCompleted?: () => void;
-    /** Khoảng thời gian (giây) để throttle timeupdate, mặc định 5s */
     timeUpdateIntervalSec?: number;
+    /** Bật/tắt pause khi rời tab/cửa sổ */
+    pauseOnTabLeave?: boolean; // NEW
 };
 
 const VideoPlayer = ({
@@ -26,18 +24,20 @@ const VideoPlayer = ({
     onTimeUpdate,
     onCompleted,
     timeUpdateIntervalSec = 10,
+    pauseOnTabLeave = true, // default bật
 }: Props) => {
     const elementRef = useRef<HTMLVideoElement | HTMLDivElement | null>(null);
     const playerRef = useRef<any>(null);
-    const callbacksRef = useRef<{ onTimeUpdate?: Props["onTimeUpdate"]; onCompleted?: Props["onCompleted"] }>({});
-    const lastPersistedRef = useRef(0); // lần cuối đã gửi timeupdate
+    const callbacksRef = useRef<{
+        onTimeUpdate?: Props["onTimeUpdate"];
+        onCompleted?: Props["onCompleted"];
+    }>({});
+    const lastPersistedRef = useRef(0);
     const appliedDefaultTimeRef = useRef<number | null>(null);
 
-    // luôn giữ bản cập nhật mới nhất của callback mà không làm đổi deps
     callbacksRef.current.onTimeUpdate = onTimeUpdate;
     callbacksRef.current.onCompleted = onCompleted;
 
-    // options của Plyr — ổn định để không gây re-init
     const plyrOptions = useMemo(
         () => ({
             ratio,
@@ -46,7 +46,6 @@ const VideoPlayer = ({
         [ratio],
     );
 
-    // helper: tạo cấu trúc source cho Plyr
     const buildSource = () => {
         if (type === "youtube") {
             return {
@@ -62,32 +61,25 @@ const VideoPlayer = ({
         };
     };
 
-    // Khởi tạo Plyr 1 lần
+    // init Plyr
     useEffect(() => {
         let isMounted = true;
-
         (async () => {
             const { default: Plyr } = await import("plyr");
             if (!isMounted || !elementRef.current) return;
 
-            // Lưu ý: với YouTube, Plyr hoạt động trên <div data-plyr-provider="youtube">…
             playerRef.current = new Plyr(elementRef.current as any, plyrOptions);
-
             const player = playerRef.current;
 
-            // ready: set defaultTime lần đầu
             player.once("ready", () => {
                 if (defaultTime > 0) {
                     try {
                         player.currentTime = defaultTime;
                         appliedDefaultTimeRef.current = defaultTime;
-                    } catch {
-                        // ignore seek errors
-                    }
+                    } catch {}
                 }
             });
 
-            // timeupdate: throttle theo timeUpdateIntervalSec
             const onTimeUpdateHandler = () => {
                 const now = player.currentTime as number;
                 const last = lastPersistedRef.current;
@@ -98,9 +90,7 @@ const VideoPlayer = ({
             };
             player.on("timeupdate", onTimeUpdateHandler);
 
-            // ended
             const onEndedHandler = () => {
-                // đảm bảo lưu 100% tiến độ
                 callbacksRef.current.onTimeUpdate?.(Math.floor(player.duration || 0));
                 callbacksRef.current.onCompleted?.();
             };
@@ -114,51 +104,71 @@ const VideoPlayer = ({
                 playerRef.current = null;
             }
         };
-        // chỉ init 1 lần; đừng để callbacks hay defaultTime vào deps
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [plyrOptions]);
 
-    // Cập nhật nguồn khi src/type/poster đổi — không destroy/init lại
+    // update source when props change
     useEffect(() => {
         const player = playerRef.current;
         if (!player) return;
-
-        const newSource = buildSource();
-
         try {
-            // reset mốc throttle khi đổi nguồn
             lastPersistedRef.current = 0;
             appliedDefaultTimeRef.current = null;
-
-            player.source = newSource;
+            player.source = buildSource();
         } catch {
-            // fallback: nếu source set lỗi, destroy & bỏ qua (rất hiếm)
             player.destroy?.();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [src, type, poster]);
 
-    // Áp dụng defaultTime khi prop thay đổi (vd: user resume ở nơi khác)
+    // apply defaultTime when prop changes
     useEffect(() => {
         const player = playerRef.current;
         if (!player) return;
-
-        // chỉ seek nếu khác với lần đã áp dụng
         if (typeof defaultTime === "number" && defaultTime > 0 && defaultTime !== appliedDefaultTimeRef.current) {
             try {
-                // nếu video chưa ready hoàn toàn, Plyr vẫn xếp lịch seek được
                 player.currentTime = defaultTime;
                 appliedDefaultTimeRef.current = defaultTime;
-            } catch {
-                // ignore
-            }
+            } catch {}
         }
     }, [defaultTime]);
+
+    // 🔒 Chỉ dừng khi rời tab/cửa sổ (mất focus)
+    useEffect(() => {
+        if (!pauseOnTabLeave) return;
+
+        const pauseIfPlaying = () => {
+            const p = playerRef.current;
+            if (!p) return;
+            try {
+                if (!p.paused) p.pause();
+            } catch {}
+        };
+
+        const onVisibility = () => {
+            if (document.hidden) pauseIfPlaying();
+        };
+        const onWindowBlur = () => {
+            // rời cửa sổ hiện tại (chuyển app/OS, chuyển tab)
+            pauseIfPlaying();
+        };
+        // một số browser phát event khi đóng/đổi page
+        const onPageHide = () => pauseIfPlaying();
+
+        document.addEventListener("visibilitychange", onVisibility);
+        window.addEventListener("blur", onWindowBlur);
+        window.addEventListener("pagehide", onPageHide);
+
+        return () => {
+            document.removeEventListener("visibilitychange", onVisibility);
+            window.removeEventListener("blur", onWindowBlur);
+            window.removeEventListener("pagehide", onPageHide);
+        };
+    }, [pauseOnTabLeave]);
 
     return (
         <div className="h-full w-full">
             {type === "youtube" ? (
-                // Plyr cho YouTube hoạt động trên <div data-plyr-provider="youtube" ... />
                 <div
                     ref={elementRef as any}
                     className="plyr-react plyr"

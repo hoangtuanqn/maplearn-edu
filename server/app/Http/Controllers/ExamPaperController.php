@@ -35,6 +35,7 @@ class ExamPaperController extends BaseApiController
                 'title',
                 'grade_level',
                 'subject',
+                "difficulty",
                 AllowedFilter::custom('provinces', new ProvincesSlugFilter),
                 AllowedFilter::custom('categories', new CategoriesSlugFilter),
                 AllowedFilter::custom('difficulties', new DifficultiesSlugFilter),
@@ -236,6 +237,7 @@ class ExamPaperController extends BaseApiController
         $attempt->save();
 
         return $this->successResponse([
+            'id_attempt' => $attempt->id,
             'scores' => $scores,
         ], 'Bài làm đã được nộp thành công');
     }

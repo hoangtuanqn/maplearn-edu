@@ -14,7 +14,7 @@ class LessonViewHistory extends Model
         'lesson_id',
         'watched_at',
         'progress',
-        'is_completed'
+        'is_completed',
     ];
 
     public function lesson()

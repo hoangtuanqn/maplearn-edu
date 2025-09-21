@@ -183,11 +183,19 @@ class ExamAttemptController extends BaseApiController
         $user = $request->user();
 
         // Bài làm của học sinh
-        $attempt = ExamAttempt::where('exam_paper_id', $exam->id)
-            ->where('user_id', $user->id)
-            ->where('id', $id)
-            ->where('status', 'submitted')
-            ->first();
+        // Nếu là admin hoặc teacher thì không cần lọc theo user_id
+        if ($user->hasRole(['admin', 'teacher'])) {
+            $attempt = ExamAttempt::where('exam_paper_id', $exam->id)
+                ->where('id', $id)
+                ->whereIn('status', ['submitted', 'detected'])
+                ->first();
+        } else {
+            $attempt = ExamAttempt::where('exam_paper_id', $exam->id)
+                ->where('user_id', $user->id)
+                ->where('id', $id)
+                ->whereIn('status', ['submitted', 'detected'])
+                ->first();
+        }
         if (!$attempt) {
             return $this->errorResponse(null, 'Không tìm thấy bài làm của bạn!');
         }

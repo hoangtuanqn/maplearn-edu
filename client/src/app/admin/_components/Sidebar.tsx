@@ -1,149 +1,10 @@
 "use client";
-import {
-    LayoutDashboard,
-    UserRound,
-    UserCog,
-    GraduationCap,
-    ClipboardList,
-    Receipt,
-    ShoppingCart,
-    History,
-    Folder,
-    FileEdit,
-    BarChart3,
-    Settings,
-    LifeBuoy,
-    ChevronUp,
-} from "lucide-react";
+import { ChevronUp } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isActiveRoute } from "~/libs/routeMatcher";
-export const menuItems = [
-    {
-        type: "title",
-        label: "Trang chính",
-        children: [
-            {
-                type: "link",
-                label: "Tổng quan",
-                icon: LayoutDashboard,
-                href: "/admin",
-                matcher: ["/admin"],
-            },
-        ],
-    },
+import menuItems from "./menuItems";
 
-    {
-        type: "title",
-        label: "Người dùng",
-        children: [
-            {
-                type: "link",
-                label: "Học sinh",
-                icon: UserRound,
-                href: "/admin/students",
-                matcher: ["/admin/students", "/admin/students/:id"],
-            },
-            {
-                type: "link",
-                label: "Giáo viên",
-                icon: UserCog,
-                href: "/admin/teachers",
-                matcher: ["/admin/teachers"],
-            },
-        ],
-    },
-
-    {
-        type: "title",
-        label: "Khóa học",
-        children: [
-            {
-                type: "link",
-                label: "Khóa học",
-                icon: GraduationCap,
-                href: "/admin/courses",
-                matcher: ["/admin/courses", "/admin/courses/:slug"],
-            },
-        ],
-    },
-    {
-        type: "title",
-        label: "Đề thi",
-        children: [
-            {
-                type: "link",
-                label: "Đề thi",
-                icon: ClipboardList,
-                href: "/admin/exams",
-                matcher: ["/admin/exams", "/admin/exams/:slug"],
-            },
-        ],
-    },
-
-    {
-        type: "title",
-        label: "Thanh toán",
-        children: [
-            {
-                type: "link",
-                label: "Hóa đơn",
-                icon: Receipt,
-                href: "/admin/payments",
-                matcher: ["/admin/payments"],
-            },
-        ],
-    },
-
-    {
-        type: "title",
-        label: "Lịch sử",
-        children: [
-            {
-                type: "link",
-                label: "Mua khóa học",
-                icon: ShoppingCart,
-                href: "/admin/purchases",
-                matcher: ["/admin/purchases"],
-            },
-            {
-                type: "link",
-                label: "Làm bài thi",
-                icon: History,
-                href: "/admin/attempts",
-                matcher: ["/admin/attempts"],
-            },
-        ],
-    },
-
-    {
-        type: "title",
-        label: "Hệ thống",
-        children: [
-            {
-                type: "link",
-                label: "Báo cáo",
-                icon: BarChart3,
-                href: "/admin/reports",
-                matcher: ["/admin/reports"],
-            },
-            {
-                type: "link",
-                label: "Cài đặt",
-                icon: Settings,
-                href: "/admin/settings",
-                matcher: ["/admin/settings"],
-            },
-            {
-                type: "link",
-                label: "Hỗ trợ",
-                icon: LifeBuoy,
-                href: "/admin/support",
-                matcher: ["/admin/support"],
-            },
-        ],
-    },
-];
 const hasActiveChild = (children: any[], pathname: string): boolean => {
     return children?.some((child) => {
         if (child.type === "link") {
@@ -186,6 +47,7 @@ const renderMenu = (items: any[], pathname: string) => {
                                 className={`flex items-center gap-2 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
                                     active ? "bg-primary text-white" : "text-slate-800 hover:bg-slate-100"
                                 }`}
+                                id={item.id}
                             >
                                 <Icon className={active ? "text-white" : "text-gray-600"} strokeWidth={3} />
                                 {item.label}

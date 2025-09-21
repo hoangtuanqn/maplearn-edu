@@ -85,6 +85,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->role === 'teacher';
     }
 
+    public function hasRole($roles): bool
+    {
+        if (is_array($roles)) {
+            return in_array($this->role, $roles);
+        }
+        return $this->role === $roles;
+    }
+
     /**
      *  Trả về dạng boolean: Check quyền student
      */
@@ -132,6 +140,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Payment::class);
     }
 
+    // Liên kết với bảng lesson_view_histories để lấy lịch sử xem bài học
 
     // Lấy danh sách khóa học đã mua
     public function purchasedCourses()

@@ -1,7 +1,5 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Check, ChevronsUpDown } from "lucide-react";
 import Link from "next/link";
 import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -10,11 +8,8 @@ import { Button } from "~/components/ui/button";
 
 import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { cn } from "~/lib/utils";
 import { getGender } from "~/libs/hepler";
 import { StudentDetailResponseType } from "~/schemaValidate/user.schema";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "~/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
 import { useMutation } from "@tanstack/react-query";
 import studentApi from "~/apiRequest/admin/student";
 import { toast } from "sonner";
@@ -26,6 +21,7 @@ import DisplayAvatar from "~/app/(student)/_components/DisplayAvatar";
 import uploadMedia from "~/apiRequest/uploadMedia";
 import { ResetPassword } from "./ResetPassword";
 import { provinces } from "~/mockdata/other/provinces.data";
+import SingleSelectDropdown from "~/app/(student)/_components/SingleSelectDropdown";
 
 interface FormEditStudentProps {
     studentData: StudentDetailResponseType["data"];
@@ -266,57 +262,15 @@ const FormEditStudent = ({ studentData }: FormEditStudentProps) => {
                                     render={({ field }) => (
                                         <FormItem className="flex w-full flex-col">
                                             <FormLabel className="text-sm font-normal">Tỉnh thành</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant="outline"
-                                                            role="combobox"
-                                                            className={cn(
-                                                                "justify-between",
-                                                                !field.value && "text-muted-foreground",
-                                                            )}
-                                                        >
-                                                            {field.value
-                                                                ? (provinces.find(
-                                                                      (province) => province.name === field.value,
-                                                                  )?.name ?? "Tỉnh thành của bạn")
-                                                                : "Tỉnh thành của bạn"}
-
-                                                            <ChevronsUpDown className="opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
-                                                    <Command>
-                                                        <CommandInput placeholder="Tìm kiếm..." className="h-9" />
-                                                        <CommandList>
-                                                            <CommandEmpty>Không tìm thấy dữ liệu.</CommandEmpty>
-                                                            <CommandGroup>
-                                                                {provinces.map((province) => (
-                                                                    <CommandItem
-                                                                        value={province.name}
-                                                                        key={province.province_code}
-                                                                        onSelect={() => {
-                                                                            form.setValue("city", province.name);
-                                                                        }}
-                                                                    >
-                                                                        {province.name}
-                                                                        <Check
-                                                                            className={cn(
-                                                                                "ml-auto",
-                                                                                province.name === field.value
-                                                                                    ? "opacity-100"
-                                                                                    : "opacity-0",
-                                                                            )}
-                                                                        />
-                                                                    </CommandItem>
-                                                                ))}
-                                                            </CommandGroup>
-                                                        </CommandList>
-                                                    </Command>
-                                                </PopoverContent>
-                                            </Popover>
+                                            <SingleSelectDropdown
+                                                onChange={field.onChange}
+                                                label="Chọn tỉnh thành của bạn"
+                                                value={field.value}
+                                                options={provinces.map((province) => ({
+                                                    label: province.name,
+                                                    value: province.name,
+                                                }))}
+                                            />
 
                                             <FormMessage />
                                         </FormItem>

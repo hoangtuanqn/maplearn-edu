@@ -5,7 +5,7 @@ import examApi, { EXAM_PER_PAGE } from "~/apiRequest/exam";
 import Link from "next/link";
 import { PaginationNav } from "~/app/(student)/_components/Pagination";
 import ExamSkeleton from "./ExamSkeleton";
-import { BookMinus, Calendar } from "lucide-react";
+import { Calendar, Clock, Users, Filter, BookOpen } from "lucide-react";
 import clsx from "clsx";
 import { formatter } from "~/libs/format";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
@@ -36,16 +36,45 @@ const ExamList = () => {
 
     const totalPages = Math.ceil((examList?.total ?? 0) / EXAM_PER_PAGE);
 
+    // Get active filters count
+    const activeFiltersCount = Object.values({ search, provinces, categories, difficulties, subject }).filter(
+        (v) => v && v !== "",
+    ).length;
+
     return (
-        <>
-            {Number(examList?.total) == 0 ? (
-                <div className="flex h-fit flex-1 items-center justify-center">
+        <div className="space-y-6">
+            {Number(examList?.total) === 0 ? (
+                <div className="py-12">
                     <DisplayNoData title="Không có đề thi nào" />
                 </div>
             ) : (
                 <>
-                    <h3 className="text-primary mb-5 font-bold">Đã tìm thấy {examList?.total ?? 0} kết quả</h3>
-                    <section className="grid h-fit flex-1 grid-cols-1 gap-4 rounded-xl lg:grid-cols-2">
+                    {/* Results Header */}
+                    <div className="rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <BookOpen className="text-primary h-5 w-5" />
+                                <span className="font-semibold text-gray-900">
+                                    {formatter.number(examList?.total ?? 0)} đề thi
+                                </span>
+                                {(examList?.total ?? 0) > 0 && (
+                                    <span className="text-sm text-gray-500">
+                                        (Trang {page ? page : 1}/{totalPages})
+                                    </span>
+                                )}
+                            </div>
+
+                            {activeFiltersCount > 0 && (
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Filter className="text-primary h-4 w-4" />
+                                    <span className="text-gray-600">{activeFiltersCount} bộ lọc đang áp dụng</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Exam Grid */}
+                    <section className="grid gap-4 lg:grid-cols-2">
                         {isLoading ? (
                             <>
                                 {[...Array(EXAM_PER_PAGE)].map((_, index) => (
@@ -58,36 +87,37 @@ const ExamList = () => {
                                     <Link
                                         key={exam.id}
                                         href={`/exams/${exam.slug}`}
-                                        className="rounded-[8px] bg-white px-4.5 py-3.5"
-                                        style={{ boxShadow: "0px 1px 4px 0px #0000000D" }}
+                                        className="group hover:border-primary/20 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md"
                                     >
-                                        <div className="flex gap-2">
+                                        {/* Tags Row */}
+                                        <div className="flex flex-wrap gap-2">
                                             <div
                                                 className={clsx(
-                                                    "t1-flex-center h-[28px] rounded-[8px] px-3.5 font-medium text-white",
+                                                    "flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-medium text-white",
                                                     {
-                                                        "bg-[#128b3d]": exam.exam_type === "HSA",
-                                                        "bg-[#0F80CC]": exam.exam_type === "V-ACT",
-                                                        "bg-[#C41D17]": exam.exam_type === "TSA",
-                                                        "bg-[#FF8A00]": exam.exam_type === "THPT",
-                                                        "bg-[#515051]": exam.exam_type === "OTHER",
+                                                        "bg-emerald-500": exam.exam_type === "HSA",
+                                                        "bg-blue-500": exam.exam_type === "V-ACT",
+                                                        "bg-red-500": exam.exam_type === "TSA",
+                                                        "bg-orange-500": exam.exam_type === "THPT",
+                                                        "bg-gray-500": exam.exam_type === "OTHER",
                                                     },
                                                 )}
                                             >
-                                                {exam.exam_type != "OTHER" ? exam.exam_type : "Khác"}
+                                                {exam.exam_type !== "OTHER" ? exam.exam_type : "Khác"}
                                             </div>
-                                            <div className="t1-flex-center text-primary h-[28px] rounded-[8px] bg-[#F0F3F7] px-3.5 font-medium">
+                                            <div className="bg-primary/10 text-primary flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-medium">
+                                                <Clock className="mr-1 h-3 w-3" />
                                                 {exam.duration_minutes} phút
                                             </div>
                                             <div
                                                 className={clsx(
-                                                    "t1-flex-center h-[28px] rounded-[8px] px-3.5 font-medium",
+                                                    "flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-medium",
                                                     {
-                                                        "bg-[#E6F4EA] text-[#128b3d]": exam.difficulty === "easy",
-                                                        "bg-[#FFF7E6] text-[#FF8A00]": exam.difficulty === "normal",
-                                                        "bg-[#FDEDED] text-[#C41D17]": exam.difficulty === "hard",
-                                                        "bg-[#E3E6F6] text-[#3F51B5]": exam.difficulty === "very_hard",
-                                                        "text-primary bg-[#F0F3F7]": ![
+                                                        "bg-emerald-50 text-emerald-600": exam.difficulty === "easy",
+                                                        "bg-orange-50 text-orange-600": exam.difficulty === "normal",
+                                                        "bg-red-50 text-red-600": exam.difficulty === "hard",
+                                                        "bg-purple-50 text-purple-600": exam.difficulty === "very_hard",
+                                                        "bg-gray-50 text-gray-600": ![
                                                             "easy",
                                                             "normal",
                                                             "hard",
@@ -107,24 +137,27 @@ const ExamList = () => {
                                                           : "Không xác định"}
                                             </div>
                                         </div>
-                                        <div className="mt-3.5 line-clamp-2 min-h-[48px] text-[16px] font-medium text-[#444444]">
+
+                                        {/* Title */}
+                                        <div className="group-hover:text-primary mt-4 line-clamp-2 min-h-[48px] text-base font-semibold text-gray-900 transition-colors">
                                             {exam.title}
                                         </div>
-                                        <div className="text-primary mt-3.5 flex items-center gap-[4px] text-[13px]">
-                                            <BookMinus />
-                                            <div className="flex-1 text-[13px]">
-                                                {exam.total_attempt_count > 0 ? (
-                                                    <span>
-                                                        Đã có {formatter.number(exam.total_attempt_count)} lượt thi
-                                                    </span>
-                                                ) : (
-                                                    <span>Chưa có lượt thi nào</span>
-                                                )}
+
+                                        {/* Stats Row */}
+                                        <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+                                            <div className="flex items-center gap-1">
+                                                <Users className="h-4 w-4" />
+                                                <span>
+                                                    {exam.total_attempt_count > 0
+                                                        ? `${formatter.number(exam.total_attempt_count)} lượt thi`
+                                                        : "Chưa có lượt thi"}
+                                                </span>
                                             </div>
-                                            <Calendar />
-                                            <div>
-                                                <span>Đóng đề: </span>
-                                                {exam.end_time ? formatter.date(exam.end_time) : "Không giới hạn"}
+                                            <div className="flex items-center gap-1">
+                                                <Calendar className="h-4 w-4" />
+                                                <span>
+                                                    {exam.end_time ? formatter.date(exam.end_time) : "Không giới hạn"}
+                                                </span>
                                             </div>
                                         </div>
                                     </Link>
@@ -132,14 +165,16 @@ const ExamList = () => {
                             </>
                         )}
                     </section>
-                    <div className="ml-auto">
-                        {!isLoading && totalPages > 1 && (examList?.data.length ?? 0) > 0 && (
+
+                    {/* Pagination */}
+                    {!isLoading && totalPages > 1 && (examList?.data.length ?? 0) > 0 && (
+                        <div className="flex justify-center pt-8">
                             <PaginationNav totalPages={totalPages} basePath="/exams" />
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </>
             )}
-        </>
+        </div>
     );
 };
 

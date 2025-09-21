@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
-use App\Models\Course;
 use App\Models\CourseChapter;
 use App\Models\CourseLesson;
 use App\Traits\AuthorizesOwnerOrAdmin;
@@ -29,12 +28,12 @@ class CourseLessonController extends BaseApiController
     {
         $data = $request->validate([
             'chapter_id' => 'required|exists:course_chapters,id',
-            'title'       => 'required|string|max:255',
-            'content'     => 'nullable|string',
-            'video_url'   => 'nullable|url',
-            'position'    => 'required|integer|min:1',
-            'duration'    => 'nullable|integer|min:0', // duration in seconds
-            'is_free'   => 'boolean',
+            'title'      => 'required|string|max:255',
+            'content'    => 'nullable|string',
+            'video_url'  => 'nullable|url',
+            'position'   => 'required|integer|min:1',
+            'duration'   => 'nullable|integer|min:0', // duration in seconds
+            'is_free'    => 'boolean',
         ]);
 
         $chapter = CourseChapter::find($data['chapter_id']);
@@ -43,12 +42,12 @@ class CourseLessonController extends BaseApiController
         }
 
         $lesson = $chapter->lessons()->create([
-            'title' => $data['title'],
-            'content' => $data['content'] ?? '',
+            'title'     => $data['title'],
+            'content'   => $data['content']     ?? '',
             'video_url' => $data['video_url'] ?? null,
-            'position' => $data['position'],
-            'duration' => $data['duration'] ?? 0,
-            'is_free' => $data['is_free'] ?? false,
+            'position'  => $data['position'],
+            'duration'  => $data['duration'] ?? 0,
+            'is_free'   => $data['is_free']   ?? false,
         ]);
         return $this->successResponse($lesson, 'Thêm bài học vào chương thành công', 201);
     }

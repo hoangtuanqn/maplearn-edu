@@ -94,6 +94,22 @@ class UserSeeder extends Seeder
                 'bio'    => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
                 "degree" => "Thạc sĩ Hóa học",
             ],
+            // [
+            //     'username' => 'admin_demo',
+            //     'name'   => "Thầy Phạm Hoàng Tuấn",
+            //     'image'  => "/assets/images/teachers/co-hien.jpg",
+            //     'bio'    => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+            //     "degree" => "Thạc sĩ Hóa học",
+            //     "role"  => 'admin',
+            // ],
+            // [
+            //     'username' => 'teacher_demo',
+            //     'name'   => "Thầy Lâm Hoàng An",
+            //     'image'  => "/assets/images/teachers/co-hien.jpg",
+            //     'bio'    => "Giáo viên dạy Hóa với 8 năm kinh nghiệm.",
+            //     "degree" => "Thạc sĩ Hóa học",
+            //     "role"   => "teacher",
+            // ],
         ];
 
         $now = Carbon::now();
@@ -115,7 +131,7 @@ class UserSeeder extends Seeder
             $username = Str::slug($fullName, '_') . '_' . ($index + 1);
 
             return [
-                'username'      => $username,
+                'username'      => $teacher['username'] ?? $username,
                 'email'         => $username . '@example.com',
                 'password'      => bcrypt('password'),
                 'facebook_link' => 'https://www.facebook.com/thayhintavungocanh',

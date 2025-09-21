@@ -1,3 +1,4 @@
+"use client";
 import { useMutation } from "@tanstack/react-query";
 import { FileDown } from "lucide-react";
 import React from "react";
@@ -9,17 +10,15 @@ import { formatter } from "~/libs/format";
 
 const ExportStudentList = () => {
     const headerMap = {
-        username: "Tên đăng nhập",
-        full_name: "Họ và tên",
+        username: "Tên tài khoản",
+        full_name: "Họ và Tên",
         email: "Email",
         phone_number: "Số điện thoại",
         gender: "Giới tính",
-        avatar: "Ảnh đại diện",
         birth_year: "Năm sinh",
-        facebook_link: "Link Facebook",
-        school: "Trường học",
         city: "Thành phố",
-        created_at: "Thời gian tạo",
+        school: "Trường học",
+        facebook_link: "Link Facebook",
     };
 
     const exportMuation = useMutation({
@@ -34,13 +33,12 @@ const ExportStudentList = () => {
                     full_name: item.full_name,
                     email: item.email,
                     phone_number: item.phone_number,
-                    gender: item.gender,
+                    gender: item.gender === "male" ? "Nam" : "Nữ",
                     avatar: item.avatar,
                     birth_year: item.birth_year,
                     facebook_link: item.facebook_link,
                     school: item.school,
                     city: item.city,
-
                     created_at: formatter.date(item.created_at, true),
                 };
             });

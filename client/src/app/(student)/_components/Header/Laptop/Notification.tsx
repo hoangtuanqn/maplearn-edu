@@ -86,7 +86,7 @@ const Notification = () => {
     };
 
     return (
-        <div className="relative">
+        <div className="relative" id="notifications">
             <button
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}

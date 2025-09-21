@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { Ban, Info, Printer } from "lucide-react";
+import { Ban, Info, Printer, CreditCard } from "lucide-react";
 import { Button } from "~/components/ui/button";
 
 import { formatter } from "~/libs/format";
@@ -53,20 +53,31 @@ const PaymentPanel = ({ payment }: { payment: PaymentDetailResponse["data"] }) =
     return (
         <>
             {(paymentMutation.isPending || cancelMutation.isPending) && <Loading />}
-            <div className="sticky top-[70px] mx-auto h-fit w-full max-w-md flex-3/12 shrink-0 md:mx-0 md:w-auto md:max-w-none md:flex-3/12 md:shrink-0">
-                <div className="h-fit flex-3/12 shrink-0 rounded-xl border border-slate-100 bg-white p-4 shadow-xs md:p-8">
-                    <div>
-                        <h2 className="mb-2 text-lg font-semibold text-slate-700">Số tiền cần thanh toán</h2>
-                        <p className="text-primary mt-2 text-3xl font-extrabold tracking-wide drop-shadow-sm md:text-4xl">
-                            {payment.status == "pending" ? formatter.number(payment.course.price) : 0} đ
+            <div className="sticky top-20 space-y-4">
+                {/* Payment Amount Card */}
+                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+                    <div className="mb-4 flex items-center gap-2">
+                        <CreditCard className="text-primary h-5 w-5" />
+                        <h2 className="text-lg font-semibold text-gray-900">Thanh toán</h2>
+                    </div>
+
+                    <div className="text-center">
+                        <p className="text-primary text-3xl font-bold">
+                            {payment.status === "pending" ? formatter.number(payment.course.price) : 0}đ
                         </p>
-                        {payment.status == "pending" && (
-                            <>
+                    </div>
+
+                    {payment.status === "pending" && (
+                        <div className="mt-6 space-y-4">
+                            <div>
+                                <label className="mb-2 block text-sm font-medium text-gray-700">
+                                    Phương thức thanh toán
+                                </label>
                                 <Select
                                     value={paymentMethod}
                                     onValueChange={setPaymentMethod as (value: string) => void}
                                 >
-                                    <SelectTrigger className="focus:ring-primary/30 mt-5 w-full rounded-lg border-slate-200 shadow-sm focus:ring-2">
+                                    <SelectTrigger className="focus:border-primary focus:ring-primary/20 w-full border-gray-200">
                                         <SelectValue placeholder="Chọn phương thức thanh toán" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -78,71 +89,74 @@ const PaymentPanel = ({ payment }: { payment: PaymentDetailResponse["data"] }) =
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
-                                <p className="mt-2 text-center text-xs font-semibold text-slate-400">
-                                    Dễ dàng thay đổi phương thức thanh toán
-                                </p>
-                                <div className="mt-4 flex flex-col items-center gap-4">
-                                    {["zalopay", "momo", "vnpay"].includes(paymentMethod) && (
-                                        <Button className="w-full text-white md:w-auto" onClick={handlePayment}>
-                                            Đi đến {paymentMethod.toUpperCase()}
-                                        </Button>
-                                    )}
+                            </div>
 
-                                    {paymentMethod === "transfer" && (
-                                        <>
-                                            <div className="rounded-xl border border-slate-200 bg-slate-50 p-2 md:p-3">
-                                                <Image
-                                                    src={`https://qr.sepay.vn/img?bank=MBBank&acc=259876543210&template=qronly&amount=${payment.course.price}&des=${payment.transaction_code}`}
-                                                    width={180}
-                                                    height={180}
-                                                    alt="QR Code"
-                                                    className="h-[180px] w-[180px] rounded-lg md:h-[220px] md:w-[220px]"
-                                                />
-                                            </div>
+                            {["zalopay", "momo", "vnpay"].includes(paymentMethod) && (
+                                <Button
+                                    className="bg-primary hover:bg-primary/90 w-full text-white"
+                                    onClick={handlePayment}
+                                >
+                                    Đi đến {paymentMethod.toUpperCase()}
+                                </Button>
+                            )}
 
-                                            <div className="flex w-full flex-col gap-1 rounded-lg border border-slate-100 bg-slate-50 p-3 text-base md:p-4">
-                                                <span className="font-medium text-slate-600">
-                                                    Ngân hàng:{" "}
-                                                    <span className="font-semibold text-slate-800">MBBank</span>
-                                                </span>
-                                                <span className="font-medium text-slate-600">
-                                                    Số tài khoản:{" "}
-                                                    <span className="font-semibold text-slate-800">259876543210</span>
-                                                </span>
-                                                <span className="font-medium text-slate-600">
-                                                    Chủ tài khoản:{" "}
-                                                    <span className="font-semibold text-slate-800">
-                                                        Phạm Hoàng Tuấn
-                                                    </span>
-                                                </span>
-                                                <span className="font-medium text-slate-600">
-                                                    Chi nhánh:{" "}
-                                                    <span className="font-semibold text-slate-800">Quảng Ngãi</span>
-                                                </span>
-                                            </div>
-                                            <div className="mt-2 flex w-full items-center gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 md:px-4">
-                                                <Info className="h-5 w-5 flex-shrink-0 text-amber-400" />
-                                                <span className="text-[13.125px] font-medium text-amber-500">
-                                                    Hệ thống tự động xác nhận sau khi quý khách thanh toán thành công.
-                                                </span>
-                                            </div>
-                                        </>
-                                    )}
+                            {paymentMethod === "transfer" && (
+                                <div className="space-y-4">
+                                    <div className="flex justify-center">
+                                        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                                            <Image
+                                                src={`https://qr.sepay.vn/img?bank=MBBank&acc=259876543210&template=qronly&amount=${payment.course.price}&des=${payment.transaction_code}`}
+                                                width={200}
+                                                height={200}
+                                                alt="QR Code"
+                                                className="rounded-lg"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Ngân hàng:</span>
+                                            <span className="font-medium text-gray-900">MBBank</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Số tài khoản:</span>
+                                            <span className="font-medium text-gray-900">259876543210</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Chủ tài khoản:</span>
+                                            <span className="font-medium text-gray-900">Phạm Hoàng Tuấn</span>
+                                        </div>
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Chi nhánh:</span>
+                                            <span className="font-medium text-gray-900">Quảng Ngãi</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
+                                        <Info className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500" />
+                                        <p className="text-sm text-amber-700">
+                                            Hệ thống tự động xác nhận sau khi quý khách thanh toán thành công.
+                                        </p>
+                                    </div>
                                 </div>
-                            </>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    )}
                 </div>
-                <div className="mt-6 px-0 md:px-2">
-                    <p className="mb-2 text-base font-bold text-slate-700">Thao tác</p>
-                    <div className="mt-2 flex gap-2">
+
+                {/* Actions Card */}
+                <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+                    <h3 className="mb-4 font-semibold text-gray-900">Thao tác</h3>
+                    <div className="space-y-3">
                         {["pending", "paid"].includes(payment.status) && (
                             <Button
-                                className="text-primary flex-3/4 gap-2"
+                                className="w-full gap-2 border-gray-200 text-gray-700 hover:bg-gray-50"
                                 onClick={() => window?.print()}
-                                variant={"outline"}
+                                variant="outline"
                             >
-                                <Printer className="h-5 w-5" /> <span>In hóa đơn</span>
+                                <Printer className="h-4 w-4" />
+                                In hóa đơn
                             </Button>
                         )}
                         {payment.status === "pending" && (
@@ -151,10 +165,11 @@ const PaymentPanel = ({ payment }: { payment: PaymentDetailResponse["data"] }) =
                                 action={() => cancelMutation.mutate()}
                             >
                                 <Button
-                                    className="flex-1/4 gap-2 border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                    className="w-full gap-2 border-red-200 text-red-600 hover:bg-red-50"
                                     variant="outline"
                                 >
-                                    <Ban /> <span>Hủy hóa đơn</span>
+                                    <Ban className="h-4 w-4" />
+                                    Hủy hóa đơn
                                 </Button>
                             </DangerConfirm>
                         )}

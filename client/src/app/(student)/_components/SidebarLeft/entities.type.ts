@@ -3,6 +3,7 @@ export interface SidebarType {
     url: string;
     image: string;
     className?: string;
+    id?: string;
 }
 export interface NewType extends SidebarType {
     createdAt: string;

@@ -9,7 +9,7 @@ import { PaginationNav } from "~/app/(student)/_components/Pagination";
 import { Button } from "~/components/ui/button";
 import { getGender } from "~/libs/hepler";
 import { getStatusBadge } from "~/libs/statusBadge";
-import ExportStudentList from "./ExportStudents";
+import DisplayTotalResult from "../../_components/DisplayTotalResult";
 const StudentList = () => {
     const { data: students, isLoading } = useQuery({
         queryKey: ["admin", "students"],
@@ -23,98 +23,88 @@ const StudentList = () => {
     const totalPages = Math.ceil(total / USERS_PER_PAGE);
     return (
         <>
-            <div className="mt-3 rounded-lg bg-white p-4 pb-8 shadow-sm">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h3 className="text-primary text-xl font-bold">Danh sách học sinh</h3>
-                        <p className="text-sm text-slate-500">Danh sách học sinh sẽ được hiển thị ở đây.</p>
-                    </div>
-                    <ExportStudentList />
-                </div>
-                <div className="mt-8 overflow-x-auto">
-                    <table className="min-w-full rounded-xl bg-white shadow-sm">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">STT</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Tài khoản</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">
-                                    Thông tin cơ bản
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Email</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">
-                                    Số điện thoại
-                                </th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Trạng thái</th>
-                                <th className="px-4 py-3 text-right text-xs font-semibold text-zinc-600">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody className="text-xs">
-                            {isLoading
-                                ? [...Array(10)].map((_, index) => <TableSkeleton key={index} col={8} />)
-                                : students?.data.map((student, idx) => (
-                                      <tr
-                                          key={student.id}
-                                          className="border-b border-gray-100 transition-colors last:border-b-0 hover:bg-blue-50"
-                                      >
-                                          <td className="px-4 py-3 text-zinc-500">{idx + 1}</td>
-                                          <td className="px-4 py-3 text-zinc-500">{student.username}</td>
-                                          <td className="px-4 py-3 text-zinc-500">
-                                              {student.full_name && (
-                                                  <p>
-                                                      <span className="font-bold">Họ tên:</span> {student.full_name}
-                                                  </p>
-                                              )}
-                                              {student.city && (
-                                                  <p>
-                                                      <span className="font-bold">Thành phố:</span> {student.city}
-                                                  </p>
-                                              )}
-                                              {student.school && (
-                                                  <p>
-                                                      <span className="font-bold">Trường học:</span> {student.school}
-                                                  </p>
-                                              )}
-                                              {student.birth_year && (
-                                                  <p>
-                                                      <span className="font-bold">Năm sinh:</span> {student.birth_year}
-                                                  </p>
-                                              )}
-                                              {student.gender && (
-                                                  <p>
-                                                      <span className="font-bold">Giới tính:</span>{" "}
-                                                      {getGender(student.gender)}
-                                                  </p>
-                                              )}
-                                          </td>
-                                          <td className="px-4 py-3 text-zinc-500">
-                                              <Link href={`mailto:${student.email}`} className="underline">
-                                                  {student.email}
-                                              </Link>
-                                          </td>
-                                          <td className="px-4 py-3 text-zinc-500">
-                                              <Link href={`tel:${student.phone_number}`} className="underline">
-                                                  {student.phone_number}
-                                              </Link>
-                                          </td>
+            <div className="mt-8 overflow-x-auto">
+                <DisplayTotalResult total={total} />
+                <table className="min-w-full rounded-xl bg-white shadow-sm">
+                    <thead>
+                        <tr className="border-b border-gray-200">
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">STT</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Tài khoản</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">
+                                Thông tin cơ bản
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Email</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Số điện thoại</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Trạng thái</th>
+                            <th className="px-4 py-3 text-right text-xs font-semibold text-zinc-600">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody className="text-xs">
+                        {isLoading
+                            ? [...Array(10)].map((_, index) => <TableSkeleton key={index} col={8} />)
+                            : students?.data.map((student, idx) => (
+                                  <tr
+                                      key={student.id}
+                                      className="border-b border-gray-100 transition-colors last:border-b-0 hover:bg-blue-50"
+                                  >
+                                      <td className="px-4 py-3 text-zinc-500">{idx + 1}</td>
+                                      <td className="px-4 py-3 text-zinc-500">{student.username}</td>
+                                      <td className="px-4 py-3 text-zinc-500">
+                                          {student.full_name && (
+                                              <p>
+                                                  <span className="font-bold">Họ tên:</span> {student.full_name}
+                                              </p>
+                                          )}
+                                          {student.city && (
+                                              <p>
+                                                  <span className="font-bold">Thành phố:</span> {student.city}
+                                              </p>
+                                          )}
+                                          {student.school && (
+                                              <p>
+                                                  <span className="font-bold">Trường học:</span> {student.school}
+                                              </p>
+                                          )}
+                                          {student.birth_year && (
+                                              <p>
+                                                  <span className="font-bold">Năm sinh:</span> {student.birth_year}
+                                              </p>
+                                          )}
+                                          {student.gender && (
+                                              <p>
+                                                  <span className="font-bold">Giới tính:</span>{" "}
+                                                  {getGender(student.gender)}
+                                              </p>
+                                          )}
+                                      </td>
+                                      <td className="px-4 py-3 text-zinc-500">
+                                          <Link href={`mailto:${student.email}`} className="underline">
+                                              {student.email}
+                                          </Link>
+                                      </td>
+                                      <td className="px-4 py-3 text-zinc-500">
+                                          <Link href={`tel:${student.phone_number}`} className="underline">
+                                              {student.phone_number}
+                                          </Link>
+                                      </td>
 
-                                          <td className="px-4 py-3">
-                                              {getStatusBadge("activity_status", student.banned ? "0" : "1")}
-                                          </td>
-                                          <td className="px-4 py-3 text-right">
-                                              <Link href={`/admin/students/${student.id}`}>
-                                                  <Button variant={"outlineBlack"}>Chỉnh sửa</Button>
-                                              </Link>
-                                          </td>
-                                      </tr>
-                                  ))}
-                        </tbody>
-                    </table>
-                </div>
-                <div className="ml-auto w-fit">
-                    <Suspense>
-                        <PaginationNav totalPages={totalPages} basePath="/admin/users" />
-                    </Suspense>
-                </div>
+                                      <td className="px-4 py-3">
+                                          {getStatusBadge("activity_status", student.banned ? "0" : "1")}
+                                      </td>
+                                      <td className="px-4 py-3 text-right">
+                                          <Link href={`/admin/students/${student.id}`}>
+                                              <Button variant={"outlineBlack"}>Chỉnh sửa</Button>
+                                          </Link>
+                                      </td>
+                                  </tr>
+                              ))}
+                    </tbody>
+                </table>
+            </div>
+            <div className="ml-auto w-fit">
+                <Suspense>
+                    <PaginationNav totalPages={totalPages} basePath="/admin/users" />
+                </Suspense>
             </div>
         </>
     );

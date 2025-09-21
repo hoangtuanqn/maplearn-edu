@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Payment;
+use App\Notifications\InvoiceNotification;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
@@ -26,6 +27,8 @@ class VnpayController extends BaseApiController
                 'status'         => 'paid',
                 'payment_method' => 'vnpay',
             ]);
+            $user = $payment->user;
+            $user->notify(new InvoiceNotification($payment, 'paid'));
             return $this->successResponse($payment, 'Thanh toán thành công');
         } else {
             // Xử lý thất bại

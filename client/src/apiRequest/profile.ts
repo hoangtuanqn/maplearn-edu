@@ -1,6 +1,6 @@
 import privateApi from "~/libs/apis/privateApi";
 import { CourseListResponse } from "~/schemaValidate/course.schema";
-import { FormChangePasswordType, ProfileType } from "~/schemaValidate/user.schema";
+import { FormChangePasswordType, ProfileType, UserType } from "~/schemaValidate/user.schema";
 import { Active2FAResponse, Generate2FAType } from "~/schemaValidate/twoFactor";
 import { PaymentListResponse } from "~/schemaValidate/payment.schema";
 
@@ -31,5 +31,12 @@ const profileApi = {
     },
     generate2FA: () => privateApi.get<Generate2FAType>("/profile/2fa/generate"),
     toggle2FA: (otp: string, type: string) => privateApi.post<Active2FAResponse>("/profile/2fa/toggle", { otp, type }),
+    getMeInfo: (headers?: { [key: string]: string }) => {
+        return privateApi.post<{
+            success: boolean;
+            message: string;
+            data: UserType;
+        }>(`/auth/me`, undefined, headers ? { headers } : undefined);
+    },
 };
 export default profileApi;

@@ -1,17 +1,23 @@
 "use client";
 import React, { useState } from "react";
-import { Award, ChevronDown, CircleCheckBig, Clock, FileText, Lock, MonitorPause, Play } from "lucide-react";
+import { ChevronDown, Clock, FileText, Lock, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import courseApi from "~/apiRequest/course";
 import { useParams } from "next/navigation";
 import { formatter } from "~/libs/format";
 import { Button } from "~/components/ui/button";
+import TryLearning from "./TryLearning";
 
 const ListLessonCourse = () => {
     const params = useParams<{ slug: string }>();
     const [open, setOpen] = useState(1);
-    const { data: chapters } = useQuery({
+
+    const {
+        data: chapters,
+        isLoading,
+        error,
+    } = useQuery({
         queryKey: ["course", "chapters", params.slug],
         queryFn: async () => {
             const res = await courseApi.getChapterLessonList(params.slug);
@@ -19,9 +25,32 @@ const ListLessonCourse = () => {
         },
         staleTime: 1000 * 60 * 5, // 5 phút
     });
+
     const handleChapterToggle = (chapterId: number) => {
         setOpen((prev) => (prev === chapterId ? 0 : chapterId));
     };
+
+    if (isLoading) {
+        return (
+            <div className="rounded-xl bg-white p-4 shadow-sm sm:p-8">
+                <p className="text-base font-bold">Nội dung khóa học</p>
+                <div className="mt-4 animate-pulse space-y-3">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-16 rounded-lg bg-gray-200"></div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="rounded-xl bg-white p-4 shadow-sm sm:p-8">
+                <p className="text-base font-bold">Nội dung khóa học</p>
+                <div className="mt-4 text-center text-red-500">Không thể tải nội dung khóa học</div>
+            </div>
+        );
+    }
     return (
         <div className="rounded-xl bg-white p-4 shadow-sm sm:p-8">
             <p className="text-base font-bold">Nội dung khóa học</p>
@@ -74,18 +103,26 @@ const ListLessonCourse = () => {
                                     {chapter.lessons.map((lesson, lessonIndex) => (
                                         <div
                                             key={lesson.id}
-                                            className={`ml-4 flex cursor-pointer items-center gap-3 border-l-2 border-l-gray-200 p-3 transition-colors hover:bg-white`}
+                                            className={`ml-4 flex cursor-pointer items-center gap-3 border-l-2 border-l-gray-200 p-3 transition-colors hover:bg-white ${
+                                                lesson.is_free ? "bg-white" : ""
+                                            }`}
                                         >
                                             {/* Lesson Status Icon */}
                                             <div className="flex-shrink-0">
-                                                <Play className="h-4 w-4 text-gray-400" />
+                                                {lesson.is_free ? (
+                                                    <Play className="h-4 w-4 text-green-500" />
+                                                ) : (
+                                                    <Lock className="h-4 w-4 text-gray-400" />
+                                                )}
                                             </div>
 
                                             {/* Lesson Info */}
                                             <div className="min-w-0 flex-1">
                                                 <div className="mb-1 flex items-center gap-2">
                                                     <span className="text-xs text-gray-500">{lessonIndex + 1}.</span>
-                                                    <h5 className={`truncate text-sm font-medium text-gray-900`}>
+                                                    <h5
+                                                        className={`truncate text-sm font-medium ${lesson.is_free ? "text-gray-900" : "text-gray-600"}`}
+                                                    >
                                                         {lesson.title}
                                                     </h5>
                                                 </div>
@@ -97,47 +134,26 @@ const ListLessonCourse = () => {
                                                     </span>
 
                                                     {lesson.is_free && (
-                                                        <span className="rounded-full bg-green-100 px-4 py-0.5 font-medium text-green-700">
+                                                        <span className="rounded-full bg-green-100 px-2 py-0.5 font-medium text-green-700">
                                                             Miễn phí
                                                         </span>
                                                     )}
-
-                                                    {!lesson.is_free && <Lock className="h-3 w-3 text-gray-400" />}
-                                                </div>
-
-                                                {/* Lesson Resources */}
-                                                <div className="mt-1 flex flex-wrap items-center gap-2">
-                                                    <span className="flex items-center gap-1 rounded-sm bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700">
-                                                        <Award className="h-3 w-3" />
-                                                        Quiz
-                                                    </span>
-
-                                                    <span className="flex items-center gap-1 rounded-sm bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                                                        <FileText className="h-3 w-3" />
-                                                        Bài tập
-                                                    </span>
-
-                                                    <span className="flex items-center gap-1 rounded-sm bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
-                                                        <FileText className="h-3 w-3" />
-                                                        Tài liệu
-                                                    </span>
-
-                                                    <span className="flex items-center gap-1 rounded-sm bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                                                        <CircleCheckBig className="h-3 w-3" />
-                                                        Hoàn thành
-                                                    </span>
-
-                                                    <span className="flex items-center gap-1 rounded-sm bg-cyan-100 px-2 py-0.5 text-xs font-medium text-cyan-700">
-                                                        <MonitorPause className="h-3 w-3" />
-                                                        Đang học
-                                                    </span>
                                                 </div>
                                             </div>
 
-                                            {/* Play Button */}
-                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-2">
-                                                <Play className="h-4 w-4" />
-                                            </Button>
+                                            {/* Action Button */}
+                                            <div className="flex-shrink-0">
+                                                {lesson.is_free ? (
+                                                    <TryLearning
+                                                        title={`Bài học: ${lesson.title}`}
+                                                        video={lesson.video_url}
+                                                    />
+                                                ) : (
+                                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-2" disabled>
+                                                        <Lock className="h-3 w-3" />
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
                                     ))}
                                 </motion.div>

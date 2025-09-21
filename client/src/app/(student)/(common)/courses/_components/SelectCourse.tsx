@@ -29,6 +29,7 @@ const SelectCourse = ({ url }: { url: string }) => {
         router.push(`${url}?${params.toString()}`);
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
+
     useEffect(() => {
         const onPopState = () => {
             const params = new URLSearchParams(window.location.search);
@@ -39,27 +40,31 @@ const SelectCourse = ({ url }: { url: string }) => {
     }, []);
 
     return (
-        <div
-            className="relative mt-6 flex w-full flex-wrap items-center overflow-x-auto [&>button]:cursor-pointer [&>button]:border-b-gray-300"
-            style={{ scrollbarWidth: "none" }}
-        >
-            {subjects.map((tab) => (
-                <button
-                    key={tab.slug}
-                    className={`relative min-w-[4.7rem] border-b-[1px] px-2 py-3 ${activeTab === tab.slug ? "" : ""}`}
-                    onClick={() => handleChoiceTab(tab.slug)}
-                >
-                    {activeTab === tab.slug && (
-                        <div
-                            className="bg-primary absolute bottom-0 left-0 h-[2px] w-full rounded-full"
-                            style={{ transform: "none", transformOrigin: "50% 50% 0px" }}
-                        />
-                    )}
-                    <p className={`text-md font-medium ${activeTab === tab.slug ? "text-primary" : "text-[#999999]"}`}>
-                        {tab.name}
-                    </p>
-                </button>
-            ))}
+        <div className="space-y-4">
+            {/* Header */}
+
+            {/* Subject Tabs */}
+            <div className="mt-5 rounded-xl border border-gray-100 bg-white p-1 shadow-sm">
+                <div className="flex overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+                    {subjects.map((subject) => {
+                        const isActive = activeTab === subject.slug;
+                        return (
+                            <button
+                                key={subject.slug}
+                                onClick={() => handleChoiceTab(subject.slug)}
+                                className={`relative flex-shrink-0 cursor-pointer px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                                    isActive ? "text-primary" : "text-gray-600 hover:text-gray-900"
+                                }`}
+                            >
+                                <span className="relative z-10">{subject.name}</span>
+                                {isActive && (
+                                    <div className="bg-primary/10 border-primary/20 absolute inset-0 rounded-lg border"></div>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
         </div>
     );
 };

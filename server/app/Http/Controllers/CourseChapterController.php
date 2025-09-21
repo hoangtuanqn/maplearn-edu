@@ -54,7 +54,13 @@ class CourseChapterController extends BaseApiController
         }, 'chapters.lessons'])->where('slug', $slug)->firstOrFail();
 
         $course->chapters->each(function ($chapter) {
-            $chapter->lessons->each->makeHidden(['video_url', 'content', 'created_at', 'updated_at']);
+            $chapter->lessons->each(function ($lesson) {
+                if ($lesson->is_free) {
+                    $lesson->makeHidden(['content', 'created_at', 'updated_at']);
+                } else {
+                    $lesson->makeHidden(['video_url', 'content', 'created_at', 'updated_at']);
+                }
+            });
         });
 
         return $this->successResponse($course->chapters, 'Lấy danh sách chương thành công');

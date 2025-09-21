@@ -14,7 +14,6 @@ const DisplayVideoLearn = ({
     course: CourseDetailResponse["data"];
     lesson: LessonDetailResponse["data"];
 }) => {
-    console.log("Re-load component");
 
     const router = useRouter();
 

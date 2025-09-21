@@ -2,24 +2,34 @@
 import React from "react";
 import { formatter } from "~/libs/format";
 import { PaymentDetailResponse } from "~/schemaValidate/payment.schema";
+import { Calculator } from "lucide-react";
 
 const PaymentSummary = ({ payment }: { payment: PaymentDetailResponse["data"] }) => {
     return (
-        <div className="mt-6 flex justify-end max-md:mt-3 max-md:justify-center">
-            <div className="w-72 rounded-xl border border-blue-100 bg-blue-50 p-5 shadow max-md:w-full max-md:rounded-lg max-md:p-3">
-                <div className="flex justify-between py-2 text-slate-700 max-md:py-1 max-md:text-xs">
-                    <span>Tổng phụ</span>
-                    <span className="font-semibold">{formatter.number(payment.course.price)} đ</span>
+        <div className="mt-6 flex justify-end">
+            <div className="w-80 rounded-lg border border-gray-200 bg-gray-50 p-5">
+                <div className="mb-4 flex items-center gap-2">
+                    <Calculator className="text-primary h-4 w-4" />
+                    <span className="font-medium text-gray-900">Tóm tắt thanh toán</span>
                 </div>
 
-                <div className="flex justify-between py-2 max-md:py-1 max-md:text-xs">
-                    <span>VAT: </span>
-                    <span className="font-semibold">0 đ</span>
-                </div>
+                <div className="space-y-3">
+                    <div className="flex justify-between text-sm text-gray-700">
+                        <span>Tổng phụ</span>
+                        <span className="font-medium">{formatter.number(payment.course.price)}đ</span>
+                    </div>
 
-                <div className="mt-2 flex justify-between border-t pt-3 text-base font-bold text-blue-800 max-md:pt-2 max-md:text-sm">
-                    <span>Tổng cộng</span>
-                    <span>{formatter.number(payment.course.price)} đ</span>
+                    <div className="flex justify-between text-sm text-gray-700">
+                        <span>VAT</span>
+                        <span className="font-medium">0đ</span>
+                    </div>
+
+                    <div className="border-t border-gray-200 pt-3">
+                        <div className="text-primary flex justify-between text-lg font-semibold">
+                            <span>Tổng cộng</span>
+                            <span>{formatter.number(payment.course.price)}đ</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

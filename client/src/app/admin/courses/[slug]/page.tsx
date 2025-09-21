@@ -8,6 +8,7 @@ import ChaptersList from "./_components/ChaptersList";
 import Link from "next/link";
 import CourseStudentChart from "./_components/CourseStudentChart";
 import { Metadata } from "next";
+import StudentCompletedList from "./_components/StudentCompletedList";
 export const metadata: Metadata = {
     title: "Chi tiết khóa học",
 };
@@ -65,9 +66,15 @@ const DetailCourse = async ({ params }: { params: Promise<{ slug: string }> }) =
             </div>
 
             {/* Course Content */}
-            <div className="rounded-lg bg-white p-6 shadow-sm">
+            <div className="mb-5 rounded-lg bg-white p-6 shadow-sm">
                 {/* Chapters List */}
                 <ChaptersList slug={slug} />
+            </div>
+
+            {/* Hiển thị những học sinh đã hoàn thành */}
+            <div className="rounded-lg bg-white p-6 shadow-sm">
+                {/* Chapters List */}
+                <StudentCompletedList slug={slug} />
             </div>
         </div>
     );

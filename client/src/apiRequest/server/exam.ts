@@ -8,9 +8,8 @@ const examApiServer = {
 
     getQuestions: (slug: string) => withAuthHeaders<QuestionsExamResponse>(`/api/exam/${slug}/questions`),
 
-    getExamResults: (id: string | null, slug: string) => {
-        const query = id ? `/api/exam/${slug}/results/${id}` : `/api/exam/${slug}/results`;
-        return withAuthHeaders<ResultExamResponse>(query);
+    getExamResults: (id: string, slug: string) => {
+        return withAuthHeaders<ResultExamResponse>(`/api/exam/${slug}/results/${id}`);
     },
 
     getResultDetail: (slug: string, idAttempt: string) =>

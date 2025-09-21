@@ -1,3 +1,4 @@
+import privateApi from "~/libs/apis/privateApi";
 import publicApi from "~/libs/apis/publicApi";
 import {
     AttemptExamHistoryResponse,
@@ -63,7 +64,7 @@ const examApi = {
     getQuestions: (slug: string, headers?: { [key: string]: string }) =>
         publicApi.get<QuestionsExamResponse>(`exams/questions/${slug}`, headers ? { headers } : undefined),
     // Bắt đầu làm bài
-    startExam: (slug: string) => publicApi.post(`/exams/${slug}/start`),
+    startExam: (slug: string) => privateApi.post(`/exams/${slug}/start`),
     // Nộp bài
     submitAnswer: (slug: string, data: any) =>
         publicApi.post(`/exams/${slug}/submit`, {
@@ -71,7 +72,7 @@ const examApi = {
         }),
 
     // Deteced Cheat
-    detectCheating: (slug: string) => publicApi.post<AttemptExamResponse>(`/exams/${slug}/detect-cheat`),
+    detectCheating: (slug: string) => privateApi.post<AttemptExamResponse>(`/exams/${slug}/detect-cheat`),
 
     // Lấy kết quả thi
     getExamResults: (id: string | null, slug: string, headers?: { [key: string]: string }) => {
@@ -86,14 +87,14 @@ const examApi = {
     },
 
     // Lịch sử làm bài
-    getAttempts: (slug: string) => publicApi.get<AttemptExamHistoryResponse>(`/exams/${slug}/attempts`),
+    getAttempts: (slug: string) => privateApi.get<AttemptExamHistoryResponse>(`/exams/${slug}/attempts`),
 
     // Get Ranking của bài thi
     getRanking: (slug: string) => publicApi.get<RankingPaper>(`/exams/${slug}/ranking`),
     // Get Ranking của tôi
-    getRankingMe: (slug: string) => publicApi.get<{ data: { rank: number } }>(`/exams/${slug}/check-ranking`),
+    getRankingMe: (slug: string) => privateApi.get<{ data: { rank: number } }>(`/exams/${slug}/check-ranking`),
 
     getResultDetail: (slug: string, idAttempt: string, headers?: { [key: string]: string }) =>
-        publicApi.get(`/exams/${slug}/${idAttempt}/my-attempts`, headers ? { headers } : undefined),
+        privateApi.get(`/exams/${slug}/${idAttempt}/my-attempts`, headers ? { headers } : undefined),
 };
 export default examApi;

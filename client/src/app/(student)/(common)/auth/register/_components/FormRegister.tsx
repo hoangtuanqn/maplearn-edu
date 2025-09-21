@@ -37,7 +37,7 @@ const FormLogin = () => {
         mutationFn: (data: FormRegisterType) => authApi.create(data),
         onSuccess: (res) => {
             login(res.data.data);
-            router.push("/");
+            router.push("/?tutorial=1");
             toast.success("Tạo tài khoản thành công! Vui lòng kiểm tra email để xác thực tài khoản của bạn.");
         },
         onError: notificationErrorApi,

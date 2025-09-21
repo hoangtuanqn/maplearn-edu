@@ -10,6 +10,7 @@ const DashboardStats = () => {
     return (
         <div
             className="md:rounded-block mt-3.5 rounded-2xl p-4 shadow-sm max-md:mb-2.5 md:p-5 xl:mt-6"
+            id="dashboard-stats"
             style={{ backgroundColor: "rgb(255, 255, 255)" }}
         >
             <div className="flex flex-col gap-4 md:gap-5.5">

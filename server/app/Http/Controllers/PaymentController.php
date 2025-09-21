@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Course;
 use App\Models\Payment;
+use App\Notifications\InvoiceNotification;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
@@ -13,10 +14,7 @@ class PaymentController extends BaseApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
-    }
+    public function index(Request $request) {}
 
     /**
      * Store a newly created resource in storage.
@@ -58,6 +56,7 @@ class PaymentController extends BaseApiController
             default:
                 return $this->errorResponse(null, 'Phương thức thanh toán không hợp lệ', 400);
         }
+        $user->notify(new InvoiceNotification($payment, 'created'));
         // Trả về URL THANH TOÁN
         $payment['url_payment'] = $result['url_payment'] ?? null;
         return $this->successResponse($payment, 'Tạo payment thành công', 201);
@@ -94,7 +93,7 @@ class PaymentController extends BaseApiController
 
     public function cancelPayment(Request $request, string $transaction_code)
     {
-        $user = $request->user();
+        $user    = $request->user();
         $payment = Payment::where(['user_id' => $user->id, 'transaction_code' => $transaction_code, 'status' => 'pending'])->first();
         if (!$payment) {
             return $this->errorResponse(null, 'Payment không tồn tại hoặc đã được xử lý', 404);

@@ -32,4 +32,9 @@ class CourseLesson extends Model
     {
         return $this->belongsTo(CourseChapter::class, 'chapter_id');
     }
+
+    public function completions()
+    {
+        return $this->hasMany(LessonViewHistory::class, 'lesson_id')->where('is_completed', true);
+    }
 }

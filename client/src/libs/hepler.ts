@@ -50,12 +50,13 @@ export function getFormattedVietnameseDate(): string {
     return formatted;
 }
 // Hàm biến đổi đối tượng thành chuỗi query string . VD: filter[key]=value&filter[key2]=value2
-export const buildLaravelFilterQuery = (filters: Record<string, string | number | boolean>) => {
+export const buildLaravelFilterQuery = (filters: Record<string, string | number | boolean | null | undefined>) => {
     const queryParams = Object.entries(filters)
+        .filter(([_, value]) => value !== null && value !== undefined && value !== "")
         .map(([key, value]) => `filter[${encodeURIComponent(key)}]=${encodeURIComponent(String(value))}`)
         .join("&");
 
-    return queryParams ?? "";
+    return queryParams;
 };
 
 export const getFullName = (gender: string, fullName: string) => {
