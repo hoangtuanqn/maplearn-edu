@@ -36,8 +36,6 @@ export function getStatusBadge(type: string, status: string) {
             }
         case "activity_status":
             switch (+status) {
-                case 3:
-                    return <Badge variant="secondary">Chưa có video</Badge>;
                 case 2:
                     return <Badge variant="secondary">Chưa bắt đầu</Badge>;
                 case 1:

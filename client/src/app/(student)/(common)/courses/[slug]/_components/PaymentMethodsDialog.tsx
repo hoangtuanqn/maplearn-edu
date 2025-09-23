@@ -20,6 +20,7 @@ import { notificationErrorApi } from "~/libs/apis/http";
 import MethodPayment from "../../../../_components/MethodPayment";
 import paymentApi from "~/apiRequest/payment";
 import { CourseGetDetailResponse } from "~/schemaValidate/course.schema";
+import { ApplyCourseFree } from "./ApplyCourseFree";
 
 export function PaymentMethodsDialog({
     course,
@@ -62,9 +63,13 @@ export function PaymentMethodsDialog({
             <Dialog>
                 <form>
                     <DialogTrigger asChild>
-                        <Button className="text-primary w-full" variant={"outline"}>
-                            <span>{isCheckPrerequisite ? "Vẫn tiếp tục mua" : "Mua ngay"}</span>
-                        </Button>
+                        {course.price === 0 ? (
+                            <ApplyCourseFree slug={course.slug} />
+                        ) : (
+                            <Button className="text-primary w-full" variant={"outline"}>
+                                <span>{isCheckPrerequisite ? "Vẫn tiếp tục mua" : "Mua ngay"}</span>
+                            </Button>
+                        )}
                     </DialogTrigger>
 
                     <DialogContent className="bg-white sm:max-w-[600px]">

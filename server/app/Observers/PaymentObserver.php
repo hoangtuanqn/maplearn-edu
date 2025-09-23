@@ -10,6 +10,6 @@ class PaymentObserver
     public function creating(Payment $paymment)
     {
         $paymment->transaction_code = strtoupper(uniqid()); // Tạo mã giao dịch duy nhất
-        $paymment->status           = 'pending'; // Mặc định trạng thái là 'pending'
+        $paymment->status           = $paymment->status ?? 'pending'; // Mặc định trạng thái là 'pending'
     }
 }

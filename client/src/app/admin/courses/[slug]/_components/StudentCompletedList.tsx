@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { Award, CheckCircle, Mail, User } from "lucide-react";
+import { Users, CheckCircle, Mail, User, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { Suspense } from "react";
@@ -12,13 +12,15 @@ import DisplayTotalResult from "~/app/admin/_components/DisplayTotalResult";
 import { Button } from "~/components/ui/button";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
 import { formatter } from "~/libs/format";
+import { FilterStudentCourse } from "./FilterStudentCourse";
 
-const StudentCompletedList = ({ slug }: { slug: string }) => {
+const StudentEnrolledList = ({ slug }: { slug: string }) => {
     const { page } = useGetSearchQuery(["page"] as const);
     const { data: studentsData, isLoading } = useQuery({
-        queryKey: ["admin", "students-completed", slug, page],
+        queryKey: ["admin", "students-enrolled", slug, page],
         queryFn: async () => {
-            const res = await courseAdminApi.getStudentsCompletedCourse(slug);
+            // Tạm thời sử dụng API getStudentsCompletedCourse, cần cập nhật API sau
+            const res = await courseAdminApi.getStudentEnrolled(slug);
             return res.data.data;
         },
         staleTime: 5 * 60 * 1000, // 5 phút
@@ -27,16 +29,48 @@ const StudentCompletedList = ({ slug }: { slug: string }) => {
     const total = studentsData?.total ?? 0;
     const totalPages = Math.ceil(total / COURSE_PER_PAGE);
 
+    // Helper function to get status badge
+    const getStatusBadge = (student: any) => {
+        if (student.is_completed) {
+            return (
+                <div className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">
+                    <CheckCircle className="h-3 w-3" />
+                    Đã hoàn thành
+                </div>
+            );
+        } else {
+            const completionPercentage = (student.completed_lessons / student.total_lessons) * 100;
+            if (completionPercentage > 30) {
+                return (
+                    <div className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+                        <Clock className="h-3 w-3" />
+                        Đang học
+                    </div>
+                );
+            } else {
+                return (
+                    <div className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
+                        <Clock className="h-3 w-3" />
+                        Mới bắt đầu
+                    </div>
+                );
+            }
+        }
+    };
+
     return (
         <>
             <div className="mb-6">
-                <div className="mb-4 flex items-center gap-3">
-                    <div className="rounded-lg bg-emerald-100 p-2">
-                        <Award className="h-5 w-5 text-emerald-600" />
+                <div className="mb-4 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className="rounded-lg bg-blue-100 p-2">
+                            <Users className="h-5 w-5 text-blue-600" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900">Học viên đăng ký khóa học</h3>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900">Học sinh đã hoàn thành khóa học</h3>
+                    <FilterStudentCourse />
                 </div>
-                <p className="text-gray-600">Danh sách học sinh đã hoàn thành 100% bài học trong khóa học này</p>
+                <p className="text-gray-600">Danh sách tất cả học viên đã đăng ký khóa học này</p>
             </div>
 
             <div className="overflow-x-auto">
@@ -56,8 +90,11 @@ const StudentCompletedList = ({ slug }: { slug: string }) => {
                             <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
                                 Tiến độ
                             </th>
+                            <th className="px-4 py-3 text-center text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                                Thời gian đăng ký
+                            </th>
                             <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                                Hoàn thành
+                                Trạng thái học tập
                             </th>
                             <th className="px-4 py-3 text-right text-xs font-semibold tracking-wider text-gray-600 uppercase">
                                 Thao tác
@@ -105,8 +142,8 @@ const StudentCompletedList = ({ slug }: { slug: string }) => {
                                                   <Mail className="h-4 w-4" />
                                                   <span className="truncate">{student.email}</span>
                                               </div>
-                                              {student.phone && (
-                                                  <p className="text-xs text-gray-500">📞 {student.phone}</p>
+                                              {student.phone_number && (
+                                                  <p className="text-xs text-gray-500">📞 {student.phone_number}</p>
                                               )}
                                           </div>
                                       </td>
@@ -114,7 +151,13 @@ const StudentCompletedList = ({ slug }: { slug: string }) => {
                                       <td className="px-4 py-4">
                                           <div className="space-y-2">
                                               <div className="flex items-center justify-between text-sm">
-                                                  <span className="text-gray-600">Tiến độ:</span>
+                                                  <span className="text-gray-600">
+                                                      Tiến độ{": "}
+                                                      {Math.round(
+                                                          (student.completed_lessons / student.total_lessons) * 100,
+                                                      )}
+                                                      %
+                                                  </span>
                                                   <span className="font-semibold text-emerald-600">
                                                       {student.completed_lessons}/{student.total_lessons}
                                                   </span>
@@ -127,43 +170,42 @@ const StudentCompletedList = ({ slug }: { slug: string }) => {
                                                       }}
                                                   ></div>
                                               </div>
-                                              <div className="text-center text-xs text-gray-500">
-                                                  {Math.round(
-                                                      (student.completed_lessons / student.total_lessons) * 100,
-                                                  )}
-                                                  %
-                                              </div>
                                           </div>
                                       </td>
 
                                       <td className="px-4 py-4">
                                           <div className="text-center">
-                                              <div className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">
-                                                  <CheckCircle className="h-3 w-3" />
-                                                  Hoàn thành
-                                              </div>
-                                              <p className="mt-1 text-xs text-gray-500">
-                                                  {formatter.date(student.completion_date)}
+                                              <p className="text-sm font-medium text-gray-900">
+                                                  {formatter.date(student.enrolled_at)}
                                               </p>
+                                              <p className="text-xs text-gray-500">Ngày đăng ký</p>
                                           </div>
+                                      </td>
+
+                                      <td className="px-4 py-4">
+                                          {getStatusBadge(student)}
+                                          {student.completion_date && (
+                                              <p className="mt-1 text-xs text-gray-500">
+                                                  Hoàn thành: {formatter.date(student.completion_date)}
+                                              </p>
+                                          )}
                                       </td>
 
                                       <td className="px-4 py-4 text-right">
                                           <div className="flex items-center justify-end gap-2">
-                                              <Link href={`/certificate/${slug}/${student.email}`} target="_blank">
-                                                  <Button
-                                                      variant="outline"
-                                                      size="sm"
-                                                      className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-                                                  >
-                                                      Xem chứng chỉ
-                                                  </Button>
-                                              </Link>
-                                              <Link href={`/admin/students/${student.id}`}>
-                                                  <Button variant="outline" size="sm">
-                                                      Chi tiết
-                                                  </Button>
-                                              </Link>
+                                              {student.completion_date ? (
+                                                  <Link href={`/certificate/${slug}/${student.email}`} target="_blank">
+                                                      <Button
+                                                          variant="outline"
+                                                          size="sm"
+                                                          className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
+                                                      >
+                                                          Xem chứng chỉ
+                                                      </Button>
+                                                  </Link>
+                                              ) : (
+                                                  "Chưa có"
+                                              )}
                                           </div>
                                       </td>
                                   </tr>
@@ -174,10 +216,10 @@ const StudentCompletedList = ({ slug }: { slug: string }) => {
                 {!isLoading && studentsData?.data.length === 0 && (
                     <div className="py-12 text-center">
                         <div className="mx-auto mb-4 h-24 w-24 text-gray-400">
-                            <Award className="h-full w-full" />
+                            <Users className="h-full w-full" />
                         </div>
-                        <h3 className="mb-2 text-lg font-medium text-gray-900">Chưa có học sinh hoàn thành</h3>
-                        <p className="text-gray-500">Chưa có học sinh nào hoàn thành 100% khóa học này.</p>
+                        <h3 className="mb-2 text-base font-medium text-gray-900">Chưa có học viên đăng ký</h3>
+                        <p className="text-xs text-gray-500">Chưa có học viên nào đăng ký khóa học này.</p>
                     </div>
                 )}
             </div>
@@ -193,4 +235,4 @@ const StudentCompletedList = ({ slug }: { slug: string }) => {
     );
 };
 
-export default StudentCompletedList;
+export default StudentEnrolledList;

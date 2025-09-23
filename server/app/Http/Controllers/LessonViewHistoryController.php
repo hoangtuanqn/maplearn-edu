@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
 use App\Notifications\CourseCompletedNotification;
+use App\Notifications\CourseCompletionExamRequiredNotification;
 use Illuminate\Http\Request;
 
 class LessonViewHistoryController extends BaseApiController
@@ -66,7 +68,9 @@ class LessonViewHistoryController extends BaseApiController
                 'is_completed' => $existingView && $existingView->is_completed ? true : ($courseLesson->duration - 30 <= $data['progress']),
             ]
         );
-        if ($completedLessons == $totalLessons - 1 && $lessonView->is_completed) {
+        // Check xem người dùng đã có chứng chỉ chưa
+        $isCertificateExist = Certificate::where('user_id', $user->id)->where('course_id', $courseId)->exists();
+        if ($completedLessons == $totalLessons - 1 && $lessonView->is_completed && !$isCertificateExist) {
             // Gửi email thông báo hoàn thành khóa học
             $this->sendCourseCompletionEmail($request, $courseLesson);
         }
@@ -84,8 +88,10 @@ class LessonViewHistoryController extends BaseApiController
             ->where('is_completed', true)
             ->count();
         if ($totalLessons > 0 && $completedLessons >= $totalLessons) {
-            // Gửi thông báo hoàn thành khóa học
-            $user->notify(new CourseCompletedNotification($course, env('APP_URL_FRONT_END') . '/certificate/' . $course->slug . '/' . $user->email));
+            // Gửi thông báo cần
+            $exam = $course->exam;
+            $user->notify(new CourseCompletionExamRequiredNotification($user, $course, $exam));
+            // $user->notify(new CourseCompletedNotification($course, env('APP_URL_FRONT_END') . '/certificate/' . $course->slug . '/' . $user->email));
         }
     }
 

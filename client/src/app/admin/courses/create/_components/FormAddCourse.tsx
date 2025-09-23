@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,69 +20,9 @@ import { notificationErrorApi } from "~/libs/apis/http";
 import Loading from "~/app/(student)/_components/Loading";
 import { useRouter } from "next/navigation";
 import courseAdminApi from "~/apiRequest/admin/course";
-const formSchema = z
-    .object({
-        name: z.string().min(2, { message: "Tên khóa học phải có ít nhất 2 ký tự." }),
-        subject: z.string().min(1, { message: "Vui lòng chọn môn học." }),
-        category: z.string().min(1, { message: "Vui lòng chọn danh mục." }),
-        gradeLevel: z.string().min(1, { message: "Vui lòng chọn cấp bậc." }),
-        instructor: z.string().min(1, { message: "Vui lòng chọn giáo viên giảng dạy." }),
-        price: z.number().min(0, { message: "Giá khóa học phải lớn hơn hoặc bằng 0." }),
-        startDate: z.string().min(1, { message: "Vui lòng chọn ngày bắt đầu." }),
-        endDate: z.string().optional(),
-        prerequisiteCourse: z.string().optional(),
-        coverImage: z.string().url("Vui lòng nhập URL hợp lệ."),
-        introVideo: z.string().url("Vui lòng nhập URL hợp lệ."),
-        description: z.string().min(10, { message: "Mô tả khóa học phải có ít nhất 10 ký tự." }),
-    })
-    .refine(
-        (data) => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const startDate = new Date(data.startDate);
-            return startDate >= today;
-        },
-        {
-            message: "Ngày bắt đầu không được nhỏ hơn ngày hiện tại.",
-            path: ["startDate"],
-        },
-    )
-    .refine(
-        (data) => {
-            const startDate = new Date(data.startDate);
-            return startDate.getFullYear() <= 2027;
-        },
-        {
-            message: "Ngày bắt đầu không được lớn hơn năm 2027.",
-            path: ["startDate"],
-        },
-    )
-    .refine(
-        (data) => {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const startDate = new Date(data.startDate);
-            return startDate >= today;
-        },
-        {
-            message: "Ngày bắt đầu không được nhỏ hơn ngày hiện tại.",
-            path: ["startDate"],
-        },
-    )
-    .refine(
-        (data) => {
-            if (!data.endDate) return true;
-            const startDate = new Date(data.startDate);
-            const endDate = new Date(data.endDate);
-            const oneDayAfterStart = new Date(startDate);
-            oneDayAfterStart.setDate(startDate.getDate() + 1);
-            return endDate >= oneDayAfterStart;
-        },
-        {
-            message: "Ngày kết thúc phải sau ngày bắt đầu ít nhất 1 ngày.",
-            path: ["endDate"],
-        },
-    );
+import { formSchema } from "../schema/formAddCourse.schema";
+import uploadMedia from "~/apiRequest/uploadMedia";
+
 const FormAddCourse = () => {
     const router = useRouter();
     const { data: teachers = [] } = useQuery({
@@ -89,6 +30,7 @@ const FormAddCourse = () => {
         queryFn: teacherApi.getTeachers,
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
+
     const { data: courses = [] } = useQuery({
         queryKey: ["user", "courses"],
         queryFn: async () => {
@@ -98,7 +40,6 @@ const FormAddCourse = () => {
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
-    // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -110,12 +51,12 @@ const FormAddCourse = () => {
             price: 0,
             startDate: "",
             endDate: "",
-            coverImage: "",
-            introVideo: "",
+
             description: "",
         },
         mode: "onBlur",
     });
+
     const mutationCourse = useMutation({
         mutationFn: (data: any) => courseAdminApi.createCourse(data),
         onSuccess: (data) => {
@@ -123,13 +64,60 @@ const FormAddCourse = () => {
         },
         onError: notificationErrorApi,
     });
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        mutationCourse.mutate(values);
-    }
+
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            // Kiểm tra nếu có ảnh bìa và upload
+            const coverImageFile = form.watch("coverImage"); // Lấy file ảnh
+            if (coverImageFile) {
+                const coverImageResponse = await uploadMedia.upload(coverImageFile, "cover-images");
+                values.coverImageUrl = coverImageResponse.url; // Gán URL vào form data
+            }
+
+            // Kiểm tra nếu có video giới thiệu và upload
+            const introVideoFile = form.watch("introVideo"); // Lấy file video
+            if (introVideoFile) {
+                const introVideoResponse = await uploadMedia.upload(introVideoFile, "intro-videos");
+                values.introVideoUrl = introVideoResponse.url; // Gán URL vào form data
+            }
+
+            // Sau khi đã upload, gửi dữ liệu đến API
+            mutationCourse.mutate(values);
+        } catch (error) {
+            console.error("Error uploading files", error);
+        }
+    };
+
+    // Điền dữ liệu mẫu
+    const fillSampleData = () => {
+        form.setValue("name", "Phong tỏa Xác Xuất Thống Kê - TOÁN 12");
+        form.setValue(
+            "description",
+            "Khóa học này giúp học sinh THPT củng cố và nâng cao kiến thức môn Toán, bao gồm các chuyên đề đại số, hình học, xác suất và thống kê. Phù hợp với học sinh chuẩn bị cho kỳ thi tốt nghiệp THPT.",
+        );
+        form.setValue("price", 300000);
+        form.setValue("category", courseCategoriesMock[0]?.slug ?? "");
+        form.setValue("gradeLevel", gradeLevelsMock[2]?.slug ?? "");
+        const today = new Date();
+        const nextMonth = new Date();
+        nextMonth.setMonth(today.getMonth() + 1);
+        form.setValue("startDate", today.toISOString().split("T")[0]);
+        form.setValue("endDate", nextMonth.toISOString().split("T")[0]);
+        form.setValue("subject", subjectsMock[0]?.slug ?? "");
+        form.setValue("instructor", teachers[0]?.id ? String(teachers[0].id) : "");
+        form.setValue("prerequisiteCourse", courses[0]?.id ? String(courses[0].id) : "");
+        form.setValue("introVideoUrl", "/video.mp4");
+        form.setValue("coverImageUrl", "/assets/images/courses/toan-demo.jpg");
+    };
 
     return (
         <>
             {mutationCourse.isPending && <Loading />}
+            <div className="flex justify-end">
+                <Button className="mb-2 ml-auto text-white" onClick={fillSampleData}>
+                    Điền dữ liệu mẫu
+                </Button>
+            </div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -153,7 +141,7 @@ const FormAddCourse = () => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Môn học</FormLabel>
-                                    <Select onValueChange={(value) => field.onChange(value)}>
+                                    <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Chọn môn học" />
@@ -178,7 +166,7 @@ const FormAddCourse = () => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Danh mục</FormLabel>
-                                    <Select onValueChange={(value) => field.onChange(value)}>
+                                    <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Chọn danh mục" />
@@ -203,7 +191,7 @@ const FormAddCourse = () => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Cấp bậc</FormLabel>
-                                    <Select onValueChange={(value) => field.onChange(value)}>
+                                    <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Chọn cấp bậc" />
@@ -269,7 +257,7 @@ const FormAddCourse = () => {
                                 <FormItem>
                                     <FormLabel>Dự kiến bắt đầu</FormLabel>
                                     <FormControl>
-                                        <Input type="date" {...field} />
+                                        <Input type="date" {...field} min={new Date().toISOString().split("T")[0]} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -287,6 +275,16 @@ const FormAddCourse = () => {
                                             type="date"
                                             {...field}
                                             disabled={form.watch("startDate") ? false : true}
+                                            min={
+                                                form.watch("startDate")
+                                                    ? new Date(
+                                                          new Date(form.watch("startDate")).getTime() +
+                                                              24 * 60 * 60 * 1000,
+                                                      )
+                                                          .toISOString()
+                                                          .split("T")[0]
+                                                    : new Date().toISOString().split("T")[0]
+                                            }
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -323,7 +321,16 @@ const FormAddCourse = () => {
                                 <FormItem>
                                     <FormLabel>Ảnh bìa</FormLabel>
                                     <FormControl>
-                                        <Input type="url" placeholder="Link ảnh bìa" {...field} />
+                                        <Input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                // Lấy file từ input và gán vào form
+                                                if (e.target.files?.[0]) {
+                                                    field.onChange(e.target.files[0]);
+                                                }
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -337,7 +344,16 @@ const FormAddCourse = () => {
                                 <FormItem>
                                     <FormLabel>Video giới thiệu khóa</FormLabel>
                                     <FormControl>
-                                        <Input type="url" placeholder="Link video giới thiệu" {...field} />
+                                        <Input
+                                            type="file"
+                                            accept="video/*"
+                                            onChange={(e) => {
+                                                // Lấy file từ input và gán vào form
+                                                if (e.target.files?.[0]) {
+                                                    field.onChange(e.target.files[0]);
+                                                }
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -350,7 +366,7 @@ const FormAddCourse = () => {
                         name="description"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Mô tả khóa học</FormLabel>
+                                <FormLabel>Mô tả khóa học ({form.watch("description")?.length || 0}/5000)</FormLabel>
                                 <FormControl>
                                     <Textarea placeholder="Nhập mô tả chi tiết về khóa học..." rows={4} {...field} />
                                 </FormControl>

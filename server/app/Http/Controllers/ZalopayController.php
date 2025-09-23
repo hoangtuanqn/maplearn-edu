@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Payment;
 use App\Notifications\InvoiceNotification;
+use App\Notifications\StudentEnrolledNotification;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
@@ -25,11 +26,15 @@ class ZalopayController extends BaseApiController
         $payment->update([
             'status'         => $result['success'] == true ? 'paid' : 'failed',
             'payment_method' => 'zalopay',
+            'paid_at'       => $result['success'] == true ? now() : null,
         ]);
 
         if ($result['success'] == true) {
             $user = $payment->user;
             $user->notify(new InvoiceNotification($payment, 'paid'));
+            $course = $payment->course;
+            $teacher = $course->teacher;
+            $teacher->notify(new StudentEnrolledNotification($teacher, $course, $user));
             return $this->successResponse($payment, 'Thanh toán thành công');
         } else {
             return $this->errorResponse($payment, 'Thanh toán thất bại', 400);

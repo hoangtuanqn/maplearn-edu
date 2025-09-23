@@ -6,6 +6,7 @@ import Loading from "~/app/(student)/_components/Loading";
 import { Button } from "~/components/ui/button";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
 import { exportExcel } from "~/libs/exportExcel";
+import { formatter } from "~/libs/format";
 import { buildLaravelFilterQuery } from "~/libs/hepler";
 const allowedFields = [
     "search",
@@ -20,8 +21,20 @@ const allowedFields = [
 ] as const;
 
 const ExportDataInvoices = () => {
-    const { search, payment_method, sort, amount_min, amount_max, date_from, date_to } =
-        useGetSearchQuery(allowedFields);
+    const { search, payment_method, sort, amount_min, amount_max } = useGetSearchQuery(allowedFields);
+
+    let { date_from, date_to } = useGetSearchQuery(allowedFields);
+    if (!date_from || !date_to) {
+        const today = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
+
+        date_from = sevenDaysAgo.toISOString().split("T")[0];
+        date_to = today.toISOString().split("T")[0];
+    } else {
+        date_from = new Date(date_from).toISOString().split("T")[0];
+        date_to = new Date(date_to).toISOString().split("T")[0];
+    }
 
     const headerMap = {
         transaction_code: "Mã giao dịch",
@@ -29,7 +42,7 @@ const ExportDataInvoices = () => {
         amount: "Số tiền",
         status: "Trạng thái",
         paid_at: "Ngày thanh toán",
-        "user.full_name": "Tên người dùng",
+        "user.full_name": "Người mua",
         "course.name": "Tên khóa học",
     };
 
@@ -55,10 +68,10 @@ const ExportDataInvoices = () => {
             // Chuyển đổi dữ liệu để phù hợp với export
             const exportData = data.data.map((payment) => ({
                 transaction_code: payment.transaction_code,
-                payment_method: payment.payment_method,
-                amount: payment.amount,
-                status: payment.status,
-                paid_at: payment.paid_at,
+                payment_method: payment.payment_method.toUpperCase(),
+                amount: formatter.number(payment.amount) + " VND",
+                status: payment.status === "paid" ? "Đã thanh toán" : "Chưa thanh toán",
+                paid_at: formatter.date(payment.paid_at, true),
                 "user.full_name": payment.user.full_name,
                 "course.name": payment.course.name,
             }));

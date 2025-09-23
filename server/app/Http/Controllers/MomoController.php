@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Payment;
+use App\Notifications\InvoiceNotification;
+use App\Notifications\StudentEnrolledNotification;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 
@@ -24,7 +26,13 @@ class MomoController extends BaseApiController
             $payment->update([
                 'status'         => 'paid',
                 'payment_method' => 'momo',
+                'paid_at'       => now(),
             ]);
+            $user = $payment->user;
+            $user->notify(new InvoiceNotification($payment, 'paid'));
+            $course = $payment->course;
+            $teacher = $course->teacher;
+            $teacher->notify(new StudentEnrolledNotification($teacher, $course, $user));
             return $this->successResponse($result, 'Thanh toán thành công!');
         } else {
             $payment->update([

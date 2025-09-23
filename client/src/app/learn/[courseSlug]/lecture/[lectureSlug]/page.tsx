@@ -21,6 +21,7 @@ import courseDetailServer from "~/apiRequest/server/courseDetail";
 import DisplayAvatar from "~/app/(student)/_components/DisplayAvatar";
 import Link from "next/link";
 import HeaderVideo from "~/app/(student)/_components/Header/HeaderVideo";
+import { NotificationExam } from "./_components/NotificationExam";
 
 import DisplayVideoLearn from "./_components/DisplayVideoLearn";
 const VideoPage = async ({ params }: { params: Promise<{ courseSlug: string; lectureSlug: string }> }) => {
@@ -376,6 +377,9 @@ const VideoPage = async ({ params }: { params: Promise<{ courseSlug: string; lec
                     <Sidebar course={course} lesson={lesson} />
                 </div>
             </div>
+
+            {/* Notification Exam */}
+            <NotificationExam course={course} />
         </>
     );
 };

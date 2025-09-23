@@ -28,6 +28,7 @@ const _courseDetailSchemaResponse = z.object({
     success: z.boolean(),
     message: z.string(),
     data: CourseDetailSchema.extend({
+        code_certificate: z.string().nullable(),
         completed_lessons: z.number(),
         percent_completed: z.number(),
         chapters: z.array(
@@ -37,6 +38,22 @@ const _courseDetailSchemaResponse = z.object({
                 lessons: z.array(lessonSchema),
             }),
         ),
+        exam: z
+            .object({
+                id: z.number(),
+                slug: z.string(),
+                title: z.string(),
+                pass_score: z.number(),
+                max_score: z.number(),
+                max_attempts: z.number().nullable(),
+                duration_minutes: z.number(),
+                user_highest_exam_score: z.number().nullable(),
+                is_in_progress: z.boolean(),
+                question_count: z.number(),
+                total_attempt_count: z.number(),
+                attempt_count: z.number(),
+            })
+            .nullable(),
     }),
 });
 export type CourseDetailResponse = z.infer<typeof _courseDetailSchemaResponse>;

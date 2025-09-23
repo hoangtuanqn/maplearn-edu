@@ -30,6 +30,10 @@ class PaymentController extends BaseApiController
         if (!$course) {
             return $this->errorResponse(null, 'Khóa học không tồn tại', 404);
         }
+        // Course == 0 thì không cho thanh toán
+        if ($course->price <= 0) {
+            return $this->errorResponse(null, 'Khóa học miễn phí, không cần thanh toán', 400);
+        }
         $payment = Payment::updateOrCreate(
             ['user_id' => $user->id, 'course_id' => $data['course_id'], 'status' => 'pending'],
             [
@@ -62,6 +66,34 @@ class PaymentController extends BaseApiController
         return $this->successResponse($payment, 'Tạo payment thành công', 201);
     }
 
+    // Function đăng ký cho khóa học free
+    public function enrollFreeCourse(Request $request, Course $course)
+    {
+        $user = $request->user();
+
+        if (!$course) {
+            return $this->errorResponse(null, 'Khóa học không tồn tại', 404);
+        }
+        // Course == 0 thì mới cho đăng ký
+        if ($course->price > 0) {
+            return $this->errorResponse(null, 'Khóa học không miễn phí, không thể đăng ký theo cách này', 400);
+        }
+        // Kiểm tra đã đăng ký chưa
+        if (Payment::where(['user_id' => $user->id, 'course_id' => $course->id, 'status' => 'paid'])->exists()) {
+            return $this->errorResponse(null, 'Bạn đã đăng ký khóa học này rồi', 400);
+        }
+        // Tạo payment với status = paid luôn
+        $payment = Payment::create([
+            'user_id'        => $user->id,
+            'amount'         => 0,
+            'course_id'      => $course->id,
+            'payment_method' => 'transfer',
+            'status'         => 'paid',
+            'paid_at'       => now(),
+        ]);
+        $user->notify(new InvoiceNotification($payment, 'created'));
+        return $this->successResponse($payment, 'Đăng ký khóa học thành công', 201);
+    }
     /**
      * Display the specified resource.
      */

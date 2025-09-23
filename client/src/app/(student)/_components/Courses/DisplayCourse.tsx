@@ -1,6 +1,6 @@
 "use client";
 
-import { Star, User } from "lucide-react";
+import { Star, User, Clock, Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { memo, useEffect, useRef, useState } from "react";
@@ -34,7 +34,24 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
             setPosition(spaceRight < tooltipWidth ? "left" : "right");
         }
     }, [showInfo]);
+
     if (!course) return null;
+
+    // Kiểm tra khóa học sắp bắt đầu
+    const isUpcoming = course?.start_date && new Date(course.start_date) > new Date();
+
+    // Tính toán số ngày còn lại
+    const getDaysUntilStart = () => {
+        if (!course.start_date) return 0;
+        const now = new Date();
+        const startDate = new Date(course.start_date);
+        const diffTime = startDate.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    };
+
+    const daysUntilStart = getDaysUntilStart();
+
     const url =
         course.is_enrolled && course.current_lesson?.slug
             ? `/learn/${course.slug}/lecture/${course.current_lesson?.slug}`
@@ -62,29 +79,59 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
                         alt={course.teacher.full_name}
                         className="aspect-square w-full rounded-xl object-cover"
                     />
-                    {course.is_best_seller && (
+
+                    {/* Badge sắp bắt đầu */}
+                    {isUpcoming && (
+                        <div className="absolute top-2 left-2 rounded bg-gradient-to-r from-blue-500 to-purple-600 px-2 py-1 text-[10.125px] font-bold text-white shadow-md">
+                            <div className="flex items-center gap-1">
+                                <Clock className="h-2.5 w-2.5" />
+                                <span>Sắp bắt đầu</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {course.is_best_seller && !isUpcoming && (
+                        <div className="absolute top-2 right-2 rounded bg-gradient-to-r from-yellow-500 to-orange-500 px-2 py-1 text-[10.125px] font-bold text-white shadow-md">
+                            Bán chạy
+                        </div>
+                    )}
+
+                    {/* Badge bán chạy di chuyển sang trái nếu có sắp bắt đầu */}
+                    {course.is_best_seller && isUpcoming && (
                         <div className="absolute top-2 right-2 rounded bg-gradient-to-r from-yellow-500 to-orange-500 px-2 py-1 text-[10.125px] font-bold text-white shadow-md">
                             Bán chạy
                         </div>
                     )}
                 </div>
+
                 <h3 className="mt-4 w-full font-medium lg:line-clamp-2">{course.name}</h3>
+
                 <div className="my-1 flex items-center gap-1 text-xs font-medium">
                     <User style={{ fill: "currentColor" }} />
                     <span className="line-clamp-2">{course.teacher?.full_name}</span>
                 </div>
-                {!course.is_enrolled && course.rating.average_rating > 0 && (
+
+                {/* Hiển thị thông tin sắp bắt đầu */}
+                {isUpcoming && (
+                    <div className="mt-2 flex items-center gap-1 text-xs font-medium text-blue-600">
+                        <Calendar className="h-3 w-3" />
+                        <span>Bắt đầu sau {daysUntilStart} ngày nữa</span>
+                    </div>
+                )}
+
+                {!course.is_enrolled && course.rating.average_rating > 0 && !isUpcoming && (
                     <div className="flex items-center gap-1 text-xs">
                         <span className="font-bold text-amber-500">{course.rating.average_rating}</span>
                         <Star className="h-3 w-3 flex-shrink-0 fill-amber-500 text-amber-500" />
                     </div>
                 )}
+
                 {course.is_enrolled ? (
                     <div className="mt-2">
                         <div className="mb-1 flex items-center justify-between text-xs text-gray-600">
                             <span>Tiến độ học tập</span>
                             <span className="font-medium">
-                                {(course.lesson_successed / course.lesson_count) * 100}%
+                                {Math.floor((course.lesson_successed / course.lesson_count) * 100)}%
                             </span>
                         </div>
                         <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -95,9 +142,24 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
                         </div>
                     </div>
                 ) : (
-                    <span className="text-primary text-sm font-bold">
-                        {course.price === 0 ? "Miễn phí" : formatter.number(course.price ?? 0) + "đ"}
-                    </span>
+                    <div className="mt-2">
+                        {/* Hiển thị trạng thái đặc biệt cho khóa học sắp bắt đầu */}
+                        {isUpcoming ? (
+                            <div className="flex flex-col gap-1">
+                                <span
+                                    className={` ${course.price === 0 ? "text-green-600" : "text-primary"} text-sm font-bold`}
+                                >
+                                    {course.price === 0 ? "Miễn phí" : formatter.number(course.price ?? 0) + "đ"}
+                                </span>
+                            </div>
+                        ) : (
+                            <span
+                                className={` ${course.price === 0 ? "text-green-600" : "text-primary"} text-sm font-bold`}
+                            >
+                                {course.price === 0 ? "Miễn phí" : formatter.number(course.price ?? 0) + "đ"}
+                            </span>
+                        )}
+                    </div>
                 )}
             </Link>
 
@@ -138,16 +200,35 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
                                         {course.name}
                                     </Link>
                                 </h3>
+
                                 <div className="mt-2 flex items-center gap-2">
-                                    <span className="text-primary inline-block rounded-full bg-blue-50 px-2 py-1 text-xs font-medium">
-                                        Cập nhật 4/2025
-                                    </span>
+                                    {isUpcoming ? (
+                                        <span className="inline-block rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-600">
+                                            <Calendar className="mr-1 inline h-3 w-3" />
+                                            Bắt đầu {formatter.date(course.start_date)}
+                                        </span>
+                                    ) : (
+                                        <span className="text-primary inline-block rounded-full bg-blue-50 px-2 py-1 text-xs font-medium">
+                                            Cập nhật {course.updated_at ? formatter.date(course.updated_at) : "N/A"}
+                                        </span>
+                                    )}
                                     <span className="text-xs text-gray-400">•</span>
                                     <span className="text-xs text-gray-500">{course.lesson_count} bài học</span>
                                 </div>
+
                                 <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-600">
                                     {course.description}
                                 </p>
+
+                                {/* Thông tin đặc biệt cho khóa học sắp bắt đầu */}
+                                {isUpcoming && (
+                                    <div className="mt-3 rounded-lg bg-blue-50 p-3">
+                                        <div className="flex items-center gap-2 text-blue-700">
+                                            <Clock className="h-4 w-4" />
+                                            <span className="text-sm font-medium">Khóa học sắp bắt đầu</span>
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div className="mt-4 space-y-3 border-t border-gray-100 pt-4">
                                     {course.rating.average_rating > 0 && (
@@ -167,9 +248,13 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
 
                                     {!course.is_enrolled && (
                                         <div className="flex items-center justify-between pt-2">
-                                            <span className="text-xs text-gray-500">Học phí</span>
+                                            <span className="text-xs text-gray-500">
+                                                {isUpcoming ? "Giá đăng ký sớm" : "Học phí"}
+                                            </span>
                                             <div className="text-right">
-                                                <span className="text-primary text-lg font-bold">
+                                                <span
+                                                    className={` ${course.price === 0 ? "text-green-600" : "text-primary"} text-lg font-bold`}
+                                                >
                                                     {course.price === 0
                                                         ? "Miễn phí"
                                                         : formatter.number(course.price ?? 0) + "đ"}

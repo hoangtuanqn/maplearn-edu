@@ -83,9 +83,13 @@ const StudentList = () => {
                                           </Link>
                                       </td>
                                       <td className="px-4 py-3 text-zinc-500">
-                                          <Link href={`tel:${student.phone_number}`} className="underline">
-                                              {student.phone_number}
-                                          </Link>
+                                          {student.phone_number ? (
+                                              <Link href={`tel:${student.phone_number}`} className="underline">
+                                                  {student.phone_number}
+                                              </Link>
+                                          ) : (
+                                              "Chưa cập nhật"
+                                          )}
                                       </td>
 
                                       <td className="px-4 py-3">

@@ -17,5 +17,9 @@ const paymentApi = {
     cancelPayment: async (transaction_code: string) => {
         return privateApi.post<PaymentDetailResponse>(`/payments/${transaction_code}/cancel`);
     },
+    // enroll
+    enrollCourseFree: async (slug: string) => {
+        return privateApi.post(`payments/enroll-free-course/${slug}`);
+    },
 };
 export default paymentApi;

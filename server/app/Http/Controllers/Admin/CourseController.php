@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Filters\Course\IsActiveFilter;
 use App\Filters\Course\PriceFilter;
 use App\Filters\Course\RatingFilter;
 use App\Filters\Course\TeacherFilter;
@@ -48,6 +49,7 @@ class CourseController extends BaseApiController
                 AllowedFilter::custom('price_range', new PriceFilter),
                 AllowedFilter::custom('teachers', new TeacherFilter),
                 AllowedFilter::custom('rating', new RatingFilter),
+                AllowedFilter::custom('is_active', new IsActiveFilter),
             ])
             // thêm cái where, nếu quyền là teacher thì chỉ lấy khóa học của mình
             ->when($user->role === 'teacher', function ($query) use ($user) {

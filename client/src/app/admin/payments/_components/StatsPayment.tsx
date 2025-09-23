@@ -9,22 +9,26 @@ import useGetSearchQuery from "~/hooks/useGetSearchQuery";
 import { useQuery } from "@tanstack/react-query";
 import paymentApi from "~/apiRequest/admin/payment";
 import { formatter } from "~/libs/format";
+import ExportDataInvoices from "./ExportDataInvoices";
 
 const allowedFields = ["date_from", "date_to"] as const;
 
 const StatsPayment = () => {
     let { date_from, date_to } = useGetSearchQuery(allowedFields);
-    // Nếu 1 trong 2 không tồn tại, mặc định là từ 7 ngày trước đến hôm nay
+    // Nếu 1 trong 2 không tồn tại, mặc định là từ 7 ngày trước đến thời điểm hiện tại (giờ Việt Nam)
+    const nowVN = new Date(Date.now() + 7 * 60 * 60 * 1000); // UTC+7
     if (!date_from || !date_to) {
-        const today = new Date();
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(today.getDate() - 7);
+        const sevenDaysAgoVN = new Date(nowVN);
+        sevenDaysAgoVN.setDate(nowVN.getDate() - 7);
 
-        date_from = sevenDaysAgo.toISOString().split("T")[0];
-        date_to = today.toISOString().split("T")[0];
+        date_from = sevenDaysAgoVN.toISOString().slice(0, 10);
+        date_to = nowVN.toISOString().slice(0, 10);
     } else {
-        date_from = new Date(date_from).toISOString().split("T")[0];
-        date_to = new Date(date_to).toISOString().split("T")[0];
+        // Đảm bảo date_from, date_to là ngày theo giờ VN
+        const fromVN = new Date(new Date(date_from).getTime() + 7 * 60 * 60 * 1000);
+        const toVN = new Date(new Date(date_to).getTime() + 7 * 60 * 60 * 1000);
+        date_from = fromVN.toISOString().slice(0, 10);
+        date_to = toVN.toISOString().slice(0, 10);
     }
     const {
         data: stats,
@@ -128,9 +132,12 @@ const StatsPayment = () => {
                         Phân tích chi tiết và hiệu suất thanh toán từ {getDateRangeText()}.
                     </p>
                 </div>
-                <Suspense>
-                    <FilterPayments />
-                </Suspense>
+                <div className="flex items-center gap-2">
+                    <Suspense>
+                        <ExportDataInvoices />
+                        <FilterPayments />
+                    </Suspense>
+                </div>
             </div>
 
             {/* Dynamic KPI Cards */}

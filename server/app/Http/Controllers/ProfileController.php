@@ -19,7 +19,7 @@ class ProfileController extends BaseApiController
     public function update(Request $request)
     {
         $request->user()->update($request->validate([
-            'avatar'        => 'sometimes|url|max:2048',
+            'avatar'        => 'sometimes|max:2048',
             'full_name'     => 'required|string|max:255',
             'phone_number'  => 'sometimes|string|max:20',
             'gender'        => 'sometimes|string|in:male,female,other',

@@ -23,7 +23,7 @@ export function PrerequisiteCourseDialog({ course }: { course: CourseGetDetailRe
                 <form>
                     <DialogTrigger asChild>
                         <Button className="text-primary mt-2 w-full" variant={"outline"}>
-                            <span>Mua ngay</span>
+                            {course.price === 0 ? "Tham gia khóa học" : "Mua ngay"}
                         </Button>
                     </DialogTrigger>
 

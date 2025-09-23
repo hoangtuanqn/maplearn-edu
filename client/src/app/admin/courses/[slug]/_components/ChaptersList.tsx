@@ -33,7 +33,7 @@ const ChaptersList = ({ slug }: { slug: string }) => {
         <>
             <div className="mb-6 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Nội dung khóa học</h2>
-                <AddChapterDialog courseSlug={slug} maxPosition={chapters.length || 1} style={1} />
+                <AddChapterDialog courseSlug={slug} maxPosition={chapters.length || 0} style={1} />
             </div>
             <div className="space-y-4">
                 {chapters?.map((chapter, chapterIndex) => (
@@ -67,7 +67,7 @@ const ChaptersList = ({ slug }: { slug: string }) => {
                                     slugCourse={slug}
                                     chapterId={chapter.id}
                                     nameChapterCourse={chapter.title}
-                                    maxPosition={chapter.lessons.length}
+                                    maxPosition={chapter.lessons.length || 0}
                                     style={1}
                                 />
                                 <Button variant="ghost" size="sm" onClick={(e) => e.stopPropagation()}>
@@ -123,7 +123,7 @@ const ChaptersList = ({ slug }: { slug: string }) => {
                                         slugCourse={slug}
                                         chapterId={chapter.id}
                                         nameChapterCourse={chapter.title}
-                                        maxPosition={chapter.lessons.length + 1}
+                                        maxPosition={chapter.lessons.length || 0}
                                         style={2}
                                     />
                                 </div>
@@ -133,7 +133,7 @@ const ChaptersList = ({ slug }: { slug: string }) => {
                 ))}
             </div>
             <div className="mt-6 border-t border-gray-200 pt-6">
-                <AddChapterDialog courseSlug={slug} maxPosition={chapters.length || 1} style={2} />
+                <AddChapterDialog courseSlug={slug} maxPosition={chapters.length || 0} style={2} />
             </div>
         </>
     );

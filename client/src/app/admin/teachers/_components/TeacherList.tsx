@@ -90,7 +90,7 @@ const TeacherList = () => {
                                           {getStatusBadge("activity_status", student.banned ? "0" : "1")}
                                       </td>
                                       <td className="px-4 py-3 text-right">
-                                          <Link href={`/admin/teachers/${student.id}`}>
+                                          <Link href={`/admin/students/${student.id}`}>
                                               <Button variant={"outlineBlack"}>Chỉnh sửa</Button>
                                           </Link>
                                       </td>

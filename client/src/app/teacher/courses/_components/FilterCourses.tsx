@@ -120,8 +120,8 @@ export function FilterCourses() {
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>Sắp xếp theo</SelectLabel>
-                                            <SelectItem value="-enrollment_count">Tăng dần</SelectItem>
-                                            <SelectItem value="enrollment_count">Giảm dần</SelectItem>
+                                            <SelectItem value="enrollment_count">Tăng dần</SelectItem>
+                                            <SelectItem value="-enrollment_count">Giảm dần</SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\User;
+use App\Notifications\PasswordResetNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -53,13 +54,16 @@ class StudentController extends BaseApiController
     public function resetPassword(Request $request, User $student)
     {
         // reset password mới từ admin
-        $request->validate([
+        $data = $request->validate([
             'password' => 'required|string|min:6|max:255',
         ]);
 
         $student->update([
-            'password' => Hash::make($request->password),
+            'password' => $data['password'],
         ]);
+
+        // Gửi email thông báo cho học sinh về việc đổi mật khẩu (nếu cần)
+        $student->notify(new PasswordResetNotification($data['password']));
         return $this->successResponse($student, "Đặt lại mật khẩu thành công!");
     }
 

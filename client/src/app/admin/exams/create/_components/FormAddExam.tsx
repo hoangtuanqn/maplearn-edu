@@ -497,7 +497,9 @@ const FormAddExam = () => {
                                         <Input
                                             type="datetime-local"
                                             {...field}
-                                            min={new Date().toISOString().slice(0, 16)}
+                                            min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+                                                .toISOString()
+                                                .slice(0, 16)}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -515,7 +517,12 @@ const FormAddExam = () => {
                                         <Input
                                             type="datetime-local"
                                             {...field}
-                                            min={new Date().toISOString().slice(0, 16)}
+                                            min={
+                                                form.watch("start_time") ||
+                                                new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+                                                    .toISOString()
+                                                    .slice(0, 16)
+                                            }
                                         />
                                     </FormControl>
                                     <FormMessage />

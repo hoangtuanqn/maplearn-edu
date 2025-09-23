@@ -24,8 +24,23 @@ const allowedFields = [
 ] as const;
 
 const PaymentList = () => {
-    const { page, search, payment_method, sort, amount_min, amount_max, date_from, date_to } =
-        useGetSearchQuery(allowedFields);
+    const { page, search, payment_method, sort, amount_min, amount_max } = useGetSearchQuery(allowedFields);
+    let { date_from, date_to } = useGetSearchQuery(allowedFields);
+    // Nếu 1 trong 2 không tồn tại, mặc định là từ 7 ngày trước đến thời điểm hiện tại (giờ Việt Nam)
+    const nowVN = new Date(Date.now() + 7 * 60 * 60 * 1000); // UTC+7
+    if (!date_from || !date_to) {
+        const sevenDaysAgoVN = new Date(nowVN);
+        sevenDaysAgoVN.setDate(nowVN.getDate() - 7);
+
+        date_from = sevenDaysAgoVN.toISOString().slice(0, 10);
+        date_to = nowVN.toISOString().slice(0, 10);
+    } else {
+        // Đảm bảo date_from, date_to là ngày theo giờ VN
+        const fromVN = new Date(new Date(date_from).getTime() + 7 * 60 * 60 * 1000);
+        const toVN = new Date(new Date(date_to).getTime() + 7 * 60 * 60 * 1000);
+        date_from = fromVN.toISOString().slice(0, 10);
+        date_to = toVN.toISOString().slice(0, 10);
+    }
 
     const { data: payments, isLoading } = useQuery({
         queryKey: [
@@ -155,7 +170,7 @@ const PaymentList = () => {
                                       <td className="px-4 py-3 text-zinc-500">
                                           <div className="space-y-1">
                                               <p className="font-semibold text-gray-900">
-                                                  {formatter.number(payment.amount)}
+                                                  {payment.amount === 0 ? "Miễn phí" : formatter.number(payment.amount)}
                                               </p>
                                           </div>
                                       </td>

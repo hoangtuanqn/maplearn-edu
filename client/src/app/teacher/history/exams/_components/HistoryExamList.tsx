@@ -162,22 +162,16 @@ const HistoryExamList = () => {
                                                                       ? "bg-red-100 text-red-800"
                                                                       : attempt.paper.difficulty === "hard"
                                                                         ? "bg-orange-100 text-orange-800"
-                                                                        : attempt.paper.difficulty === "medium"
+                                                                        : attempt.paper.difficulty === "normal"
                                                                           ? "bg-yellow-100 text-yellow-800"
                                                                           : attempt.paper.difficulty === "easy"
                                                                             ? "bg-green-100 text-green-800"
                                                                             : "bg-gray-100 text-gray-800"
                                                               }`}
                                                           >
-                                                              {attempt.paper.difficulty === "very_hard"
-                                                                  ? "Rất khó"
-                                                                  : attempt.paper.difficulty === "hard"
-                                                                    ? "Khó"
-                                                                    : attempt.paper.difficulty === "medium"
-                                                                      ? "Trung bình"
-                                                                      : attempt.paper.difficulty === "easy"
-                                                                        ? "Dễ"
-                                                                        : attempt.paper.difficulty}
+                                                              {difficulties.find(
+                                                                  (diff) => diff.slug === attempt.paper.difficulty,
+                                                              )?.name || attempt.paper.difficulty}
                                                           </span>
                                                       </p>
                                                       <p className="text-xs text-gray-500">

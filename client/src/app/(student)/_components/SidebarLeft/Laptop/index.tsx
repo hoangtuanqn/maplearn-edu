@@ -19,7 +19,7 @@ const SideBarLaptop = () => {
                 {user ? (
                     <div className="rounded-xl border border-gray-100 bg-white">
                         <Link
-                            className="hover:bg-primary/5 flex cursor-pointer items-center justify-start rounded-lg p-3 transition-all duration-200"
+                            className="hover:bg-primary/5 m-2 flex cursor-pointer items-center justify-start rounded-lg px-0.5 py-1.5 transition-all duration-200"
                             href="/profile"
                             id="profile"
                         >

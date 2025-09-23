@@ -18,6 +18,9 @@ Route::prefix('payment')->group(function () {
 
 Route::prefix('/payments')->middleware('auth.jwt')->group(function () {
     Route::post('{transaction_code}/cancel', [PaymentController::class, 'cancelPayment']);
+
+    // enrollFreeCourse
+    Route::post('enroll-free-course/{course}', [PaymentController::class, 'enrollFreeCourse']);
 });
 Route::apiResource('/payments', PaymentController::class)->middleware('auth.jwt');
 Route::apiResource('/payments-admin', AdminPaymentController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);

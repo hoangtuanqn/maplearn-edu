@@ -9,7 +9,7 @@ class EnrollmentCountSort implements Sort
 {
     public function __invoke(Builder $query, bool $descending, string $property)
     {
-        // $query->withCount('enrollments')
-        //     ->orderBy('enrollments_count', $descending ? 'desc' : 'asc');
+        $query->withCount('students')
+            ->orderBy('students_count', $descending ? 'desc' : 'asc');
     }
 }

@@ -20,7 +20,6 @@ const ExamPage = () => {
                             <h3 className="text-primary text-xl font-bold">Hóa đơn đã thanh toán</h3>
                             <p className="text-sm text-slate-500">Quản lý và theo dõi các hóa đơn trong hệ thống.</p>
                         </div>
-                        <div>Xuất dữ liệu</div>
                     </div>
                 </div>
 

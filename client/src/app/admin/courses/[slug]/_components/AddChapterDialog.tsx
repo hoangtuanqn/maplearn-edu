@@ -13,7 +13,7 @@ import {
     DialogTrigger,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -25,8 +25,11 @@ import courseAdminApi from "~/apiRequest/admin/course";
 
 // Schema validation
 const addChapterSchema = z.object({
-    title: z.string().min(2, { message: "Tên chương phải có ít nhất 2 ký tự." }),
-    position: z.number().min(1, { message: "Vị trí phải lớn hơn 0." }),
+    title: z
+        .string()
+        .min(10, { message: "Tên chương phải có ít nhất 10 ký tự." })
+        .max(255, { message: "Tên chương không được vượt quá 255 ký tự." }),
+    position: z.number().min(1, { message: "Vị trí phải lớn hơn 0." }).max(30, { message: "Vị trí phải nhỏ hơn 30." }),
 });
 
 type AddChapterFormData = z.infer<typeof addChapterSchema>;
@@ -137,11 +140,16 @@ export function AddChapterDialog({
                                                     type="number"
                                                     placeholder="Nhập vị trí chương..."
                                                     {...field}
+                                                    min={1}
                                                     value={field.value || ""}
                                                     onChange={(e) => field.onChange(Number(e.target.value))}
                                                 />
                                             </FormControl>
                                             <FormMessage />
+                                            <FormDescription>
+                                                Nếu có hai chương cùng vị trí, chương được thêm sau sẽ hiển thị trước
+                                                chương cũ.
+                                            </FormDescription>
                                         </FormItem>
                                     )}
                                 />

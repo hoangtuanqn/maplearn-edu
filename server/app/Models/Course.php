@@ -30,6 +30,7 @@ class Course extends Model
         'end_date',
         'status',
         'is_sequential',
+        'exam_paper_id',
     ];
     protected $hidden = [];
     // Nhớ đi qua middleware auth.optional.jwt để lấy được user đang đăng nhập
@@ -51,6 +52,12 @@ class Course extends Model
     public function payments()
     {
         return $this->hasMany(Payment::class)->where('status', 'paid');
+    }
+
+    // Lấy thông tin bài kiểm tra cuối khóa
+    public function exam()
+    {
+        return $this->belongsTo(ExamPaper::class, 'exam_paper_id');
     }
 
     // Danh sách học sinh đã thanh toán (qua bảng pivot: payments)

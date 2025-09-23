@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
+use Illuminate\Support\Facades\Auth;
 // Implement JWTSubject để sử dụng các phương thức được cấp
 class User extends Authenticatable implements JWTSubject
 {
@@ -153,5 +153,40 @@ class User extends Authenticatable implements JWTSubject
     {
         // Nếu là teacher thì load cái này sẽ có data
         return $this->hasMany(Course::class);
+    }
+
+    // get danh sách các khóa học đã hoàn thành hết video (nhưng chưa có chứng chỉ)
+    public function completedCourses()
+    {
+        $user = $this;
+
+        // Lấy tất cả khóa học đã mua
+        $purchasedCourses = $this->purchasedCourses;
+
+        $completedCourses = [];
+
+        foreach ($purchasedCourses as $course) {
+            // Đếm tổng số bài học trong khóa học
+            $totalLessons = $course->lessons()->count();
+
+            // Đếm số bài học đã hoàn thành
+            $completedLessons = LessonViewHistory::where('user_id', $user->id)
+                ->whereIn('lesson_id', $course->lessons->pluck('id'))
+                ->where('is_completed', true)
+                ->count();
+
+            // Kiểm tra đã học hết tất cả video và chưa có chứng chỉ
+            if ($totalLessons > 0 && $completedLessons >= $totalLessons) {
+                $hasCertificate = Certificate::where('user_id', $user->id)
+                    ->where('course_id', $course->id)
+                    ->exists();
+
+                if (!$hasCertificate) {
+                    $completedCourses[] = $course;
+                }
+            }
+        }
+
+        return collect($completedCourses);
     }
 }

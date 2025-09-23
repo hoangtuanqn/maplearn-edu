@@ -76,14 +76,18 @@ const CourseDetailPage = async ({ params }: { params: Promise<{ slug: string }> 
 
                                     {/* Pricing */}
                                     <div className="text-center">
-                                        <div className="text-primary text-2xl font-bold">
-                                            {formatter.number(course.price)}đ
+                                        <div
+                                            className={`text-2xl font-bold ${
+                                                course.price === 0 ? "text-green-600" : "text-primary"
+                                            }`}
+                                        >
+                                            {course.price === 0 ? "Miễn phí" : `${formatter.number(course.price)}đ`}
                                         </div>
-                                        {course.price < course.price && (
+                                        {/* {course.price < course.price && (
                                             <div className="text-sm text-gray-500 line-through">
                                                 {formatter.number(course.price)}đ
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
 
                                     {/* Action Button */}

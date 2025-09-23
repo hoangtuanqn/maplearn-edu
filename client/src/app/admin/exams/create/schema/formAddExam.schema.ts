@@ -4,7 +4,7 @@ const formSchema = z
     .object({
         title: z
             .string()
-            .min(10, { message: "Tên đề thi phải có ít nhất 10 ký tự." })
+            .min(15, { message: "Tên đề thi phải có ít nhất 15 ký tự." })
             .max(255, { message: "Tên đề thi không được vượt quá 255 ký tự." }),
         exam_category: z.string().min(1, { message: "Vui lòng chọn loại đề thi." }),
         subject: z.string().min(1, { message: "Vui lòng chọn môn học." }),
@@ -20,7 +20,7 @@ const formSchema = z
         pass_score: z.number().min(0, { message: "Điểm qua môn phải lớn hơn hoặc bằng 0." }),
         duration_minutes: z
             .number()
-            .min(1, { message: "Thời gian làm bài phải lớn hơn 0 phút." })
+            .min(15, { message: "Thời gian làm bài phải lớn hơn 15 phút." })
             .max(300, { message: "Thời gian làm bài không được vượt quá 300 phút." }),
         start_time: z.string().min(1, { message: "Vui lòng chọn thời gian bắt đầu." }),
         end_time: z.string(),
@@ -31,7 +31,7 @@ const formSchema = z
         is_shuffle_answers: z.boolean(),
         is_show_result: z.boolean(),
         is_retakeable: z.boolean(),
-        max_attempts: z.number().min(0, { message: "Số lần làm bài tối đa phải lớn hơn 0`." }).optional(),
+        max_attempts: z.number().min(0, { message: "Số lần làm bài tối đa phải lớn hơn 0." }).optional(),
     })
     .refine(
         (data) => {
@@ -45,15 +45,40 @@ const formSchema = z
     )
     .refine(
         (data) => {
+            // pass_score phải nhỏ hơn max_score
+            return data.pass_score < data.max_score;
+        },
+        {
+            message: "Điểm qua môn phải nhỏ hơn điểm tối đa.",
+            path: ["pass_score"],
+        },
+    )
+    .refine(
+        (data) => {
             // Nếu end_time không có giá trị, bỏ qua kiểm tra
             if (!data.end_time) return true;
             const startTime = new Date(data.start_time);
             const endTime = new Date(data.end_time);
-            return endTime > startTime;
+            // end_time phải sau start_time ít nhất 1 phút
+            return endTime > startTime && endTime.getTime() - startTime.getTime() >= 60000;
         },
         {
-            message: "Thời gian kết thúc phải sau thời gian bắt đầu.",
+            message: "Thời gian kết thúc phải sau thời gian bắt đầu ít nhất 1 phút.",
             path: ["end_time"],
+        },
+    )
+    .refine(
+        (data) => {
+            // Nếu end_time không có giá trị, bỏ qua kiểm tra
+            if (!data.end_time) return true;
+            const startTime = new Date(data.start_time);
+            const endTime = new Date(data.end_time);
+            const diffMinutes = Math.floor((endTime.getTime() - startTime.getTime()) / 60000);
+            return data.duration_minutes <= diffMinutes;
+        },
+        {
+            message: "Thời lượng làm bài không được vượt quá tổng thời gian giữa bắt đầu và kết thúc.",
+            path: ["duration_minutes"],
         },
     )
     .refine(

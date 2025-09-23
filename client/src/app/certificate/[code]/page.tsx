@@ -19,11 +19,11 @@ export const metadata: Metadata = {
     title: "Chứng chỉ hoàn thành khóa học | MapLearn",
     description: "Chứng chỉ hoàn thành khóa học được cấp bởi nền tảng học tập MapLearn",
 };
-const CertificatePage = async ({ params }: { params: Promise<{ slug: string; email: string }> }) => {
-    const { slug, email } = await params;
+const CertificatePage = async ({ params }: { params: Promise<{ code: string }> }) => {
+    const { code } = await params;
     let certificate;
     try {
-        const res = await certificateApi.getCertificate(slug, email);
+        const res = await certificateApi.getCertificate(code);
         certificate = res.data.data;
     } catch {
         redirect("/");
@@ -47,7 +47,7 @@ const CertificatePage = async ({ params }: { params: Promise<{ slug: string; ema
                         {/* Certificate ID */}
                         <div className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-1">
                             <span className="text-xs text-gray-500">Mã chứng chỉ:</span>
-                            <span className="font-mono text-sm font-semibold text-blue-600">MAPLEAN-C5-F7-F2</span>
+                            <span className="font-mono text-sm font-semibold text-blue-600">{code}</span>
                         </div>
                     </div>
                 </div>
@@ -61,8 +61,7 @@ const CertificatePage = async ({ params }: { params: Promise<{ slug: string; ema
                             fullName={certificate.full_name}
                             dateCompleted={certificate.completion_date}
                             courseTitle={certificate.course_title}
-                            slugCourse={slug}
-                            email={email}
+                            code={code}
                         />
                     </div>
 

@@ -4,6 +4,7 @@ import CourseList from "./_components/CourseList";
 import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import { FilterCourses } from "./_components/FilterCourses";
+import SearchCourse from "~/app/(student)/(common)/courses/_components/SearchCourse";
 
 export const metadata: Metadata = {
     title: "Danh sách các khóa học",
@@ -23,9 +24,12 @@ const CoursePage = () => {
                             <h3 className="text-primary text-xl font-bold">Danh sách khóa học</h3>
                             <p className="text-sm text-slate-500">Danh sách khóa học sẽ được hiển thị ở đây.</p>
                         </div>
-                        <Suspense>
-                            <FilterCourses />
-                        </Suspense>
+                        <div className="flex items-center gap-3">
+                            <Suspense>
+                                <SearchCourse url="/admin/courses" />
+                                <FilterCourses />
+                            </Suspense>
+                        </div>
                     </div>
                 </div>
                 <Suspense>

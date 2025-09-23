@@ -27,8 +27,8 @@ Route::prefix("/courses")->middleware('auth.jwt')->group(function () {
     // get thông tin chứng chỉ sau khi hoàn thành khóa học
     Route::get('/{course}/certificate', [CourseController::class, 'getCertificateInfo']);
 
-    // Admin: Lấy thông tin những người hoàn thành khóa học
-    Route::get('/{course}/completions', [CourseController::class, 'listStudentsWithCertificates']);
+    // Admin: Lấy thông tin những người đăng ký khóa học
+    Route::get('/{course}/enrollments', [CourseController::class, 'getRegistrations'])->middleware('check.role:admin,teacher');
 
     // gửi email khi hoàn thành khóa học
     Route::post('/{course}/send-completion-email', [LessonViewHistoryController::class, 'sendCourseCompletionEmail']);
@@ -39,5 +39,5 @@ Route::apiResource('lessons', CourseLessonController::class)->middleware('auth.j
 
 Route::apiResource('lesson-history', LessonViewHistoryController::class)->middleware('auth.jwt');
 
-Route::get("/certificates/{slugCourse}/{email}", [CertificateController::class, 'getInfoCertificate']);
+Route::get("/certificates/{certificate}/", [CertificateController::class, 'getInfoCertificate']);
 Route::apiResource('courses-admin', AdminCourseController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);

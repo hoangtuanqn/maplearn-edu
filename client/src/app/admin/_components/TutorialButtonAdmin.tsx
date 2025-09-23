@@ -44,7 +44,8 @@ export default function TutorialButtonAdmin() {
             element: "#payments",
             popover: {
                 title: "Quản lý thanh toán",
-                description: "Hiển thị đầy đủ thông tin các khóa học được người dùng mua và quản lý giao dịch.",
+                description:
+                    "Hiển thị đầy đủ thông tin các khóa học được người dùng mua và quản lý giao dịch. Có thể xuất dữ liệu báo cáo.",
             },
         },
         {

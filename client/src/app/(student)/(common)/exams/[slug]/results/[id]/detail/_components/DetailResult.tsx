@@ -116,7 +116,13 @@ const DetailResult = ({
                             {result.type === "DRAG_DROP" ? (
                                 <DragDrop
                                     question={result.content || ""}
-                                    items={result.options || []}
+                                    items={
+                                        (result.options || []).map((opt: any, idx: number) => ({
+                                            id: opt.id ?? idx,
+                                            content: opt.content,
+                                            is_correct: opt.is_correct,
+                                        }))
+                                    }
                                     activeAnswers={result.your_choice ?? []}
                                     idQuestion={result.id}
                                     handleChoiceAnswer={() => {}}

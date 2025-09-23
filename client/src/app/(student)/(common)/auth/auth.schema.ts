@@ -8,13 +8,22 @@ export type FormLoginType = z.infer<typeof loginSchema>;
 
 export const registerSchema = z
     .object({
-        full_name: z.string().max(50, "Chỉ được nhập tối đa 50 kí tự").nonempty("Vui lòng nhập họ và tên"),
+        full_name: z
+            .string()
+            .min(5, "Họ và tên phải có ít nhất 5 ký tự")
+            .max(50, "Họ và tên không được vượt quá 50 ký tự")
+            .nonempty("Vui lòng không bỏ trống họ và tên"),
         email: z
             .string()
             .nonempty("Vui lòng nhập email")
-            .max(255, "Chỉ được nhập tối đa 255 kí tự")
+            .min(10, "Email phải có ít nhất 10 kí tự")
+            .max(70, "Chỉ được nhập tối đa 70 kí tự")
             .email("Email không hợp lệ"),
-        username: z.string().max(50, "Chỉ được nhập tối đa 50 kí tự").nonempty("Vui lòng nhập tên đăng nhập"),
+        username: z
+            .string()
+            .min(5, "Tên đăng nhập phải có ít nhất 5 ký tự")
+            .max(30, "Chỉ được nhập tối đa 30 kí tự")
+            .nonempty("Vui lòng nhập tên đăng nhập"),
         password: z
             .string()
             .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
@@ -32,7 +41,8 @@ export const forgotPasswordSchema = z.object({
     email: z
         .string()
         .nonempty("Vui lòng nhập email")
-        .max(255, "Chỉ được nhập tối đa 255 kí tự")
+        .min(10, "Email phải có ít nhất 10 kí tự")
+        .max(70, "Chỉ được nhập tối đa 70 kí tự")
         .email("Email không hợp lệ"),
 });
 export type FormForgotPasswordType = z.infer<typeof forgotPasswordSchema>;
@@ -42,13 +52,13 @@ export const resetPasswordSchema = z
         email: z
             .string()
             .nonempty("Vui lòng nhập email")
-            .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-            .max(255, "Chỉ được nhập tối đa 255 kí tự")
+            .min(10, "Email phải có ít nhất 10 kí tự")
+            .max(70, "Chỉ được nhập tối đa 70 kí tự")
             .email("Email không hợp lệ"),
         password: z
             .string()
-            .min(6, "Mật khẩu tối tiểu 6 kí tự")
-            .max(255, "Chỉ được nhập tối đa 255 kí tự")
+            .min(6, "Mật khẩu tối thiểu 6 kí tự")
+            .max(70, "Chỉ được nhập tối đa 70 kí tự")
             .nonempty("Vui lòng nhập mật khẩu"),
         confirmPassword: z.string().nonempty("Vui lòng nhập lại mật khẩu"),
     })

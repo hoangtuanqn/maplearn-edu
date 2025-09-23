@@ -6,8 +6,10 @@ use App\Filters\PaperExam\CategoriesSlugFilter;
 use App\Filters\PaperExam\DifficultiesSlugFilter;
 use App\Filters\PaperExam\ProvincesSlugFilter;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Certificate;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
+use App\Notifications\CourseCompletedNotification;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -236,9 +238,32 @@ class ExamPaperController extends BaseApiController
         $attempt->details = $answers; // lưu JSON chuẩn
         $attempt->save();
 
+        // Kiểm tra các khóa học của người dùng, xem khóa học nào đã hoàn thành rồi (chưa nhận chứng chỉ mà đã hoàn thành video). 
+        // exam_paper_id = $exam->id thì gửi email hoàn thành khóa học (chỉ gửi lần đầu tiên)
+        if ($scores > $exam->pass_score) {
+            $user->completedCourses();
+            foreach ($user->completedCourses() as $course) {
+                // Gui thong bao can
+                $courseExam = $course->exam;
+                if ($courseExam && $courseExam->id === $exam->id) {
+                    // Tạo chứng chỉ cho người học
+                    $cert = Certificate::create([
+                        'user_id'   => $user->id,
+                        'full_name' => $user->full_name,
+                        'course_id' => $course->id,
+                    ]);
+                    if ($cert) {
+                        $user->notify(new CourseCompletedNotification($course, env('APP_URL_FRONT_END') . '/certificate/' . $cert->code));
+                    }
+                }
+            }
+        }
+
+
         return $this->successResponse([
             'id_attempt' => $attempt->id,
             'scores' => $scores,
         ], 'Bài làm đã được nộp thành công');
     }
+
 }

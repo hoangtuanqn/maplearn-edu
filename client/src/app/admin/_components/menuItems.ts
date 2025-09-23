@@ -1,4 +1,3 @@
-import { id } from "date-fns/locale";
 import {
     LayoutDashboard,
     UserRound,
@@ -57,7 +56,7 @@ const menuItems = [
                 label: "Khóa học",
                 icon: GraduationCap,
                 href: "/admin/courses",
-                matcher: ["/admin/courses", "/admin/courses/:slug"],
+                matcher: ["/admin/courses", "/admin/courses/edit/:slug", "/admin/courses/:slug"],
                 id: "courses",
             },
         ],

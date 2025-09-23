@@ -5,16 +5,24 @@ import HomeIcon from "../../Icons/HomeIcon";
 import GraduationIcon from "../../Icons/GraduationIcon";
 import DocumentIcon from "../../Icons/DocumentIcon";
 import NewsIcon from "../../Icons/NewsIcon";
-import Image from "next/image";
 import HeaderLink from "./HeaderLink";
 import BlurBackdrop from "../BlurBackdrop";
 import { Button } from "~/components/ui/button";
 import { useSelector } from "react-redux";
 import { RootState } from "~/store";
-import { ChevronDown, User, CreditCard, BookOpen, LogOut, Shield, GraduationCap } from "lucide-react";
+import {
+    ChevronDown,
+    User,
+    CreditCard,
+    BookOpen,
+    LogOut,
+    Shield,
+    GraduationCap,
+    CircleQuestionMark,
+} from "lucide-react";
 import { useAuth } from "~/hooks/useAuth";
 import DisplayAvatar from "../../DisplayAvatar";
-import Notification from "./Notification";
+import LogoMapLearn from "../components/LogoMapLearn";
 const headerLinks = [
     {
         label: "Trang chủ",
@@ -51,25 +59,7 @@ const HeaderLaptop = () => {
                 <div className="padding-scrollbar text-primary flex h-[64px] w-full items-center border-b border-gray-200/60 bg-white/85 shadow-sm backdrop-blur-sm">
                     <div className="max-w-8xl mx-auto w-full items-center px-4 pl-6.5">
                         <div className="flex w-full items-center justify-between">
-                            <div className="flex items-center max-xl:hidden">
-                                <Link className="group flex cursor-pointer items-center gap-3" href={"/"}>
-                                    <div className="flex items-center justify-center rounded-xl bg-gray-100 p-1 shadow-sm transition-transform duration-200 group-hover:scale-105">
-                                        <Image
-                                            width={36}
-                                            height={36}
-                                            className="rounded-lg object-contain"
-                                            alt="MapLearn Logo"
-                                            src="/assets/images/logo/logo-64.png"
-                                        />
-                                    </div>
-                                    <div className="hidden lg:block">
-                                        <h1 className="text-primary text-xl font-bold tracking-tight">MapLearn</h1>
-                                        <p className="mt-0.5 text-xs font-normal text-gray-400">
-                                            Nền tảng học tập thông minh
-                                        </p>
-                                    </div>
-                                </Link>
-                            </div>
+                            <LogoMapLearn textColor="text-primary" />
                             <div className="flex shrink-1 justify-center">
                                 <div className="relative flex items-center">
                                     <div className="relative">
@@ -193,7 +183,13 @@ const HeaderLaptop = () => {
                                             </div>
                                         </div>
                                         {/* Notification Bell */}
-                                        <Notification />
+                                        <Link
+                                            href="/?tutorial=1"
+                                            id="help-center-button"
+                                            className="cursor-pointer rounded-lg border border-gray-400 bg-white/80 p-2 shadow-sm backdrop-blur-sm transition-all duration-200 hover:border-gray-300 hover:bg-gray-50"
+                                        >
+                                            <CircleQuestionMark className="h-5 w-5 text-gray-600" />
+                                        </Link>
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-3">

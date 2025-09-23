@@ -736,13 +736,13 @@ class CourseSeeder extends Seeder
                 'subject'     => $subjects[$item['subject'] - 1],
                 'category'    => $categories[$item['category_id'] - 1],
                 'user_id'     => $item['user_id'],
-
                 'price'       => $faker->numberBetween(100, 400) * 1000,
                 'description' => 'Khóa học được thiết kế nhằm cung cấp cho học sinh nền tảng kiến thức vững chắc, hệ thống hóa toàn bộ nội dung trọng tâm theo chương trình chuẩn, kết hợp với phương pháp học hiệu quả giúp rèn luyện tư duy, nâng cao kỹ năng làm bài và tự tin chinh phục các kỳ thi quan trọng như thi học kỳ, thi chuyển cấp hay kỳ thi THPT Quốc gia.',
                 'intro_video' => '/video.mp4',
                 'start_date'  => $faker->dateTimeBetween('-1 month', '+1 month'),
                 'end_date'    => $faker->dateTimeBetween('+2 months', '+6 months'),
                 'status'      => 1,
+                'exam_paper_id' => 39
             ]);
         }
     }

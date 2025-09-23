@@ -59,10 +59,10 @@ export default function TutorialUsing() {
                     },
                 },
                 {
-                    element: "#notifications",
+                    element: "#help-center-button",
                     popover: {
-                        title: "Thông báo",
-                        description: "Xem và quản lý các thông báo của bạn tại đây.",
+                        title: "Hướng dẫn sử dụng",
+                        description: "Để xem lại phần hướng dẫn sử dụng này, hãy nhấn vào đây.",
                     },
                 },
             ],

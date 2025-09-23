@@ -216,7 +216,7 @@ const AdminPage = () => {
                 {/* Biểu đồ doanh thu theo tháng */}
                 <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                     <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900">Doanh Thu 12 Tháng</h3>
+                        <h3 className="text-base font-semibold text-gray-900">Doanh Thu 12 Tháng</h3>
                         <div className="text-sm text-gray-500">VNĐ</div>
                     </div>
                     <div className="h-80">
@@ -260,7 +260,7 @@ const AdminPage = () => {
                 {/* Biểu đồ phân bố danh mục khóa học */}
                 <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                     <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900">Phân Bố Khóa Học</h3>
+                        <h3 className="text-base font-semibold text-gray-900">Phân Bố Khóa Học</h3>
                         <div className="text-sm text-gray-500">Theo danh mục</div>
                     </div>
                     <div className="h-80">
@@ -304,7 +304,7 @@ const AdminPage = () => {
                 {/* Biểu đồ hoạt động hàng tuần */}
                 <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm lg:col-span-2">
                     <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900">Hoạt Động 4 Tuần Gần Đây</h3>
+                        <h3 className="text-base font-semibold text-gray-900">Hoạt Động 4 Tuần Gần Đây</h3>
                         <div className="text-sm text-gray-500">Khóa học, Đề thi, Người dùng mới</div>
                     </div>
                     <div className="h-80">
@@ -347,7 +347,7 @@ const AdminPage = () => {
                 {/* Thống kê phương thức thanh toán */}
                 <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                     <div className="mb-4 flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900">Thanh Toán</h3>
+                        <h3 className="text-base font-semibold text-gray-900">Thanh Toán</h3>
                         <div className="text-sm text-gray-500">Phương thức</div>
                     </div>
                     <div className="space-y-4">
@@ -412,7 +412,7 @@ const AdminPage = () => {
                 <div className="rounded-lg border border-gray-100 bg-white shadow-sm">
                     <div className="border-b border-gray-100 p-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900">Người Dùng Mới</h3>
+                            <h3 className="text-base font-semibold text-gray-900">Người Dùng Mới</h3>
                             <Link
                                 href="/admin/students"
                                 className="text-sm font-medium text-blue-600 hover:text-blue-700"
@@ -424,14 +424,19 @@ const AdminPage = () => {
                     <div className="p-6">
                         <div className="space-y-4">
                             {dashboard?.new_users?.slice(0, 5).map((user: any) => (
-                                <div key={user.id} className="flex items-center space-x-3">
+                                <Link
+                                    key={user.id}
+                                    href={`/admin/students/${user.id}`}
+                                    target="_blank"
+                                    className="flex items-center space-x-3"
+                                >
                                     <DisplayAvatar fullName={user.full_name} avatar={user.avatar} ratio={"10"} />
                                     <div className="min-w-0 flex-1">
                                         <p className="truncate text-sm font-medium text-gray-900">{user.full_name}</p>
                                         <p className="truncate text-sm text-gray-500">{user.email}</p>
                                     </div>
                                     <div className="text-xs text-gray-400">Mới</div>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                     </div>
@@ -441,7 +446,7 @@ const AdminPage = () => {
                 <div className="rounded-lg border border-gray-100 bg-white shadow-sm">
                     <div className="border-b border-gray-100 p-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900">Khóa Học Phổ Biến</h3>
+                            <h3 className="text-base font-semibold text-gray-900">Khóa Học Phổ Biến</h3>
                             <Link
                                 href="/admin/courses"
                                 className="text-sm font-medium text-blue-600 hover:text-blue-700"
@@ -476,7 +481,9 @@ const AdminPage = () => {
                                             </div>
                                             <div className="flex items-center">
                                                 <span className="text-xs text-gray-500">
-                                                    {formatter.number(course.revenue)}đ
+                                                    {course.revenue === 0
+                                                        ? "Miễn phí"
+                                                        : `${formatter.number(course.revenue)}đ`}
                                                 </span>
                                             </div>
                                         </div>
@@ -491,7 +498,7 @@ const AdminPage = () => {
                 <div className="rounded-lg border border-gray-100 bg-white shadow-sm">
                     <div className="border-b border-gray-100 p-6">
                         <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900">Thanh Toán Gần Đây</h3>
+                            <h3 className="text-base font-semibold text-gray-900">Thanh Toán Gần Đây</h3>
                             <Link
                                 href="/admin/payments"
                                 className="text-sm font-medium text-blue-600 hover:text-blue-700"
@@ -527,7 +534,7 @@ const AdminPage = () => {
 
             {/* Thao tác nhanh */}
             <div className="rounded-lg border border-gray-100 bg-white p-6 shadow-sm" id="quick-actions">
-                <h3 className="mb-4 text-lg font-semibold text-gray-900">Thao Tác Nhanh</h3>
+                <h3 className="mb-4 text-base font-semibold text-gray-900">Thao Tác Nhanh</h3>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <Link
                         href="/admin/courses/create"

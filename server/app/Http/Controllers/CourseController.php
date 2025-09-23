@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Filters\Course\PriceFilter;
 use App\Filters\Course\RatingFilter;
 use App\Filters\Course\TeacherFilter;
+use App\Filters\Course\IsActiveFilter;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
+use App\Notifications\TeacherAddedToCourseNotification;
 use App\Sorts\Course\EnrollmentCountSort;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Carbon\Carbon;
@@ -45,6 +48,7 @@ class CourseController extends BaseApiController
                 'status',
                 'start_date',
                 'end_date',
+                'updated_at',
             ])
             ->allowedSorts(['created_at', 'download_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
             ->allowedFilters([
@@ -56,9 +60,17 @@ class CourseController extends BaseApiController
                 'subject',
                 AllowedFilter::custom('price_range', new PriceFilter),
                 AllowedFilter::custom('teachers', new TeacherFilter),
-                AllowedFilter::custom('rating', new RatingFilter),
+                AllowedFilter::custom('is_active', new IsActiveFilter),
+
             ])
-            // ->where('status', true)
+            ->where(function ($query) {
+                $query->whereNull('end_date')
+                    ->orWhere('end_date', '>=', Carbon::now());
+            })
+            // chỉ hiển thị khóa học có video
+            ->whereHas('lessons', function ($query) {
+                $query->whereNotNull('video_url');
+            })
             ->orderByDesc('id')
             ->paginate($limit);
         $courses->getCollection()->transform(function ($course) {
@@ -83,14 +95,12 @@ class CourseController extends BaseApiController
             'startDate'          => 'required|string|min:1',
             'endDate'            => 'nullable|string',
             'prerequisiteCourse' => 'nullable|string',
-            'coverImage'         => 'required|url',
-            'introVideo'         => 'required|url',
+            'coverImageUrl'         => 'required',
+            'introVideoUrl'         => 'required',
             'description'        => 'required|string|min:10',
         ]);
 
         Gate::authorize('only-admin');
-        // Nếu start > now() thì status = 3, ngược lại = 2
-        $status = (strtotime($data['startDate']) > time()) ? 2 : 3;
         $course = Course::create([
             'name'                   => $data['name'],
             'subject'                => $data['subject'],
@@ -99,14 +109,16 @@ class CourseController extends BaseApiController
             'user_id'                => $data['instructor'],
             'price'                  => $data['price'],
             'start_date'             => $data['startDate'],
-            'end_date'               => $data['endDate']                          ?? null,
+            'end_date'               => $data['endDate'] ?? null,
             'prerequisite_course_id' => $data['prerequisiteCourse'] ?? null,
-            'thumbnail'              => $data['coverImage'],
-            'intro_video'            => $data['introVideo'],
+            'thumbnail'              => $data['coverImageUrl'],
+            'intro_video'            => $data['introVideoUrl'],
             'description'            => $data['description'],
             'created_by'             => $request->user()->id,
-            'status'                 => $status,
+            'status'                 => 1,
         ]);
+        // gửi email thông báo cho giảng viên được add vào
+        $course->teacher->notify(new TeacherAddedToCourseNotification($course));
         return $this->successResponse($course, 'Tạo khóa học thành công!', 201);
     }
 
@@ -280,6 +292,16 @@ class CourseController extends BaseApiController
 
         // Lấy chương khóa học (bên trong mỗi chương sẽ có lesson)
         $course->load('chapters.lessons');
+        $course->load('exam:id,slug,title,pass_score,duration_minutes,max_score,max_attempts');
+        // get điểm thi cao nhất của người dùng trong Exam attemps
+        $course->user_highest_exam_score = null;
+        if ($course->exam) {
+            $highestScore = $course->exam->examAttempts()
+                ->where('user_id', $user->id)
+                ->whereIn('status', ['submitted', 'detected'])
+                ->max('score');
+            $course->exam->user_highest_exam_score = $highestScore !== null ? (float)$highestScore : null;
+        }
 
         // Lặp qua từng lesson và check trong DB LessonViewHistory
         $lessonHistories = LessonViewHistory::where('user_id', $user->id)->get()->keyBy('lesson_id');
@@ -302,6 +324,10 @@ class CourseController extends BaseApiController
             $chapter->completed_lessons = $count_successed;
             $chapter->duration          = $duration;
         }
+
+        $course->code_certificate = Certificate::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->value('code') ?? null;
 
         return $this->successResponse($course, 'Lấy thông tin khóa học thành công!');
     }
@@ -417,8 +443,8 @@ class CourseController extends BaseApiController
         return $this->successResponse($certificateInfo, 'Lấy thông tin chứng chỉ thành công!');
     }
 
-    // Hiển thị danh sách những người đã hoàn thành khóa học và nhận chứng chỉ
-    public function listStudentsWithCertificates(Request $request, Course $course)
+    // Hiển thị danh sách tất cả học viên đã đăng ký khóa học với trạng thái hoàn thành
+    public function getRegistrations(Request $request, Course $course)
     {
         Gate::authorize('admin-teacher-owner', $course);
 
@@ -436,59 +462,55 @@ class CourseController extends BaseApiController
             ->pluck('id')
             ->toArray();
 
-        // Lọc những học viên đã hoàn thành tất cả bài học
-        $studentsWithCompletion = collect();
+        // Lấy tất cả học viên đã đăng ký khóa học với thông tin đăng ký
+        $students = $course->students()
+            ->select(['users.id', 'users.full_name', 'users.email', 'users.avatar', 'users.phone_number', 'payments.paid_at as enrolled_at'])
+            ->paginate($limit);
 
-        $course->students()->chunk(100, function ($students) use ($lessonIds, $totalLessons, &$studentsWithCompletion) {
-            foreach ($students as $student) {
-                // Đếm số bài học đã hoàn thành của học viên này
-                $completedLessonsCount = LessonViewHistory::where('user_id', $student->id)
+        // Transform dữ liệu để thêm thông tin hoàn thành
+        $students->getCollection()->transform(function ($student) use ($lessonIds, $totalLessons) {
+            // Đếm số bài học đã hoàn thành của học viên này
+            $completedLessonsCount = LessonViewHistory::where('user_id', $student->id)
+                ->where('is_completed', true)
+                ->whereIn('lesson_id', $lessonIds)
+                ->count();
+
+            // Kiểm tra đã hoàn thành khóa học chưa
+            $isCompleted = $completedLessonsCount >= $totalLessons;
+
+            // Lấy ngày hoàn thành bài học cuối cùng nếu đã hoàn thành
+            $lastCompletionDate = null;
+            if ($isCompleted) {
+                $lastCompletion = LessonViewHistory::where('user_id', $student->id)
                     ->where('is_completed', true)
                     ->whereIn('lesson_id', $lessonIds)
-                    ->count();
+                    ->latest('updated_at')
+                    ->first();
 
-                // Nếu đã hoàn thành tất cả bài học
-                if ($completedLessonsCount >= $totalLessons) {
-                    // Lấy ngày hoàn thành bài học cuối cùng
-                    $lastCompletionDate = LessonViewHistory::where('user_id', $student->id)
-                        ->where('is_completed', true)
-                        ->whereIn('lesson_id', $lessonIds)
-                        ->latest('updated_at')
-                        ->first();
-
-                    $studentsWithCompletion->push([
-                        'id'              => $student->id,
-                        'full_name'       => $student->full_name,
-                        'email'           => $student->email,
-                        'avatar'          => $student->avatar,
-                        'phone'           => $student->phone,
-                        'completion_date' => $lastCompletionDate
-                            ? Carbon::parse($lastCompletionDate->updated_at)->format('d/m/Y')
-                            : null,
-                        'completed_lessons' => $completedLessonsCount,
-                        'total_lessons'     => $totalLessons,
-
-                    ]);
+                if ($lastCompletion) {
+                    $lastCompletionDate = $lastCompletion->updated_at;
                 }
             }
+
+            // Tính phần trăm hoàn thành
+            $completionPercentage = $totalLessons > 0 ? round(($completedLessonsCount / $totalLessons) * 100, 2) : 0;
+
+            return [
+                'id' => $student->id,
+                'full_name' => $student->full_name,
+                'email' => $student->email,
+                'avatar' => $student->avatar,
+                'phone_number' => $student->phone_number,
+                'enrolled_at' => $student->enrolled_at,
+                'is_completed' => $isCompleted,
+                'completion_date' => $lastCompletionDate,
+                'completed_lessons' => $completedLessonsCount,
+                'total_lessons' => $totalLessons,
+                'completion_percentage' => $completionPercentage,
+                'status' => $isCompleted ? 'Đã hoàn thành' : 'Đang học'
+            ];
         });
 
-        // Phân trang thủ công cho collection
-        $page   = $request->get('page', 1);
-        $offset = ($page - 1) * $limit;
-        $items  = $studentsWithCompletion->slice($offset, $limit)->values();
-
-        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
-            $items,
-            $studentsWithCompletion->count(),
-            $limit,
-            $page,
-            [
-                'path'     => $request->url(),
-                'pageName' => 'page',
-            ]
-        );
-
-        return $this->successResponse($paginated, 'Lấy danh sách học viên hoàn thành khóa học thành công!');
+        return $this->successResponse($students, 'Lấy danh sách học viên đăng ký khóa học thành công!');
     }
 }

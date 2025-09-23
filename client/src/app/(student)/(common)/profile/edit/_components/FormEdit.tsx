@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -55,12 +55,12 @@ const FormEdit = ({ user }: { user: UserType }) => {
                 // Thực hiện upload ảnh
                 const uploadPromise = await uploadMedia.upload(file as File, "avatars");
                 data.avatar = uploadPromise.url; // gán link ảnh đã upload vào data
-                setFile(null);
             }
             await profileApi.update(data);
         },
         onSuccess: (_, data) => {
             updateProfile(data as UserType);
+            setFile(null);
             toast.success("Cập nhật thông tin thành công!");
         },
         onError: notificationErrorApi,
@@ -179,13 +179,19 @@ const FormEdit = ({ user }: { user: UserType }) => {
                                                     <User size={14} />
                                                     Họ và tên *
                                                 </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Nhập họ và tên của bạn"
-                                                        className="focus:border-primary focus:ring-primary h-11 border-gray-300"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
+
+                                                <div>
+                                                    <FormControl>
+                                                        <Input
+                                                            placeholder="Nhập họ và tên của bạn"
+                                                            className="focus:border-primary focus:ring-primary h-11 border-gray-300"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <FormDescription className="mt-2 text-xs italic">
+                                                        Tên sẽ hiển thị trong chứng chỉ của bạn.
+                                                    </FormDescription>
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}

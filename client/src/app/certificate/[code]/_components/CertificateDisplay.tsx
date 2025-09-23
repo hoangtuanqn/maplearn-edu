@@ -12,14 +12,12 @@ const CertificateDisplay = ({
     fullName,
     dateCompleted,
     courseTitle,
-    slugCourse,
-    email,
+    code,
 }: {
     fullName: string;
     dateCompleted: string;
     courseTitle: string;
-    slugCourse: string;
-    email: string;
+    code: string;
 }) => {
     const certRef = useRef<HTMLDivElement | null>(null);
     const downloadPNG = async () => {
@@ -48,7 +46,7 @@ const CertificateDisplay = ({
                         fullName={fullName}
                         eventName={courseTitle}
                         eventDate={dateCompleted}
-                        verifyUrl={`${APP.APP_URL}/certificate/${slugCourse}/${email}`}
+                        verifyUrl={`${APP.APP_URL}/certificate/${code}`}
                         ref={certRef}
                     />
                 </div>

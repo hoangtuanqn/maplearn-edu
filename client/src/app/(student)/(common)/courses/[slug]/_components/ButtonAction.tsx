@@ -10,6 +10,7 @@ import { PaymentMethodsDialog } from "./PaymentMethodsDialog";
 import { useAuth } from "~/hooks/useAuth";
 import { PrerequisiteCourseDialog } from "./PrerequisiteCourseDialog";
 import { Button } from "~/components/ui/button";
+import { formatter } from "~/libs/format";
 
 const ButtonAction = () => {
     const { slug } = useParams<{ slug: string }>();
@@ -54,13 +55,28 @@ const ButtonAction = () => {
                         </>
                     ) : (
                         <>
-                            {isCheckPrerequisite ? (
-                                <PrerequisiteCourseDialog course={course!} />
+                            {course?.start_date && new Date(course.start_date) > new Date() ? (
+                                <p className="text-center font-bold text-red-500">
+                                    Khóa học sẽ bắt đầu vào ngày{" "}
+                                    {course.start_date && formatter.date(course.start_date)}
+                                </p>
                             ) : (
-                                <PaymentMethodsDialog course={course!} isCheckPrerequisite={isCheckPrerequisite} />
+                                <>
+                                    <>
+                                        {isCheckPrerequisite ? (
+                                            <PrerequisiteCourseDialog course={course!} />
+                                        ) : (
+                                            <PaymentMethodsDialog
+                                                course={course!}
+                                                isCheckPrerequisite={isCheckPrerequisite}
+                                            />
+                                        )}
+                                        {course?.price !== 0 && (
+                                            <p className="text-center text-xs">Đảm bảo hoàn tiền trong 30 ngày</p>
+                                        )}
+                                    </>
+                                </>
                             )}
-
-                            <p className="text-center text-xs">Đảm bảo hoàn tiền trong 30 ngày</p>
                         </>
                     )}
                 </>

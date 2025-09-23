@@ -57,7 +57,10 @@ const Questions = ({
                                 {questions[questionActive].type === "DRAG_DROP" ? (
                                     <DragDrop
                                         question={questions[questionActive].content || ""}
-                                        items={questions[questionActive].options || []}
+                                        items={(questions[questionActive].options || []).map((item, idx) => ({
+                                            id: idx,
+                                            content: item.content,
+                                        }))}
                                         activeAnswers={answers[questions[questionActive].id] ?? []}
                                         idQuestion={questions[questionActive].id}
                                         handleChoiceAnswer={handleChoiceAnswer}

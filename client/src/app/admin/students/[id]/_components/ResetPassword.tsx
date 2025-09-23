@@ -1,11 +1,13 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
+import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import studentApi from "~/apiRequest/admin/student";
 import Loading from "~/app/(student)/_components/Loading";
 import { DangerConfirm } from "~/components/DangerConfirm";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import {
     Dialog,
@@ -66,21 +68,32 @@ export function ResetPassword({ id }: { id: string }) {
                                         <Input id="password" value={newPassword} readOnly className="flex-1" />
                                     </div>
                                     <Button type="button" variant="outline" onClick={handleGenerate}>
-                                        Tạo mới
+                                        Làm mới
                                     </Button>
                                 </div>
                             </div>
+                            {/* Alert hiển thị: Sẽ có email thông báo về cho người dùng */}
+                            <Alert className="flex items-center gap-3 border-l-4 border-yellow-400 bg-yellow-50 p-4 text-yellow-900">
+                                <Bell className="h-5 w-5 text-yellow-500" />
+                                <div>
+                                    <AlertTitle className="font-bold">Thông báo</AlertTitle>
+                                    <AlertDescription>
+                                        Sau khi đặt lại mật khẩu, hệ thống sẽ gửi email chứa mật khẩu mới đến người
+                                        dùng.
+                                    </AlertDescription>
+                                </div>
+                            </Alert>
                         </div>
                         <DialogFooter>
                             <DialogClose asChild>
                                 <Button variant="outline">Đóng</Button>
                             </DialogClose>
                             <DangerConfirm
-                                message="Bạn có chắc chắn muốn đặt lại mật khẩu? Bạn cần lưu lại mật khẩu trước khi bấm xác nhận!"
+                                message="Cảnh báo: Đây là dữ liệu nhạy cảm. Chỉ đặt lại mật khẩu khi thật sự cần thiết và đảm bảo bạn đã lưu lại mật khẩu mới trước khi xác nhận."
                                 action={() => handleSubmit()}
                             >
-                                <Button type="submit" variant={"primary"}>
-                                    Cập nhật
+                                <Button type="submit" variant="primary">
+                                    Đặt lại mật khẩu
                                 </Button>
                             </DangerConfirm>
                         </DialogFooter>

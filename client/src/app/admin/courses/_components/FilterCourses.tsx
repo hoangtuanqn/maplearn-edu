@@ -20,13 +20,23 @@ import {
     SelectTrigger,
     SelectValue,
 } from "~/components/ui/select";
+
+import { Checkbox } from "~/components/ui/checkbox";
 import { Label } from "~/components/ui/label";
 import { usePathname } from "next/navigation";
 import { useFilterQuery } from "~/hooks/useFilterQuery";
 import { useQuery } from "@tanstack/react-query";
 import teacherApi from "~/apiRequest/teachers";
 import MultiSelectDropdown from "~/app/(student)/_components/MultiSelectDropdown";
-const fields = ["created_at", "rating", "enrollment_count", "price_range", "duration", "teachers"] as const;
+const fields = [
+    "created_at",
+    "rating",
+    "enrollment_count",
+    "price_range",
+    "duration",
+    "teachers",
+    "is_active",
+] as const;
 export function FilterCourses() {
     const { data: teachers = [], isLoading } = useQuery({
         queryKey: ["user", "teachers"],
@@ -120,8 +130,8 @@ export function FilterCourses() {
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>Sắp xếp theo</SelectLabel>
-                                            <SelectItem value="-enrollment_count">Tăng dần</SelectItem>
-                                            <SelectItem value="enrollment_count">Giảm dần</SelectItem>
+                                            <SelectItem value="enrollment_count">Tăng dần</SelectItem>
+                                            <SelectItem value="-enrollment_count">Giảm dần</SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>
@@ -171,6 +181,24 @@ export function FilterCourses() {
                                     }))}
                                 />
                             )}
+                        </div>
+                        <div className="grid gap-3">
+                            <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950">
+                                <Checkbox
+                                    id="toggle-2"
+                                    checked={formValues.filter.is_active === "true"}
+                                    onCheckedChange={(checked) =>
+                                        setFieldValue("is_active", checked ? "true" : "false", "filter")
+                                    }
+                                    className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+                                />
+                                <div className="grid gap-1.5 font-normal">
+                                    <p className="text-sm leading-none font-medium">
+                                        Chỉ hiện thị khóa học đang diễn ra
+                                    </p>
+                                    <p className="text-muted-foreground text-sm">Ẩn các khóa học chưa bắt đầu.</p>
+                                </div>
+                            </Label>
                         </div>
                     </div>
 

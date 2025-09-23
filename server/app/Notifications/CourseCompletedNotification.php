@@ -11,37 +11,41 @@ class CourseCompletedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $course;
-    public $certificateUrl;
+    protected $course;
+    protected $certificateUrl;
 
     /**
-     * Create a new notification instance.
+     * @param  \App\Models\Course  $course
+     * @param  string              $certificateUrl
      */
-    public function __construct($course, $certificateUrl)
+    public function __construct($course, string $certificateUrl)
     {
         $this->course = $course;
         $this->certificateUrl = $certificateUrl;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     */
     public function via($notifiable)
     {
-        return ['mail']; // có thể thêm 'database', 'broadcast' nếu cần
+        return ['mail'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Chúc mừng! Bạn đã hoàn thành khóa học')
-            ->greeting('Chào ' . $notifiable->full_name)
-            ->line('Bạn vừa hoàn thành khóa học: **' . $this->course->name . '**.')
-            ->line('Hãy nhấn vào nút bên dưới để xem và tải chứng chỉ của bạn.')
-            ->action('Xem chứng chỉ', $this->certificateUrl)
-            ->line('Chúc mừng bạn đã đạt được thành tích này!');
+            ->subject('Chúc mừng! Bạn đã hoàn thành và đạt chứng chỉ')
+            ->greeting('Xin chào ' . ($notifiable->full_name ?? $notifiable->name ?? 'bạn') . ',')
+            ->line('Bạn đã xuất sắc vượt qua bài kiểm tra cuối cùng và chính thức hoàn thành khóa học: **' . $this->course->name . '**.')
+            ->line('Thành quả học tập của bạn đã được công nhận. Chứng chỉ đã sẵn sàng để tải về.')
+            ->action('Xem & Tải chứng chỉ', $this->certificateUrl)
+            ->line('Một lần nữa xin chúc mừng, và chúc bạn tiếp tục thành công trên con đường học tập và sự nghiệp!');
+    }
+
+    public function toArray($notifiable)
+    {
+        return [
+            'course_id'       => $this->course->id,
+            'certificate_url' => $this->certificateUrl,
+            'message'         => 'Đã hoàn thành khóa học và đạt chứng chỉ.',
+        ];
     }
 }
