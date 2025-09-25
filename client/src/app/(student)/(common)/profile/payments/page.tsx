@@ -7,7 +7,7 @@ export const metadata: Metadata = {
 const InvoiceProfile = () => {
     return (
         <>
-            <h3 className="block-heading mb-6">Hóa đơn của tôi</h3>
+            <h3 className="block-heading mb-6 uppercase">Hóa đơn của tôi</h3>
             <Suspense>
                 <InvoiceList />
             </Suspense>

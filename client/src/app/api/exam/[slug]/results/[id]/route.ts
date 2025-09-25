@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import examApi from "~/apiRequest/exam";
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string; ids?: string[] }> }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string; id: string }> }) {
     const cookie = request.headers.get("cookie");
 
-    const { slug, ids } = await params;
-    const id = ids?.[0] ?? null;
+    const { slug, id } = await params;
     // return NextResponse.json({ id });
 
     // Gọi backend API với cookie

@@ -16,12 +16,14 @@ class DatabaseSeeder extends Seeder
             PostSeeder::class,
 
             ExamPaperSeeder::class,
-            ExamQuestionSeeder::class,
+
             CourseSeeder::class,
             CourseReviewSeeder::class,
             CourseChapterSeeder::class,
+            ExamQuestionSeeder::class,
 
             PaymentSeeder::class,
+            LessonViewHistorySeeder::class
 
         ]);
     }

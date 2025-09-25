@@ -2,13 +2,19 @@ import React from "react";
 
 import { Metadata } from "next";
 import TeacherList from "./_components/TeacherList";
+import Breadcrumb from "../_components/Breadcrumb";
 
 export const metadata: Metadata = {
     title: "Danh sách giáo viên",
 };
-const StudentPage = () => {
+const breadcrumbData = [
+    { label: "Dashboard", href: "/admin" },
+    { label: "Giáo viên", href: "/admin/teachers" },
+];
+const TeacherPage = () => {
     return (
         <section className="mt-5 bg-[#F5F5F5] p-2">
+            <Breadcrumb breadcrumbData={breadcrumbData} />
             <div className="mt-3 rounded-lg bg-white p-4 pb-8 shadow-sm">
                 <div className="flex items-center justify-between">
                     <div>
@@ -22,4 +28,4 @@ const StudentPage = () => {
     );
 };
 
-export default StudentPage;
+export default TeacherPage;

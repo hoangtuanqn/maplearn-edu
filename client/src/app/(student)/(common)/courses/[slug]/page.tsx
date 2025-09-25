@@ -1,5 +1,4 @@
 import React, { cache } from "react";
-import "react-circular-progressbar/dist/styles.css";
 import IntroCourse from "./IntroCourse";
 import ListLessonCourse from "./_components/ListLessonCourse";
 import ContentLesson from "./_components/ContentLesson";
@@ -10,6 +9,7 @@ import { Metadata } from "next";
 import { formatter } from "~/libs/format";
 import ButtonAction from "./_components/ButtonAction";
 import RelatedCourses from "./_components/RelatedCourses";
+import SaveLocalStorage from "./_components/SaveLocalStorage";
 const getCourse = cache(async (slug: string) => {
     const {
         data: { data: post },
@@ -54,6 +54,7 @@ const CourseDetailPage = async ({ params }: { params: Promise<{ slug: string }> 
                         <ContentLesson course={course as CourseDetail} />
                         <ListLessonCourse />
                         <RelatedCourses category={course.category} />
+                        <SaveLocalStorage courseId={String(course.id)} />
                     </div>
 
                     {/* Layout Bên phải */}

@@ -13,6 +13,7 @@ class ExamPaperSeeder extends Seeder
      */
     public function run(): void
     {
+        // Tạo danh sách tên đề thi mẫu
         $examPapers = [
             'KHẢO SÁT CHẤT LƯỢNG THÁNG 8 - KỲ THI TSA - MÔN TOÁN',
             'Đề khảo sát năng lực khóa hè - Nguyễn Khuyến',
@@ -54,10 +55,49 @@ class ExamPaperSeeder extends Seeder
             'Đề minh họa thi tốt nghiệp THPT 2025 môn Ngữ văn',
             'Đề minh họa thi tốt nghiệp THPT 2025 môn Toán',
         ];
+
+        // Sinh thêm đề thi ngẫu nhiên cho đủ 81 đề
+        $subjectsForName = [
+            'Toán',
+            'Vật Lý',
+            'Hóa Học',
+            'Sinh Học',
+            'Tiếng Anh',
+            'Ngữ Văn'
+        ];
+        $examTypes = [
+            'Thi thử',
+            'Đề kiểm tra',
+            'Đề khảo sát',
+            'Đề minh họa',
+            'Đề ôn tập',
+            'Đề luyện tập'
+        ];
+        $years = [2023, 2024, 2025];
+        $schools = [
+            'THPT Nguyễn Khuyến',
+            'THPT Lê Quý Đôn',
+            'THPT Trần Phú',
+            'THPT Chuyên Hà Nội',
+            'THPT Quốc Học Huế',
+            'THPT Bùi Thị Xuân'
+        ];
+
+        $count = count($examPapers);
+        $maxCount = 200;
+        for ($i = $count + 1; $i <= $maxCount; $i++) {
+            $subject = $subjectsForName[array_rand($subjectsForName)];
+            $type = $examTypes[array_rand($examTypes)];
+            $year = $years[array_rand($years)];
+            $school = $schools[array_rand($schools)];
+            $examPapers[] = "{$type} {$subject} {$school} năm {$year} - Đề số " . ($i - $count);
+        }
         $subjects    = ['toan', 'ly', 'hoa', 'sinh', 'tieng-anh', 'van'];
         $gradeLevels = ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'];
         $categories  = ['dgnl-hsa', 'dgnl-v-act', 'dgtd-tsa', 'tot-nghiep-thpt', 'thi-cuoi-ki-1', 'thi-cuoi-ki-2', 'thi-giua-ki-1', 'thi-giua-ki-2'];
-        foreach ($examPapers as $paper) {
+        foreach ($examPapers as $key => $paper) {
+            $status = ($maxCount - $key) > 81;
+
             ExamPaper::create([
                 'title'            => $paper,
                 'user_id'          => 8,
@@ -69,6 +109,8 @@ class ExamPaperSeeder extends Seeder
                 'difficulty'       => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
                 'province'         => collect(['Quảng Ngãi', 'Bình Định', 'Hà Nội', 'TP Hồ Chí Minh'])->random(),
                 'exam_type'        => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random(),
+                'status'           => $status,
+                'start_time'       => now()->subDays(rand(0, 28)),
             ]);
         }
     }

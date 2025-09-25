@@ -18,6 +18,7 @@ class ExamQuestion extends Model
         'images',
         'options',
         'correct',
+        'status',
     ];
     protected $casts = [
         'marks'   => 'float',
@@ -31,5 +32,4 @@ class ExamQuestion extends Model
     {
         return $this->belongsTo(ExamPaper::class, 'exam_paper_id');
     }
-
 }

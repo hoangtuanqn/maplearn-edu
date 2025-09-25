@@ -8,21 +8,49 @@ use App\Notifications\PasswordResetNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\QueryBuilder\AllowedFilter;
 use Spatie\QueryBuilder\QueryBuilder;
 
 class StudentController extends BaseApiController
 {
     public function index(Request $request)
     {
-        // Đã check quyền admin ở middleware
+        // Kiểm tra nếu giá trị limit là hợp lệ (số dương)
         $limit = (int)($request->limit ?? 10);
+        if ($limit <= 0) {
+            $limit = 10; // giá trị mặc định
+        }
 
         $students = QueryBuilder::for(User::class)
+            ->allowedFilters([
+                'id',
+                'username',
+                'full_name',
+                'email',
+                'phone_number',
+                'gender',
+                'birth_year',
+                'city',
+                'school',
+                'banned',
+                'email_verified_at',
+                AllowedFilter::callback('email_verified', function ($query, $value) {
+                    if ($value === 'verified') {
+                        $query->whereNotNull('email_verified_at');
+                    } elseif ($value === 'unverified') {
+                        $query->whereNull('email_verified_at');
+                    }
+                }),
+            ])
+            ->allowedSorts(['created_at'])
             ->where('role', 'student')
-            ->orderBy('id', "desc")
+            ->orderBy('id', 'desc')
             ->paginate($limit);
+
         return $this->successResponse($students, "Lấy danh sách học sinh thành công!");
     }
+
+
 
     // Lấy thông tin 1 student
     public function show(Request $request, $id)

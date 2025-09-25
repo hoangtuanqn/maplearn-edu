@@ -25,13 +25,7 @@ import { usePathname } from "next/navigation";
 import { useFilterQuery } from "~/hooks/useFilterQuery";
 import { Input } from "~/components/ui/input";
 
-const fields = [
-    "search",
-    "enrolled_at",
-    "completion_status",
-    "progress_range",
-
-] as const;
+const fields = ["search", "enrolled_at", "completion_status", "progress_range"] as const;
 
 // Progress ranges
 const progressRanges = [
@@ -50,7 +44,7 @@ const completionStatuses = [
     { value: "waiting_certificate", label: "Chờ cấp chứng chỉ" },
 ];
 
-export function FilterStudentCourse() {
+export function FilterCourses() {
     const pathName = usePathname();
     const { formValues, setFieldValue, handleSubmit } = useFilterQuery(fields);
 

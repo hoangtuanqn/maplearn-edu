@@ -1,13 +1,22 @@
 import React from "react";
 import FormAddCourse from "./_components/FormAddCourse";
 import { Metadata } from "next";
+import Breadcrumb from "../../_components/Breadcrumb";
 export const metadata: Metadata = {
     title: "Thêm khóa học mới",
 };
+const breadcrumbData = [
+    { label: "Dashboard", href: "/admin" },
+    { label: "Khóa học", href: "/admin/courses" },
+    { label: "Thêm khóa học", href: "/admin/courses/create" },
+];
 const CreateCoursePage = () => {
     return (
         <>
-            <div className="mt-6 flex gap-5">
+            <div className="mt-6 flex-col gap-5">
+                <div className="mb-6 flex flex-col gap-5">
+                    <Breadcrumb breadcrumbData={breadcrumbData} />
+                </div>
                 <div className="flex-1 rounded-lg bg-white p-6 pb-8 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>

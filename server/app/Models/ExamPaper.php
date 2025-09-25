@@ -38,7 +38,7 @@ class ExamPaper extends Model
         'max_violation_attempts' => 'integer',
         'status'                 => 'boolean',
         'start_time'             => 'datetime',
-        'end_time'               => 'datetime',
+        'end_time'               => 'datetime'
     ];
     protected $appends = [
         'is_in_progress', // Kiểm tra người dùng có đang làm bài thi hay không

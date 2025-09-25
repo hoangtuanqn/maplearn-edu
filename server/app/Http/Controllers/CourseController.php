@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\Course\CompletionStatusFilter;
 use App\Filters\Course\PriceFilter;
-use App\Filters\Course\RatingFilter;
 use App\Filters\Course\TeacherFilter;
 use App\Filters\Course\IsActiveFilter;
+use App\Filters\Course\ProgressRangeFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseLesson;
+use App\Models\ExamAttempt;
+use App\Models\ExamPaper;
 use App\Models\LessonViewHistory;
 use App\Notifications\TeacherAddedToCourseNotification;
 use App\Sorts\Course\EnrollmentCountSort;
@@ -50,7 +53,7 @@ class CourseController extends BaseApiController
                 'end_date',
                 'updated_at',
             ])
-            ->allowedSorts(['created_at', 'download_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
+            ->allowedSorts(['start_date', 'download_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
             ->allowedFilters([
                 'id',
                 'name',
@@ -182,46 +185,39 @@ class CourseController extends BaseApiController
     }
 
     // Lấy 8 khóa học
-    public function recommended()
+    public function recommended(Request $request)
     {
-        // $userId = Auth::id();
-        // $favCourseIds = CourseUserFavorite::where('user_id', $userId)
-        //     ->pluck('course_id');
+        $viewedIds = $request->input('viewed_course_ids', []);
 
-        // if ($favCourseIds->isNotEmpty()) {
-        //     $favoriteCourses = Course::whereIn('id', $favCourseIds)->get();
+        // Nếu không có khóa học đã xem, trả về ngẫu nhiên 8 khóa học bất kỳ
+        if (empty($viewedIds)) {
+            $courses = Course::where('status', true)
+                ->where('price', '>', 0)
+                ->where('start_date', '<=', Carbon::now())
+                ->inRandomOrder()
+                ->limit(8)
+                ->get();
 
-        //     // Lấy các chủ đề, cấp học,... từ các khóa yêu thích
-        //     $subjectIds = $favoriteCourses->pluck('subject_id')->unique();
-        //     $gradeLevels = $favoriteCourses->pluck('grade_level_id')->unique();
-        //     $categoryIds = $favoriteCourses->pluck('category_id')->unique();
+            return $this->successResponse($courses, 'Lấy danh sách khóa học đề xuất thành công!');
+        }
 
-        //     // Lấy danh sách khóa học đã mua (để tránh đề xuất khóa học đã mua)
-        //     $purchasedCourseIds = Auth::user()->enrollments()->pluck('course_id');
+        // Lấy danh mục của các khóa học đã xem
+        $categories = Course::whereIn('id', $viewedIds)
+            ->pluck('category')
+            ->unique()
+            ->toArray();
 
-        //     // Đề xuất các khóa học tương tự nhưng chưa yêu thích (và người dùng chưa mua khóa học đó)
-        //     $recommendCourses = Course::whereNotIn('id', $favCourseIds)->whereNotIn('id', $purchasedCourseIds)
-        //         ->where('status', true)
-        //         ->where(function ($query) use ($subjectIds, $gradeLevels, $categoryIds) {
-        //             $query->whereIn('subject_id', $subjectIds)
-        //                 ->orWhereIn('grade_level_id', $gradeLevels)
-        //                 ->orWhereIn('category_id', $categoryIds);
-        //         })
-        //         ->inRandomOrder()
-        //         ->limit(8)
-        //         ->get();
-        // } else {
-        //     // Nếu chưa có khóa yêu thích → đề xuất ngẫu nhiên
-        //     $recommendCourses = Course::where('status', true)
-        //         ->inRandomOrder()
-        //         ->limit(8)
-        //         ->get();
-        // }
-        $recommendCourses = Course::where('status', true)
+        // Lấy ngẫu nhiên 8 khóa học cùng danh mục với các khóa đã xem, loại trừ các khóa đã xem
+        $courses = Course::where('status', true)
+            ->where('price', '>', 0)
+            ->where('start_date', '<=', Carbon::now())
+            ->whereIn('category', $categories)
+            ->whereNotIn('id', $viewedIds)
             ->inRandomOrder()
             ->limit(8)
             ->get();
-        return $this->successResponse($recommendCourses, 'Lấy danh sách khóa học đề xuất thành công!');
+
+        return $this->successResponse($courses, 'Lấy danh sách khóa học đề xuất thành công!');
     }
 
     // Data được cắt gọn để gửi cho AI
@@ -443,7 +439,7 @@ class CourseController extends BaseApiController
         return $this->successResponse($certificateInfo, 'Lấy thông tin chứng chỉ thành công!');
     }
 
-    // Hiển thị danh sách tất cả học viên đã đăng ký khóa học với trạng thái hoàn thành
+    // Hiển thị danh sách tất cả học viên đã đăng ký
     public function getRegistrations(Request $request, Course $course)
     {
         Gate::authorize('admin-teacher-owner', $course);
@@ -453,47 +449,101 @@ class CourseController extends BaseApiController
         // Lấy tổng số bài học trong khóa học
         $totalLessons = $course->lesson_count;
 
-        // Lấy tất cả lesson IDs của khóa học một lần để tối ưu
-        $lessonIds = $course->chapters()
-            ->with('lessons:id,chapter_id')
-            ->get()
-            ->pluck('lessons')
-            ->flatten()
-            ->pluck('id')
-            ->toArray();
+        // Sử dụng QueryBuilder để lấy danh sách học viên với các filter
+        $students = QueryBuilder::for($course->students())
+            ->allowedFilters([
+                AllowedFilter::callback('search', function ($query, $value) {
+                    // search sẽ tìm kiếm trong full_name, email
+                    $query->where(function ($q) use ($value) {
+                        $q->where('full_name', 'LIKE', "%$value%")
+                            ->orWhere('email', 'LIKE', "%$value%");
+                    });
+                }),
+                AllowedFilter::custom('progress_range', new ProgressRangeFilter($course->id)),
+                AllowedFilter::custom('completion_status', new CompletionStatusFilter($course->id))
 
-        // Lấy tất cả học viên đã đăng ký khóa học với thông tin đăng ký
-        $students = $course->students()
-            ->select(['users.id', 'users.full_name', 'users.email', 'users.avatar', 'users.phone_number', 'payments.paid_at as enrolled_at'])
+            ])
+            ->allowedSorts([
+                'payments.paid_at'
+            ])
+            ->select([
+                'users.id',
+                'users.full_name',
+                'users.email',
+                'users.avatar',
+                'users.phone_number',
+                'payments.paid_at as enrolled_at',
+                'payments.amount as paid_amount'
+            ])
+            ->with([
+                'certificates' => function ($query) use ($course) {
+                    $query->where('course_id', $course->id);
+                }
+            ])
+            ->orderByDesc('payments.paid_at')
             ->paginate($limit);
 
-        // Transform dữ liệu để thêm thông tin hoàn thành
-        $students->getCollection()->transform(function ($student) use ($lessonIds, $totalLessons) {
-            // Đếm số bài học đã hoàn thành của học viên này
+        // Lấy lesson IDs một lần
+        $lessonIds = $course->lessons()->pluck('course_lessons.id');
+
+        // Lấy exam paper nếu có
+        $examPaper = null;
+        if ($course->exam_paper_id) {
+            $examPaper = ExamPaper::find($course->exam_paper_id);
+        }
+
+        // Transform dữ liệu
+        $students->getCollection()->transform(function ($student) use ($lessonIds, $totalLessons, $course, $examPaper) {
+            // Đếm số bài học đã hoàn thành
             $completedLessonsCount = LessonViewHistory::where('user_id', $student->id)
                 ->where('is_completed', true)
                 ->whereIn('lesson_id', $lessonIds)
                 ->count();
 
-            // Kiểm tra đã hoàn thành khóa học chưa
-            $isCompleted = $completedLessonsCount >= $totalLessons;
+            $allLessonsCompleted = $completedLessonsCount >= $totalLessons;
+            $completionPercentage = $totalLessons > 0 ? round(($completedLessonsCount / $totalLessons) * 100, 2) : 0;
 
-            // Lấy ngày hoàn thành bài học cuối cùng nếu đã hoàn thành
-            $lastCompletionDate = null;
-            if ($isCompleted) {
-                $lastCompletion = LessonViewHistory::where('user_id', $student->id)
-                    ->where('is_completed', true)
-                    ->whereIn('lesson_id', $lessonIds)
-                    ->latest('updated_at')
+            // Kiểm tra chứng chỉ
+            $certificate = $student->certificates->first();
+            $isCompleted = $certificate !== null;
+
+            // Kiểm tra bài thi nếu có
+            $examPassed = true;
+            $examScore = null;
+            if ($examPaper) {
+                $bestExamAttempt = ExamAttempt::where('user_id', $student->id)
+                    ->where('exam_paper_id', $course->exam_paper_id)
+                    ->whereIn('status', ['submitted', 'detected'])
+                    ->orderByDesc('score')
                     ->first();
 
-                if ($lastCompletion) {
-                    $lastCompletionDate = $lastCompletion->updated_at;
+                if ($bestExamAttempt) {
+                    $examScore = $bestExamAttempt->score;
+                    $examPassed = $examScore >= $examPaper->pass_score;
+                } else {
+                    $examPassed = false;
                 }
             }
 
-            // Tính phần trăm hoàn thành
-            $completionPercentage = $totalLessons > 0 ? round(($completedLessonsCount / $totalLessons) * 100, 2) : 0;
+            // Thống kê hoạt động trong tuần
+            $recentActivity = LessonViewHistory::where('user_id', $student->id)
+                ->where('created_at', '>=', now()->subDays(7))
+                ->whereIn('lesson_id', $lessonIds)
+                ->selectRaw('COUNT(*) as lessons_count, SUM(progress) as total_progress')
+                ->first();
+
+            $lessonsInWeek = $recentActivity->lessons_count ?? 0;
+            $hoursInWeek = $recentActivity->total_progress ? round($recentActivity->total_progress / 60, 2) : 0;
+
+            // Xác định trạng thái
+            $status = 'Đang học';
+            if ($isCompleted) {
+                $status = 'Đã hoàn thành';
+            } elseif ($allLessonsCompleted && $examPaper && !$examPassed) {
+                $status = 'Chưa đạt bài thi';
+            } elseif ($allLessonsCompleted && $examPassed && !$certificate) {
+                $status = 'Chờ cấp chứng chỉ';
+            }
 
             return [
                 'id' => $student->id,
@@ -502,12 +552,20 @@ class CourseController extends BaseApiController
                 'avatar' => $student->avatar,
                 'phone_number' => $student->phone_number,
                 'enrolled_at' => $student->enrolled_at,
+                'paid_amount' => $student->paid_amount,
                 'is_completed' => $isCompleted,
-                'completion_date' => $lastCompletionDate,
+                'completion_date' => $certificate ? $certificate->issued_at : null,
+                'certificate_code' => $certificate ? $certificate->code : null,
                 'completed_lessons' => $completedLessonsCount,
                 'total_lessons' => $totalLessons,
                 'completion_percentage' => $completionPercentage,
-                'status' => $isCompleted ? 'Đã hoàn thành' : 'Đang học'
+                'all_lessons_completed' => $allLessonsCompleted,
+                'exam_required' => $course->exam_paper_id !== null,
+                'exam_passed' => $examPassed,
+                'exam_score' => $examScore,
+                'lessons_in_week' => $lessonsInWeek,
+                'hours_in_week' => $hoursInWeek,
+                'status' => $status
             ];
         });
 

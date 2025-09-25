@@ -2,13 +2,21 @@ import React, { Suspense } from "react";
 import { Metadata } from "next";
 import PaymentList from "./_components/PaymentList";
 import StatsPayment from "./_components/StatsPayment";
+import Breadcrumb from "../_components/Breadcrumb";
 
 export const metadata: Metadata = {
     title: "Danh sách hóa đơn",
 };
+const breadcrumbData = [
+    { label: "Dashboard", href: "/admin" },
+    { label: "Thanh toán", href: "/admin/payments" },
+];
 const ExamPage = () => {
     return (
         <section className="mt-5 bg-[#F5F5F5] p-2">
+            <div className="mb-6 flex flex-col gap-5">
+                <Breadcrumb breadcrumbData={breadcrumbData} />
+            </div>
             {/* Thống kê */}
             <Suspense>
                 <StatsPayment />

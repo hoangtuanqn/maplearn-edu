@@ -3,15 +3,18 @@ import React, { Suspense } from "react";
 import StudentList from "./_components/StudentList";
 import { Metadata } from "next";
 import { FilterStudents } from "./[id]/_components/FilterStudents";
+import Breadcrumb from "../_components/Breadcrumb";
 export const metadata: Metadata = {
     title: "Danh sách học sinh",
 };
+const breadcrumbData = [
+    { label: "Dashboard", href: "/admin" },
+    { label: "Học sinh", href: "/admin/students" },
+];
 const StudentPage = () => {
     return (
         <section className="mt-5 bg-[#F5F5F5] p-2">
-            {/* <div className="item-center mt-5 flex justify-end">
-                <ImportStudent />
-            </div> */}
+            <Breadcrumb breadcrumbData={breadcrumbData} />
             <div className="mt-3 rounded-lg bg-white p-4 pb-8 shadow-sm">
                 <div className="flex items-center justify-between">
                     <div>

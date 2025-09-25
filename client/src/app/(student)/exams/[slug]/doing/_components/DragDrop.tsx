@@ -147,6 +147,10 @@ const DragDrop = ({
         });
     }, [droppedItems, handleChoiceAnswer, idQuestion]);
 
+    useEffect(() => {
+        setItems(initialItems.filter((item) => !activeAnswers?.includes(item.content)));
+    }, [initialItems, activeAnswers]);
+
     const questionParts = parseQuestion(question);
 
     return (

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Filters\Invoice\DateFilter;
 use App\Filters\Invoice\StatusFilter;
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Certificate;
 use App\Models\Payment;
 use App\Notifications\VerifyEmailNotification;
 use App\Services\GoogleAuthenService;
@@ -71,6 +72,23 @@ class ProfileController extends BaseApiController
             // ->latest('created_at')
             ->paginate($limit)
             ->appends($request->query()); // giữ nguyên query string khi phân trang
+
+        // lặp qua các courses
+        // Lấy tất cả course IDs
+        $courseIds = $courses->pluck('id')->toArray();
+
+        // Lấy các course đã có certificate của user
+        $certifiedCourseIds = Certificate::where('user_id', $user->id)
+            ->whereIn('course_id', $courseIds)
+            ->pluck('course_id')
+            ->toArray();
+
+        // Gán thuộc tính has_certificate cho từng course
+        $courses->getCollection()->transform(function ($course) use ($certifiedCourseIds) {
+            $course->has_certificate = in_array($course->id, $certifiedCourseIds);
+            return $course;
+        });
+
 
         return $this->successResponse($courses, "Đã lấy danh sách khóa học của bạn thành công!");
     }

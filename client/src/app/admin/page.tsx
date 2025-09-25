@@ -108,6 +108,7 @@ const AdminPage = () => {
     }
 
     if (!dashboard) return null;
+
     return (
         <div className="min-h-screen bg-white p-6">
             {/* Header */}
@@ -468,7 +469,7 @@ const AdminPage = () => {
                                         <Link
                                             href={`/courses/${course.slug}`}
                                             target="_blank"
-                                            className="truncate text-sm font-medium text-gray-900"
+                                            className="line-clamp-1 truncate text-sm font-medium text-gray-900"
                                         >
                                             {course.name}
                                         </Link>
@@ -479,8 +480,11 @@ const AdminPage = () => {
                                                     {course.students_count} học viên
                                                 </span>
                                             </div>
-                                            <div className="flex items-center">
-                                                <span className="text-xs text-gray-500">
+                                            <div className="flex items-center gap-1">
+                                                <span className="text-xs text-gray-500">Tổng doanh thu: </span>
+                                                <span
+                                                    className={`text-xs ${course.revenue === 0 ? "text-gray-500" : "font-bold text-green-600"}`}
+                                                >
                                                     {course.revenue === 0
                                                         ? "Miễn phí"
                                                         : `${formatter.number(course.revenue)}đ`}
@@ -517,12 +521,20 @@ const AdminPage = () => {
                                         </div>
                                         <div>
                                             <p className="text-sm font-medium text-gray-900">{payment.full_name}</p>
-                                            <p className="text-xs text-gray-500">{payment.course_name}</p>
+                                            <Link
+                                                href={`/courses/${payment.slug}`}
+                                                target="_blank"
+                                                className="text-xs text-gray-500"
+                                            >
+                                                {payment.course_name}
+                                            </Link>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm font-medium text-gray-900">
-                                            {formatter.number(payment.amount)}đ
+                                        <p
+                                            className={`text-sm ${payment.amount > 0 ? "text-primary font-bold" : "font-medium text-green-600"}`}
+                                        >
+                                            {payment.amount === 0 ? "Miễn phí" : `${formatter.number(payment.amount)}đ`}
                                         </p>
                                     </div>
                                 </div>

@@ -166,9 +166,12 @@ export type RankingPaper = z.infer<typeof _rankingPaperSchema>;
 
 // Get result detail paper exam
 const resultDetailSchema = questionSchema.extend({
-    is_correct: z.boolean(),
-    your_choice: z.array(z.string()) || z.string(),
-    correct_answer: z.array(z.string()),
+    is_correct: z.boolean(), // bạn trả lời đúng hay sai
+    your_choice: z.object({
+        value: z.array(z.string()), // câu trả lời của bạn
+        is_correct: z.boolean(),
+    }), // câu trả lời của bạn
+    correct_answer: z.array(z.string()), // đáp án đúng
 });
 const _resultDetailExamResponseSchema = z.object({
     success: z.boolean(),

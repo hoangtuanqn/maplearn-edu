@@ -122,8 +122,10 @@ const InvoiceList = () => {
                                                     </td>
 
                                                     <td className="px-2 py-4 text-xs whitespace-nowrap text-gray-800 sm:px-6 sm:text-sm">
-                                                        <div className="font-medium">
-                                                            {formatter.number(payment.amount)} VNĐ
+                                                        <div className={`text-primary font-semibold`}>
+                                                            {payment.amount === 0
+                                                                ? "Miễn phí"
+                                                                : `${formatter.number(payment.amount)} VNĐ`}
                                                         </div>
                                                     </td>
                                                     <td className="px-2 py-4 text-end text-xs font-medium whitespace-nowrap sm:px-6 sm:text-sm">

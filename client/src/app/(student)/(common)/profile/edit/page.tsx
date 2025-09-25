@@ -16,7 +16,7 @@ const EditProfilePage = async () => {
     }
     return (
         <>
-            <h3 className="block-heading mb-6">Chỉnh sửa thông tin</h3>
+            <h3 className="block-heading mb-6 uppercase">Chỉnh sửa thông tin</h3>
             <div className="flex flex-col gap-4 font-medium">
                 <FormEdit user={user} />
             </div>

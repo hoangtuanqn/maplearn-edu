@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         });
 
         return NextResponse.json(res.data, { status: res.status });
-    } catch {
+    } catch  {
         return NextResponse.json({ error: "Failed to fetch exam results" }, { status: 500 });
     }
 }

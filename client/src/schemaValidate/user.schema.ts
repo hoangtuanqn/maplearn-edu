@@ -19,6 +19,9 @@ export const userSchema = z.object({
     banned: z.boolean().default(false),
     google2fa_enabled: z.boolean().default(false),
     email_verified_at: z.string().nullable(),
+    learning_courses: z.number().min(0),
+    lessons_in_week: z.number().min(0),
+    hours_in_week: z.number().min(0),
     created_at: z.string(),
     updated_at: z.string(),
 });

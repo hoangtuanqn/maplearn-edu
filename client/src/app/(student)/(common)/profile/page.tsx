@@ -8,7 +8,8 @@ export const metadata: Metadata = {
 const ProfilePage = () => {
     return (
         <>
-            <h3 className="block-heading mb-6">Thông tin cá nhân</h3>
+            <h3 className="block-heading mb-6 uppercase">Thông tin cá nhân</h3>
+
             <ShowProfile />
         </>
     );

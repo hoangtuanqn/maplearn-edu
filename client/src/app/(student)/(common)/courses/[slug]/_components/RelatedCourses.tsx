@@ -16,6 +16,7 @@ const RelatedCourses = ({ category }: { category: string }) => {
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
 
+
     return (
         <div className="mt-4 rounded-xl bg-white p-4 shadow-sm sm:p-8">
             <h2 className="text-secondary-typo mb-3 text-lg font-bold">Những khóa học bạn có thể thích</h2>

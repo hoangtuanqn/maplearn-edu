@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Course;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Spatie\QueryBuilder\AllowedFilter;
@@ -51,7 +52,7 @@ class PaymentController extends BaseApiController
 
         // Nếu là teacher thì chỉ được xem thanh toán của khóa học do mình tạo
         if ($user->role === 'teacher') {
-            $teacherCourseIds = \App\Models\Course::where('user_id', $user->id)->pluck('id');
+            $teacherCourseIds = Course::where('user_id', $user->id)->pluck('id');
             $paymentsQuery->whereIn('course_id', $teacherCourseIds);
         }
         // Nếu là admin thì xem được tất cả thanh toán

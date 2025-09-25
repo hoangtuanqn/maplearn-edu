@@ -44,7 +44,25 @@ const courseAdminApi = {
     // get thống kê học viên đăng ký khóa học trong 7 ngày
     getCourseStudentStats: (slug: string) => privateApi.get<CourseStats>(`/courses/${slug}/stats-enrollments`),
 
-    // get học sinh đã đăng ký học khóa học
-    getStudentEnrolled: (slug: string) => privateApi.get<StudentEnrollmentResponse>(`/courses/${slug}/enrollments`),
+    getStudentEnrolled: (
+        slug: string,
+        page: number = 1,
+        limit: number = COURSE_PER_PAGE,
+        search: string = "",
+        querySortOther: string = "",
+        queryOther: string = "",
+    ) => {
+        let query = `/courses/${slug}/enrollments?page=${page}&limit=${limit}`;
+        if (search) {
+            query += `&filter[name]=${search}`;
+        }
+        if (querySortOther) {
+            query += `&sort=${querySortOther}`; // Các value cần sort: -created_at, download_count, ...
+        }
+        if (queryOther) {
+            query += `&${queryOther}`; // Các value khác nếu cần
+        }
+        return privateApi.get<StudentEnrollmentResponse>(query);
+    },
 };
 export default courseAdminApi;

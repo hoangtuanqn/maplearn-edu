@@ -7,14 +7,81 @@ import studentApi, { USERS_PER_PAGE } from "~/apiRequest/admin/student";
 import TableSkeleton from "~/app/(student)/(common)/profile/_components/TableSkeleton";
 import { PaginationNav } from "~/app/(student)/_components/Pagination";
 import { Button } from "~/components/ui/button";
-import { getGender } from "~/libs/hepler";
+import { buildLaravelFilterQuery, getGender } from "~/libs/hepler";
 import { getStatusBadge } from "~/libs/statusBadge";
 import DisplayTotalResult from "../../_components/DisplayTotalResult";
+import useGetSearchQuery from "~/hooks/useGetSearchQuery";
+const allowedFields = [
+    "sort",
+    "page",
+    "search",
+    "full_name",
+    "email",
+    "city",
+    "school",
+    "gender",
+    "birth_year",
+    "banned",
+    "email_verified",
+    "created_at",
+    "phone_number",
+] as const;
+
 const StudentList = () => {
+    const {
+        page,
+        search,
+        full_name,
+        email,
+        city,
+        school,
+        gender,
+        birth_year,
+        banned,
+        email_verified,
+        created_at,
+        phone_number,
+        sort,
+    } = useGetSearchQuery(allowedFields);
     const { data: students, isLoading } = useQuery({
-        queryKey: ["admin", "students"],
+        queryKey: [
+            "admin",
+            "students",
+            {
+                page,
+                sort,
+                search,
+                full_name,
+                email,
+                city,
+                school,
+                gender,
+                birth_year,
+                banned,
+                email_verified,
+                created_at,
+                phone_number,
+            },
+        ],
         queryFn: async () => {
-            const res = await studentApi.getStudents();
+            const res = await studentApi.getStudents(
+                +page || 1,
+                20,
+                search || "",
+                sort,
+                buildLaravelFilterQuery({
+                    full_name,
+                    email,
+                    city,
+                    school,
+                    gender,
+                    birth_year,
+                    banned,
+                    email_verified,
+                    created_at,
+                    phone_number,
+                }),
+            );
             return res.data.data;
         },
         staleTime: 5 * 60 * 1000, // 5 phút
@@ -107,7 +174,7 @@ const StudentList = () => {
             </div>
             <div className="ml-auto w-fit">
                 <Suspense>
-                    <PaginationNav totalPages={totalPages} basePath="/admin/users" />
+                    <PaginationNav totalPages={totalPages} basePath="/admin/students" />
                 </Suspense>
             </div>
         </>

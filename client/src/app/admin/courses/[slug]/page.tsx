@@ -9,12 +9,17 @@ import Link from "next/link";
 import CourseStudentChart from "./_components/CourseStudentChart";
 import { Metadata } from "next";
 import StudentCompletedList from "./_components/StudentCompletedList";
+import Breadcrumb from "../../_components/Breadcrumb";
 export const metadata: Metadata = {
     title: "Chi tiết khóa học",
 };
-
 const DetailCourse = async ({ params }: { params: Promise<{ slug: string }> }) => {
     const { slug } = await params;
+    const breadcrumbData = [
+        { label: "Dashboard", href: "/admin" },
+        { label: "Khóa học", href: "/admin/courses" },
+        { label: "Chi tiết khóa học", href: `/admin/courses/${slug}` },
+    ];
     let course;
     try {
         const res = await courseApi.getDetailCourse(slug);
@@ -23,7 +28,10 @@ const DetailCourse = async ({ params }: { params: Promise<{ slug: string }> }) =
         redirect("/admin/courses");
     }
     return (
-        <div className="min-h-screen bg-[#F5F5F5] p-6">
+        <div className="mt-5 min-h-screen bg-[#F5F5F5]">
+            <div className="mb-6 flex flex-col gap-5">
+                <Breadcrumb breadcrumbData={breadcrumbData} />
+            </div>
             {/* Header */}
             <div className="mb-6 rounded-lg bg-white p-6 shadow-sm">
                 <div className="flex flex-col items-start justify-between gap-2 2xl:flex-row">

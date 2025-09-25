@@ -53,11 +53,11 @@ const FormEditStudent = ({ studentData }: FormEditStudentProps) => {
                 // Thực hiện upload ảnh
                 const uploadPromise = await uploadMedia.upload(file as File, "avatars");
                 data.avatar = uploadPromise.url; // gán link ảnh đã upload vào data
-                setFile(null);
             }
             await studentApi.updateStudent(String(studentData.id), data);
         },
         onSuccess: () => {
+            setFile(null);
             toast.success("Cập nhật thông tin học viên thành công");
         },
         onError: notificationErrorApi,
@@ -333,7 +333,7 @@ const FormEditStudent = ({ studentData }: FormEditStudentProps) => {
                             </div>
 
                             <div className="flex gap-3">
-                                <Button type="submit" variant={"primary"} disabled={!form.formState.isDirty}>
+                                <Button type="submit" variant={"primary"}>
                                     Cập nhật thông tin
                                 </Button>
                                 <Button

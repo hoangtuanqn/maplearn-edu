@@ -1,13 +1,12 @@
+import { UploadApiResponse } from "cloudinary";
 import { NextRequest } from "next/server";
-import path from "path";
-import fs from "fs/promises";
-import { v4 as uuidv4 } from "uuid";
+import cloudinary from "../config";
 
 export async function POST(req: NextRequest) {
     try {
         const formData = await req.formData();
         const file = formData.get("file") as File | null;
-        const folder = (formData.get("folder") as string) ?? "uploads";
+        const folder = (formData.get("folder") as string) ?? "nextjs_uploads";
 
         if (!file) {
             return Response.json({ error: "Không có file để upload" }, { status: 400 });
@@ -17,33 +16,28 @@ export async function POST(req: NextRequest) {
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
-        // Tạo thư mục nếu chưa có
-        const uploadDir = path.join(process.cwd(), "public", folder);
-        await fs.mkdir(uploadDir, { recursive: true });
-
-        // Lấy đuôi file gốc và kiểm tra loại file (ví dụ, video hoặc ảnh)
-        const ext = path.extname(file.name).toLowerCase();
-        const allowedImageExts = [".jpg", ".jpeg", ".png", ".gif"];
-        const allowedVideoExts = [".mp4", ".avi", ".mov", ".mkv"];
-
-        // Kiểm tra xem file có phải là ảnh hoặc video không
-        if (![...allowedImageExts, ...allowedVideoExts].includes(ext)) {
-            return Response.json({ error: "Định dạng file không hỗ trợ" }, { status: 400 });
-        }
-
-        // Tạo tên file ngẫu nhiên bằng UUID
-        const fileName = `${uuidv4()}${ext}`;
-        const filePath = path.join(uploadDir, fileName);
-
-        // Ghi file vào server
-        await fs.writeFile(filePath, buffer);
-
-        // Trả về URL public
-        const url = `/${folder}/${fileName}`;
+        // Upload lên Cloudinary
+        const result: UploadApiResponse = await new Promise((resolve, reject) => {
+            cloudinary.uploader
+                .upload_stream(
+                    {
+                        folder,
+                        resource_type: "auto",
+                        quality: "auto", // Tự động tối ưu chất lượng ảnh
+                        fetch_format: "auto", // Chuyển sang định dạng WebP/AVIF nếu trình duyệt hỗ trợ
+                    },
+                    (error, result) => {
+                        if (error) return reject(error);
+                        if (!result) return reject(new Error("Không có phản hồi từ Cloudinary"));
+                        resolve(result);
+                    },
+                )
+                .end(buffer);
+        });
 
         return Response.json({
-            url,
-            fileName,
+            url: result.secure_url,
+            public_id: result.public_id,
         });
     } catch (err) {
         if (err instanceof Error) {

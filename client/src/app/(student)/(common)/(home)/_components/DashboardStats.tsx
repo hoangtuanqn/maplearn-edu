@@ -61,7 +61,7 @@ const DashboardStats = () => {
                 <div className="grid grid-cols-3 gap-3 md:gap-3.5">
                     <Link
                         className="flex flex-col items-center gap-3 rounded-xl bg-[linear-gradient(278.32deg,_#BAE2FF_1.57%,_#E7F5FF_107.77%)] px-3.5 py-4 md:flex-row"
-                        href="/ca-nhan/khoa-hoc"
+                        href="/profile/my-courses"
                     >
                         <div className="t1-flex-center size-12 rounded-lg bg-[#A8DBFF]">
                             <svg
@@ -81,7 +81,9 @@ const DashboardStats = () => {
                             </svg>
                         </div>
                         <div>
-                            <p className="text-center text-4xl font-bold text-[#0581D7] md:text-start">0</p>
+                            <p className="text-center text-4xl font-bold text-[#0581D7] md:text-start">
+                                {user.learning_courses || 0}
+                            </p>
                             <p className="text-cp text-center text-[#155E94] md:text-start">Khoá đang học</p>
                         </div>
                     </Link>
@@ -104,7 +106,9 @@ const DashboardStats = () => {
                             </svg>
                         </div>
                         <div>
-                            <p className="text-center text-4xl font-bold text-[#EE5F06] md:text-start">0</p>
+                            <p className="text-center text-4xl font-bold text-[#EE5F06] md:text-start">
+                                {user.hours_in_week || 0}
+                            </p>
                             <p className="text-cp l text-center text-[#EE5F06] md:text-start">Giờ học tuần này</p>
                         </div>
                     </div>
@@ -125,7 +129,9 @@ const DashboardStats = () => {
                             </svg>
                         </div>
                         <div>
-                            <p className="text-center text-4xl font-bold text-[#8555E7] md:text-start">0</p>
+                            <p className="text-center text-4xl font-bold text-[#8555E7] md:text-start">
+                                {user.lessons_in_week || 0}
+                            </p>
                             <p className="text-cp text-center text-[#8555E7] md:text-start">Bài đã học tuần này</p>
                         </div>
                     </div>

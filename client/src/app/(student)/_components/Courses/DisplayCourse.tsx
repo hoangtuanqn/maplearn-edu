@@ -52,6 +52,10 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
 
     const daysUntilStart = getDaysUntilStart();
 
+    // Kiểm tra khóa học đã hoàn thành và nhận chứng chỉ
+    const hasCompleted = course.lesson_successed === course.lesson_count; // Kiểm tra đã hoàn thành tất cả bài học
+    const hasCertificate = hasCompleted && course.has_certificate; // Kiểm tra nếu đã hoàn thành và có chứng chỉ
+
     const url =
         course.is_enrolled && course.current_lesson?.slug
             ? `/learn/${course.slug}/lecture/${course.current_lesson?.slug}`
@@ -96,10 +100,10 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
                         </div>
                     )}
 
-                    {/* Badge bán chạy di chuyển sang trái nếu có sắp bắt đầu */}
-                    {course.is_best_seller && isUpcoming && (
-                        <div className="absolute top-2 right-2 rounded bg-gradient-to-r from-yellow-500 to-orange-500 px-2 py-1 text-[10.125px] font-bold text-white shadow-md">
-                            Bán chạy
+                    {/* Badge đã hoàn thành và nhận chứng chỉ */}
+                    {hasCertificate && (
+                        <div className="absolute top-2 right-2 rounded bg-gradient-to-r from-green-500 to-green-700 px-2 py-1 text-[10.125px] font-bold text-white shadow-md">
+                            Đã hoàn thành
                         </div>
                     )}
                 </div>
@@ -143,7 +147,6 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
                     </div>
                 ) : (
                     <div className="mt-2">
-                        {/* Hiển thị trạng thái đặc biệt cho khóa học sắp bắt đầu */}
                         {isUpcoming ? (
                             <div className="flex flex-col gap-1">
                                 <span
@@ -220,7 +223,6 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
                                     {course.description}
                                 </p>
 
-                                {/* Thông tin đặc biệt cho khóa học sắp bắt đầu */}
                                 {isUpcoming && (
                                     <div className="mt-3 rounded-lg bg-blue-50 p-3">
                                         <div className="flex items-center gap-2 text-blue-700">

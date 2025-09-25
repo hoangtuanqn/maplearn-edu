@@ -7,10 +7,13 @@ import CourseSkeleton from "../../courses/_components/CourseSkeleton";
 import DisplayCourse from "~/app/(student)/_components/Courses/DisplayCourse";
 
 const ListCourseRecommended = () => {
+    const viewed_course_ids = typeof window !== "undefined" ? localStorage.getItem("viewed_course_ids") || "[]" : "[]";
     const { data: courses, isLoading } = useQuery({
         queryKey: ["user", "course", "recommended"],
         queryFn: async () => {
-            const response = await courseApi.getCourseRecommended();
+            const response = await courseApi.getCourseRecommended(
+                viewed_course_ids ? JSON.parse(viewed_course_ids) : [],
+            );
             return response.data.data;
         },
         staleTime: 1000 * 60 * 5, // 5 minutes

@@ -112,9 +112,9 @@ class UserSeeder extends Seeder
             // ],
         ];
 
-        $now = Carbon::now();
 
-        $insertData = collect($teachers)->map(function ($teacher, $index) use ($now) {
+
+        $insertData = collect($teachers)->map(function ($teacher, $index) {
             // Phân tích giới tính + tên đầy đủ (bỏ "Thầy", "Cô")
             $originalName = $teacher['name'];
             $gender       = 'other';
@@ -141,13 +141,13 @@ class UserSeeder extends Seeder
                 'bio'           => $teacher['bio'],
                 'degree'        => $teacher['degree'],
                 'avatar'        => $teacher['image'],
-                'created_at'    => $now,
-                'updated_at'    => $now,
+                'created_at'    => now()->subDays(rand(0, 60)),
+                'updated_at'    => now(),
             ];
         })->toArray();
 
         User::insert($insertData);
 
-        User::factory(5)->create();
+        User::factory(50)->create();
     }
 }

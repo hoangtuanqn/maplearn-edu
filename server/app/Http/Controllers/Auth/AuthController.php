@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\Certificate;
+use App\Models\LessonViewHistory;
+use App\Models\Payment;
 use App\Models\User;
 use App\Notifications\VerifyEmailNotification;
 use App\Services\GoogleAuthenService;
@@ -128,7 +131,26 @@ class AuthController extends BaseApiController
      */
     public function me(Request $request)
     {
-        return $this->successResponse($request->user(), 'Lấy thông tin người dùng thành công!');
+        $user = $request->user();
+        /*get khóa học đang học của user (chưa hoàn thành có nghĩa là chưa có chứng chỉ)*/
+        // get các khóa học có chứng chỉ để loại trừ
+        $completedCourses = Certificate::where('user_id', $user->id)
+            ->pluck('course_id')
+            ->toArray();
+        $course = Payment::where('user_id', $user->id)->where('status', 'paid')
+            ->whereNotIn('course_id', $completedCourses)
+            ->count();
+
+
+        // Get số giờ học trong tuần (7 ngày gần nhất)
+        $hours = LessonViewHistory::where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subDays(7));
+        $user->learning_courses = $course;
+        // số bài học đã học trong tuần này
+        $user->lessons_in_week = $hours->count();
+        $user->hours_in_week = round($hours->sum('progress') / 60); // Quy đổi ra giờ và làm tròn
+
+        return $this->successResponse($user, 'Lấy thông tin người dùng thành công!');
     }
 
     /**

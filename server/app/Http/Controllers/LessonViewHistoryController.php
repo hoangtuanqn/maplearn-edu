@@ -90,6 +90,7 @@ class LessonViewHistoryController extends BaseApiController
         if ($totalLessons > 0 && $completedLessons >= $totalLessons) {
             // Gửi thông báo cần
             $exam = $course->exam;
+            // Check bài thi xem đã hoàn thành chưa (nếu rồi thì cấp chứng chỉ luôn)
             $user->notify(new CourseCompletionExamRequiredNotification($user, $course, $exam));
             // $user->notify(new CourseCompletedNotification($course, env('APP_URL_FRONT_END') . '/certificate/' . $course->slug . '/' . $user->email));
         }

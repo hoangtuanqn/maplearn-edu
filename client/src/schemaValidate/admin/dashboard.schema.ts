@@ -27,6 +27,7 @@ const dashboardSchema = z.object({
             full_name: z.string(),
             course_name: z.string(),
             amount: z.number(),
+            slug: z.string(),
             avatar: z.string().url(),
         }),
     ),

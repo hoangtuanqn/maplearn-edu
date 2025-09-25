@@ -33,9 +33,12 @@ const courseApi = {
     getDetailCourse: (slug: string) => {
         return publicApi.get<CourseGetDetailResponse>(`/courses/${slug}`);
     },
-    getCourseRecommended: () => privateApi.get<CourseListRecommendedResponse>(`/courses/recommended`),
+    getCourseRecommended: (viewed_course_ids: string[]) =>
+        privateApi.post<CourseListRecommendedResponse>(`/courses/recommended`, {
+            viewed_course_ids,
+        }),
     getCategories: (page: number = 1, limit: number = CATEGORY_COURSE_PER_PAGE) =>
-        publicApi.get<CategoriesCoursesResponse>(`/course-categories?page=${page}&limit=${limit}`),
+        publicApi.post<CategoriesCoursesResponse>(`/course-categories?page=${page}&limit=${limit}`),
 
     addCourseToCart: (courseId: number) => {
         return publicApi.post(`/carts`, {

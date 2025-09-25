@@ -245,6 +245,7 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
                     {/* Main Content */}
                     <div className="flex flex-col gap-6 xl:flex-row">
                         <Questions
+                            key={questionActive} // reset internal state khi chuyển câu hỏi
                             payload={{
                                 questions,
                                 questionActive,

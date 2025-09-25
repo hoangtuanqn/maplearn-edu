@@ -1,6 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { Users, CheckCircle, Mail, User, Clock } from "lucide-react";
+import { Users, CheckCircle, User, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { Suspense } from "react";
@@ -13,14 +13,42 @@ import { Button } from "~/components/ui/button";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
 import { formatter } from "~/libs/format";
 import { FilterStudentCourse } from "./FilterStudentCourse";
+import { buildLaravelFilterQuery } from "~/libs/hepler";
 
 const StudentEnrolledList = ({ slug }: { slug: string }) => {
-    const { page } = useGetSearchQuery(["page"] as const);
+    const { page, search, sort, completion_status, progress_range } = useGetSearchQuery([
+        "page",
+        "search",
+        "sort",
+        "completion_status",
+        "progress_range",
+    ] as const);
     const { data: studentsData, isLoading } = useQuery({
-        queryKey: ["admin", "students-enrolled", slug, page],
+        queryKey: [
+            "admin",
+            "students-enrolled",
+            {
+                slug,
+                page,
+                search,
+                sort,
+                completion_status,
+                progress_range,
+            },
+        ],
         queryFn: async () => {
             // Tạm thời sử dụng API getStudentsCompletedCourse, cần cập nhật API sau
-            const res = await courseAdminApi.getStudentEnrolled(slug);
+            const res = await courseAdminApi.getStudentEnrolled(
+                slug,
+                +page || 1,
+                COURSE_PER_PAGE,
+                search ?? "",
+                sort ?? "",
+                buildLaravelFilterQuery({
+                    completion_status,
+                    progress_range,
+                }),
+            );
             return res.data.data;
         },
         staleTime: 5 * 60 * 1000, // 5 phút
@@ -29,33 +57,26 @@ const StudentEnrolledList = ({ slug }: { slug: string }) => {
     const total = studentsData?.total ?? 0;
     const totalPages = Math.ceil(total / COURSE_PER_PAGE);
 
-    // Helper function to get status badge
+    // Helper function to get status badge based on new schema
     const getStatusBadge = (student: any) => {
-        if (student.is_completed) {
-            return (
-                <div className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-800">
-                    <CheckCircle className="h-3 w-3" />
-                    Đã hoàn thành
-                </div>
-            );
-        } else {
-            const completionPercentage = (student.completed_lessons / student.total_lessons) * 100;
-            if (completionPercentage > 30) {
-                return (
-                    <div className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-                        <Clock className="h-3 w-3" />
-                        Đang học
-                    </div>
-                );
-            } else {
-                return (
-                    <div className="inline-flex items-center gap-1 rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800">
-                        <Clock className="h-3 w-3" />
-                        Mới bắt đầu
-                    </div>
-                );
-            }
-        }
+        const statusColors = {
+            "Đang học": { bg: "bg-blue-100", text: "text-blue-800", icon: Clock },
+            "Đã hoàn thành": { bg: "bg-emerald-100", text: "text-emerald-800", icon: CheckCircle },
+            "Chưa đạt bài thi": { bg: "bg-red-100", text: "text-red-800", icon: Clock },
+            "Chờ cấp chứng chỉ": { bg: "bg-amber-100", text: "text-amber-800", icon: Clock },
+        };
+
+        const statusConfig = statusColors[student.status as keyof typeof statusColors] || statusColors["Đang học"];
+        const IconComponent = statusConfig.icon;
+
+        return (
+            <div
+                className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${statusConfig.bg} ${statusConfig.text}`}
+            >
+                <IconComponent className="h-3 w-3" />
+                {student.status}
+            </div>
+        );
     };
 
     return (
@@ -82,19 +103,20 @@ const StudentEnrolledList = ({ slug }: { slug: string }) => {
                                 STT
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                                Thông tin học sinh
+                                Thông tin học viên
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                                Liên hệ
-                            </th>
-                            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                                Tiến độ
+
+                            <th className="px-4 py-3 text-center text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                                Tiến độ học tập
                             </th>
                             <th className="px-4 py-3 text-center text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                                Thời gian đăng ký
+                                Bài thi & Chứng chỉ
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 uppercase">
-                                Trạng thái học tập
+                            <th className="px-4 py-3 text-center text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                                Thống kê tuần
+                            </th>
+                            <th className="px-4 py-3 text-center text-xs font-semibold tracking-wider text-gray-600 uppercase">
+                                Trạng thái
                             </th>
                             <th className="px-4 py-3 text-right text-xs font-semibold tracking-wider text-gray-600 uppercase">
                                 Thao tác
@@ -103,7 +125,7 @@ const StudentEnrolledList = ({ slug }: { slug: string }) => {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                         {isLoading
-                            ? [...Array(5)].map((_, index) => <TableSkeleton key={index} col={6} />)
+                            ? [...Array(5)].map((_, index) => <TableSkeleton key={index} col={8} />)
                             : studentsData?.data.map((student, idx) => (
                                   <tr key={student.id} className="transition-colors hover:bg-gray-50">
                                       <td className="px-4 py-4 text-sm text-gray-500">
@@ -131,36 +153,23 @@ const StudentEnrolledList = ({ slug }: { slug: string }) => {
                                                   <p className="truncate text-sm font-semibold text-gray-900">
                                                       {student.full_name}
                                                   </p>
-                                                  <p className="text-xs text-gray-500">ID: {student.id}</p>
+                                                  <div className="text-xs text-gray-500">
+                                                      <span>ID: {student.id}</span>
+                                                  </div>
                                               </div>
                                           </div>
                                       </td>
 
                                       <td className="px-4 py-4">
-                                          <div className="space-y-1">
-                                              <div className="flex items-center gap-2 text-sm text-gray-600">
-                                                  <Mail className="h-4 w-4" />
-                                                  <span className="truncate">{student.email}</span>
+                                          <div className="space-y-2 text-center">
+                                              <div className="text-base font-bold text-emerald-600">
+                                                  {Math.round(
+                                                      (student.completed_lessons / student.total_lessons) * 100,
+                                                  )}
+                                                  %
                                               </div>
-                                              {student.phone_number && (
-                                                  <p className="text-xs text-gray-500">📞 {student.phone_number}</p>
-                                              )}
-                                          </div>
-                                      </td>
-
-                                      <td className="px-4 py-4">
-                                          <div className="space-y-2">
-                                              <div className="flex items-center justify-between text-sm">
-                                                  <span className="text-gray-600">
-                                                      Tiến độ{": "}
-                                                      {Math.round(
-                                                          (student.completed_lessons / student.total_lessons) * 100,
-                                                      )}
-                                                      %
-                                                  </span>
-                                                  <span className="font-semibold text-emerald-600">
-                                                      {student.completed_lessons}/{student.total_lessons}
-                                                  </span>
+                                              <div className="text-xs text-gray-500">
+                                                  {student.completed_lessons}/{student.total_lessons} bài học
                                               </div>
                                               <div className="h-2 w-full rounded-full bg-gray-200">
                                                   <div
@@ -174,37 +183,102 @@ const StudentEnrolledList = ({ slug }: { slug: string }) => {
                                       </td>
 
                                       <td className="px-4 py-4">
-                                          <div className="text-center">
-                                              <p className="text-sm font-medium text-gray-900">
-                                                  {formatter.date(student.enrolled_at)}
-                                              </p>
-                                              <p className="text-xs text-gray-500">Ngày đăng ký</p>
+                                          <div className="space-y-2 text-center">
+                                              <div className="grid grid-cols-1 gap-2 text-xs">
+                                                  {/* Exam Status */}
+                                                  <div className="rounded bg-gray-50 px-2 py-1">
+                                                      <div className="font-medium text-gray-700">
+                                                          {student.exam_required
+                                                              ? "Bài thi bắt buộc"
+                                                              : "Không có bài thi"}
+                                                      </div>
+                                                      {student.exam_required && (
+                                                          <div
+                                                              className={`${student.exam_passed ? "text-green-600" : "text-red-600"}`}
+                                                          >
+                                                              {student.exam_score ? (
+                                                                  <>
+                                                                      {student.exam_passed
+                                                                          ? `✓ Đạt (${student.exam_score}/10)`
+                                                                          : `✗ Chưa đạt (${student.exam_score}/10)`}
+                                                                  </>
+                                                              ) : (
+                                                                  "Chưa tham gia bài thi"
+                                                              )}
+                                                          </div>
+                                                      )}
+                                                  </div>
+
+                                                  {/* Certificate Status */}
+                                                  <div className="rounded bg-amber-50 px-2 py-1">
+                                                      <div className="font-medium text-amber-700">
+                                                          {student.certificate_code
+                                                              ? "Có chứng chỉ"
+                                                              : "Chưa có chứng chỉ"}
+                                                      </div>
+                                                      {student.certificate_code && (
+                                                          <div className="text-xs text-amber-600">
+                                                              Mã: {student.certificate_code}
+                                                          </div>
+                                                      )}
+                                                  </div>
+                                              </div>
                                           </div>
                                       </td>
 
                                       <td className="px-4 py-4">
-                                          {getStatusBadge(student)}
-                                          {student.completion_date && (
-                                              <p className="mt-1 text-xs text-gray-500">
-                                                  Hoàn thành: {formatter.date(student.completion_date)}
-                                              </p>
-                                          )}
+                                          <div className="space-y-2 text-center">
+                                              <div className="grid grid-cols-1 gap-2 text-xs">
+                                                  <div className="rounded bg-green-50 px-2 py-1">
+                                                      <div className="font-medium text-green-700">
+                                                          {student.lessons_in_week} bài học
+                                                      </div>
+                                                      <div className="text-green-500">tuần này</div>
+                                                  </div>
+
+                                                  <div className="rounded bg-purple-50 px-2 py-1">
+                                                      <div className="font-medium text-purple-700">
+                                                          {student.hours_in_week}h
+                                                      </div>
+                                                      <div className="text-purple-500">học tuần này</div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </td>
+
+                                      <td className="px-4 py-4">
+                                          <div className="space-y-2 text-center">
+                                              {getStatusBadge(student)}
+                                              {student.completion_date && (
+                                                  <p className="text-xs text-gray-500">
+                                                      Hoàn thành: {formatter.date(student.completion_date)}
+                                                  </p>
+                                              )}
+                                          </div>
                                       </td>
 
                                       <td className="px-4 py-4 text-right">
-                                          <div className="flex items-center justify-end gap-2">
-                                              {student.completion_date ? (
-                                                  <Link href={`/certificate/${slug}/${student.email}`} target="_blank">
-                                                      <Button
-                                                          variant="outline"
-                                                          size="sm"
-                                                          className="border-emerald-200 text-emerald-600 hover:bg-emerald-50"
-                                                      >
+                                          <div className="flex flex-col items-end gap-2">
+                                              {student.certificate_code ? (
+                                                  <Link
+                                                      href={`/certificate/${student.certificate_code}`}
+                                                      target="_blank"
+                                                  >
+                                                      <Button variant="primary" size="sm">
                                                           Xem chứng chỉ
                                                       </Button>
                                                   </Link>
+                                              ) : student.status === "Chờ cấp chứng chỉ" ? (
+                                                  <Button
+                                                      variant="outline"
+                                                      size="sm"
+                                                      className="border-amber-200 text-amber-600 hover:bg-amber-50"
+                                                      disabled
+                                                  >
+                                                      Đang xử lý
+                                                  </Button>
                                               ) : (
-                                                  "Chưa có"
+                                                  <span className="text-xs text-gray-400">Chưa có</span>
                                               )}
                                           </div>
                                       </td>
@@ -225,10 +299,12 @@ const StudentEnrolledList = ({ slug }: { slug: string }) => {
             </div>
 
             {totalPages > 1 && (
-                <div className="mt-6 flex justify-center">
-                    <Suspense>
-                        <PaginationNav totalPages={totalPages} basePath={`/admin/courses/${slug}`} />
-                    </Suspense>
+                <div className="mt-6 flex w-full">
+                    <div className="ml-auto">
+                        <Suspense>
+                            <PaginationNav totalPages={totalPages} basePath={`/admin/courses/${slug}`} />
+                        </Suspense>
+                    </div>
                 </div>
             )}
         </>

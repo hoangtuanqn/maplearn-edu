@@ -126,14 +126,17 @@ class DashboardController extends BaseApiController
     // get 4 hóa đơn được thanh toán mới nhất
     public function getNewPayments(): array
     {
-        $payments = Payment::where('status', 'paid')->with(['user:id,full_name', 'course:id,name'])
+        $payments = Payment::where('status', 'paid')
+            ->with(['user:id,full_name', 'course:id,name,slug']) // Thêm slug vào select
             ->orderBy('paid_at', 'desc')
             ->limit(4)
             ->get()
             ->map(function ($payment) {
+                $course = $payment->course;
                 return [
                     'full_name'   => $payment->user->full_name ?? null,
-                    'course_name' => $payment->course->name  ?? null,
+                    'course_name' => $course->name ?? null,
+                    'slug'        => $course->slug ?? null,
                     'amount'      => $payment->amount,
                 ];
             })

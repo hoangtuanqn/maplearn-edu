@@ -141,6 +141,10 @@ class User extends Authenticatable implements JWTSubject
     }
 
     // Liên kết với bảng lesson_view_histories để lấy lịch sử xem bài học
+    public function lessonViewHistories()
+    {
+        return $this->hasMany(LessonViewHistory::class);
+    }
 
     // Lấy danh sách khóa học đã mua
     public function purchasedCourses()
@@ -188,5 +192,11 @@ class User extends Authenticatable implements JWTSubject
         }
 
         return collect($completedCourses);
+    }
+
+    // certificates
+    public function certificates()
+    {
+        return $this->hasMany(Certificate::class);
     }
 }

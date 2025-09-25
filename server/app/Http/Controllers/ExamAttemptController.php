@@ -210,26 +210,34 @@ class ExamAttemptController extends BaseApiController
         $questions = $exam->questions;
         // $this->successResponse($questions, 'Lấy thông tin bài làm thành công!');
 
+        // return $questions;
         // Gắn thông tin đáp án của người dùng vào từng câu hỏi
         $questions->each(function ($question) use ($answers) {
+            foreach ($answers as $key => $ans) {
+                if ($key == $question->id) {
+                    $userAnswer = $ans;
+                }
+            }
+
+
             // Nếu người dùng có trả lời câu hỏi này
-            if (isset($answers[$question->id])) {
-                $userAnswer            = $answers[$question->id];
+            if (isset($userAnswer)) {
+                // $userAnswer            = $answers[$question->id];
                 $question->is_correct  = $userAnswer['is_correct'];
-                $question->your_choice = $userAnswer['value'];
+                $question->your_choice = $userAnswer;
                 // Nếu trả lời sai, lấy đáp án đúng
 
             } else {
-                $question->your_choice = [];
+                $question->your_choice = ['value' => []];
                 $question->is_correct  = false;
             }
 
-            $question->correct_answer = array_map(fn($item) => $item['content'], array_filter($question->correct, fn($item) => $item['is_correct']));
+            $question->correct_answer = $question->correct;
         });
-        return $this->successResponse($exam->questions->makeHidden(['correct']), 'Lấy thông tin bài làm thành công!');
+        return $this->successResponse($questions, 'Lấy thông tin bài làm thành công!');
 
         // Ẩn chi tiết nếu cần
 
-        return $this->successResponse($attempt, 'Lấy thông tin bài làm thành công!');
+        // return $this->successResponse($attempt, 'Lấy thông tin bài làm thành công!');
     }
 }

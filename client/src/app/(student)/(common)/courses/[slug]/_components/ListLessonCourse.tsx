@@ -30,6 +30,7 @@ const ListLessonCourse = () => {
         setOpen((prev) => (prev === chapterId ? 0 : chapterId));
     };
 
+
     if (isLoading) {
         return (
             <div className="rounded-xl bg-white p-4 shadow-sm sm:p-8">

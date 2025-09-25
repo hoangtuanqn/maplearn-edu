@@ -53,6 +53,7 @@ export const courseSchema = z.object({
     lesson_count: z.number().default(0),
     lesson_successed: z.number().default(0),
     updated_at: z.string(),
+    has_certificate: z.boolean(),
     current_lesson: z.object({
         id: z.number(),
         chapter_id: z.number(),

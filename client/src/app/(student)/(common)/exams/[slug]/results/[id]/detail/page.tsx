@@ -17,14 +17,14 @@ const DetailResultExam = async ({ params }: { params: Promise<{ slug: string; id
     ]);
 
     if (examRes.status !== "fulfilled" || resultRes.status !== "fulfilled") {
-        redirect(`/exams/${slug}`);
+        redirect(`/exams/${slug}/results/${id}`);
     }
 
     const exam = examRes.status === "fulfilled" ? examRes.value.data.data : null;
     const result = resultRes.status === "fulfilled" ? resultRes.value.data.data : null;
 
     if (!exam || !result) {
-        redirect(`/exams/${slug}`);
+        redirect(`/exams/${slug}/results/${id}`);
     }
 
     return (

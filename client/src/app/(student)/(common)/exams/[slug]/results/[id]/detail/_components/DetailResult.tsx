@@ -49,7 +49,7 @@ const DetailResult = ({
                         {/* Question Header */}
                         <div
                             className={`border-l-4 px-6 py-4 ${
-                                result.your_choice.length === 0
+                                result.your_choice.value.length === 0
                                     ? "border-l-gray-400 bg-gray-50"
                                     : result.is_correct
                                       ? "border-l-green-500 bg-green-50"
@@ -60,7 +60,7 @@ const DetailResult = ({
                                 <div className="flex items-center gap-3">
                                     <div
                                         className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
-                                            result.your_choice.length === 0
+                                            result.your_choice.value.length === 0
                                                 ? "bg-gray-200 text-gray-600"
                                                 : result.is_correct
                                                   ? "bg-green-200 text-green-800"
@@ -72,7 +72,7 @@ const DetailResult = ({
                                     <div>
                                         <span className="text-base font-semibold text-gray-900">Câu {index + 1}</span>
                                         <div className="mt-1 flex items-center gap-2">
-                                            {result.your_choice.length === 0 ? (
+                                            {result.your_choice.value.length === 0 ? (
                                                 <>
                                                     <Clock className="h-4 w-4 text-gray-500" />
                                                     <span className="text-sm text-gray-500">Chưa làm</span>
@@ -94,7 +94,7 @@ const DetailResult = ({
 
                                 <div className="flex items-center gap-2">
                                     <Award className="h-4 w-4 text-gray-500" />
-                                    {result.your_choice.length === 0 ? (
+                                    {result.your_choice.value.length === 0 ? (
                                         <span className="rounded-full bg-gray-200 px-3 py-1 text-sm font-medium text-gray-600">
                                             0 điểm
                                         </span>
@@ -116,14 +116,12 @@ const DetailResult = ({
                             {result.type === "DRAG_DROP" ? (
                                 <DragDrop
                                     question={result.content || ""}
-                                    items={
-                                        (result.options || []).map((opt: any, idx: number) => ({
-                                            id: opt.id ?? idx,
-                                            content: opt.content,
-                                            is_correct: opt.is_correct,
-                                        }))
-                                    }
-                                    activeAnswers={result.your_choice ?? []}
+                                    items={(result.options || []).map((opt: any, idx: number) => ({
+                                        id: opt.id ?? idx,
+                                        content: opt.content,
+                                        is_correct: opt.is_correct,
+                                    }))}
+                                    activeAnswers={result.your_choice?.value ?? []}
                                     idQuestion={result.id}
                                     handleChoiceAnswer={() => {}}
                                     disabled={true}
@@ -134,21 +132,18 @@ const DetailResult = ({
                                         <RenderLatex content={result.content} />
                                     </div>
                                     <div className="mb-6">
-                                        {result.type === "SINGLE_CHOICE" && (
-                                            <SingleChoice
-                                                activeAnswer={
-                                                    Array.isArray(result.your_choice)
-                                                        ? result.your_choice
-                                                        : [result.your_choice]
-                                                }
-                                                handleChoiceAnswer={() => {}}
-                                                idQuestion={result.id}
-                                                answers={result.options}
-                                            />
-                                        )}
+                                        {result.type === "SINGLE_CHOICE" &&
+                                            !Array.isArray(result.your_choice?.value) && (
+                                                <SingleChoice
+                                                    activeAnswer={[result.your_choice?.value]}
+                                                    handleChoiceAnswer={() => {}}
+                                                    idQuestion={result.id}
+                                                    answers={result.options}
+                                                />
+                                            )}
                                         {result.type === "MULTIPLE_CHOICE" && (
                                             <MultipleChoice
-                                                activeAnswers={result.your_choice}
+                                                activeAnswers={result.your_choice?.value}
                                                 handleChoiceAnswer={() => {}}
                                                 idQuestion={result.id}
                                                 answers={result.options}
@@ -158,14 +153,14 @@ const DetailResult = ({
                                             <NumericInput
                                                 handleChoiceAnswer={() => {}}
                                                 idQuestion={result.id}
-                                                activeAnswer={result.your_choice}
+                                                activeAnswer={result.your_choice?.value}
                                             />
                                         )}
                                         {result.type === "TRUE_FALSE" && (
                                             <TrueFalseAnswer
                                                 idQuestion={result.id}
                                                 answers={result.options || []}
-                                                activeAnswer={result.your_choice}
+                                                activeAnswer={result.your_choice?.value}
                                                 handleChoiceAnswer={() => {}}
                                             />
                                         )}

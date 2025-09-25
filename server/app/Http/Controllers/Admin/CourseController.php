@@ -38,7 +38,7 @@ class CourseController extends BaseApiController
                 'start_date',
                 'end_date',
             ])
-            ->allowedSorts(['created_at', 'download_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
+            ->allowedSorts(['start_date', 'download_count', AllowedSort::custom('enrollment_count', new EnrollmentCountSort)])
             ->allowedFilters([
                 'id',
                 'name',

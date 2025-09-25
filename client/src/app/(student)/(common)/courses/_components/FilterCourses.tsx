@@ -29,7 +29,7 @@ import { useFilterQuery } from "~/hooks/useFilterQuery";
 import { useQuery } from "@tanstack/react-query";
 import teacherApi from "~/apiRequest/teachers";
 const fields = [
-    "created_at",
+    "start_date",
     "rating",
     "enrollment_count",
     "price_range",
@@ -77,8 +77,8 @@ export function FilterCourses() {
                             <div className="grid gap-3">
                                 <Label>Thời gian</Label>
                                 <Select
-                                    value={formValues.sort.created_at || "-created_at"}
-                                    onValueChange={(value) => setFieldValue("created_at", value, "sort")}
+                                    value={formValues.sort.start_date || ""}
+                                    onValueChange={(value) => setFieldValue("start_date", value, "sort")}
                                 >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="Sắp xếp theo thời gian" />
@@ -86,8 +86,8 @@ export function FilterCourses() {
                                     <SelectContent>
                                         <SelectGroup>
                                             <SelectLabel>Sắp xếp theo</SelectLabel>
-                                            <SelectItem value="-created_at">Mới nhất</SelectItem>
-                                            <SelectItem value="created_at">Cũ nhất</SelectItem>
+                                            <SelectItem value="-start_date">Mới nhất</SelectItem>
+                                            <SelectItem value="start_date">Cũ nhất</SelectItem>
                                         </SelectGroup>
                                     </SelectContent>
                                 </Select>

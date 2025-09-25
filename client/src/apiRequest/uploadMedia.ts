@@ -33,10 +33,10 @@ const uploadMedia = {
      * @param filename Tên file hoặc đường dẫn file
      * @returns Kết quả xóa
      */
-    delete: async (filename: string, folder: string = "uploads"): Promise<DeleteResponse> => {
+    delete: async (filename: string): Promise<DeleteResponse> => {
         try {
             const res = await axios.delete<DeleteResponse>("/api/media/delete", {
-                data: { filename, folder },
+                data: { filename },
             });
 
             return res.data;
