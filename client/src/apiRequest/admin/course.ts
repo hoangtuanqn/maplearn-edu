@@ -1,5 +1,9 @@
 import privateApi from "~/libs/apis/privateApi";
-import { StudentEnrollmentResponse } from "~/schemaValidate/admin/course.schema";
+import {
+    HistoryLearningResponse,
+    StudentEnrollmentResponse,
+    StudentListResponse,
+} from "~/schemaValidate/admin/course.schema";
 import { ChapterLesson } from "~/schemaValidate/chapterLessonCourse.schema";
 import { CourseGetDetailResponse, CourseListResponse, CourseStats } from "~/schemaValidate/course.schema";
 import { LessonResponse } from "~/schemaValidate/courseDetail.schema";
@@ -27,6 +31,10 @@ const courseAdminApi = {
     },
     addChapter: (data: { course_slug: string; title: string; position: number }) =>
         privateApi.post<ChapterLesson>(`/chapters/`, data),
+    editChapter: (chapterId: number, data: { title: string; position: number }) =>
+        privateApi.patch<ChapterLesson>(`/chapters/${chapterId}`, data),
+    editLesson: (lessonSlug: string, data: { title: string; position: number; is_free: boolean; video_url: string }) =>
+        privateApi.patch<LessonResponse>(`/lessons/${lessonSlug}`, data),
     // Admin
     createCourse: (data: any) => privateApi.post<CourseGetDetailResponse>("/courses", data),
     createLesson: (chapterId: number, data: any) =>
@@ -54,7 +62,7 @@ const courseAdminApi = {
     ) => {
         let query = `/courses/${slug}/enrollments?page=${page}&limit=${limit}`;
         if (search) {
-            query += `&filter[name]=${search}`;
+            query += `&filter[full_name]=${search}`;
         }
         if (querySortOther) {
             query += `&sort=${querySortOther}`; // Các value cần sort: -created_at, download_count, ...
@@ -63,6 +71,15 @@ const courseAdminApi = {
             query += `&${queryOther}`; // Các value khác nếu cần
         }
         return privateApi.get<StudentEnrollmentResponse>(query);
+    },
+
+    // get lịch sử học video
+    getHistoriesLearning: (slug: string, userId: string) =>
+        privateApi.get<HistoryLearningResponse>(`/courses-admin/${slug}/student/${userId}/histories`),
+
+    // get tất cả học sinh trong hệ thống (dùng để so sánh)
+    getAllStudents: (slug: string) => {
+        return privateApi.get<StudentListResponse>(`courses-admin/${slug}/students`);
     },
 };
 export default courseAdminApi;

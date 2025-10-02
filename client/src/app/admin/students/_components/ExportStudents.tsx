@@ -1,6 +1,6 @@
 "use client";
 import { useMutation } from "@tanstack/react-query";
-import { FileDown } from "lucide-react";
+import { FileUp } from "lucide-react";
 import React from "react";
 import studentApi from "~/apiRequest/admin/student";
 import Loading from "~/app/(student)/_components/Loading";
@@ -55,7 +55,7 @@ const ExportStudentList = () => {
                     exportMuation.mutate();
                 }}
             >
-                <FileDown />
+                <FileUp />
                 <span>Xuất dữ liệu</span>
             </Button>
         </>

@@ -1,27 +1,36 @@
 import React from "react";
 import { BookOpen, Users, Clock, BarChart3 } from "lucide-react";
+
 import { redirect } from "next/navigation";
 import { formatter } from "~/libs/format";
 import courseApi from "~/apiRequest/course";
 import ChaptersList from "./_components/ChaptersList";
 import CourseStudentChart from "./_components/CourseStudentChart";
 import { Metadata } from "next";
-import StudentCompletedList from "./_components/StudentCompletedList";
+import StudentPurchasedCourses from "./_components/StudentPurchasedCourses";
+import Breadcrumb from "../../_components/Breadcrumb";
 export const metadata: Metadata = {
     title: "Chi tiết khóa học",
 };
-
 const DetailCourse = async ({ params }: { params: Promise<{ slug: string }> }) => {
     const { slug } = await params;
+    const breadcrumbData = [
+        { label: "Dashboard", href: "/teacher" },
+        { label: "Khóa học", href: "/teacher/courses" },
+        { label: "Chi tiết khóa học", href: `/teacher/courses/${slug}` },
+    ];
     let course;
     try {
         const res = await courseApi.getDetailCourse(slug);
         course = res.data.data;
     } catch {
-        redirect("/admin/courses");
+        redirect("/teacher/courses");
     }
     return (
-        <div className="min-h-screen bg-[#F5F5F5] p-6">
+        <div className="mt-5 min-h-screen bg-[#F5F5F5]">
+            <div className="mb-6 flex flex-col gap-5">
+                <Breadcrumb breadcrumbData={breadcrumbData} />
+            </div>
             {/* Header */}
             <div className="mb-6 rounded-lg bg-white p-6 shadow-sm">
                 <div className="flex flex-col items-start justify-between gap-2 2xl:flex-row">
@@ -63,7 +72,7 @@ const DetailCourse = async ({ params }: { params: Promise<{ slug: string }> }) =
             {/* Hiển thị những học sinh đã hoàn thành */}
             <div className="rounded-lg bg-white p-6 shadow-sm">
                 {/* Chapters List */}
-                <StudentCompletedList slug={slug} />
+                <StudentPurchasedCourses slug={slug} />
             </div>
         </div>
     );

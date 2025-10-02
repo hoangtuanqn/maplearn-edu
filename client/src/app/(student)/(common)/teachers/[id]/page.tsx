@@ -4,7 +4,7 @@ import SocialLink from "../../../_components/SidebarLeft/SocialLink";
 import teacherApi from "~/apiRequest/teachers";
 import { redirect } from "next/navigation";
 import DisplayCourse from "../../../_components/Courses/DisplayCourse";
-import { getFullName } from "~/libs/hepler";
+import { getFullName } from "~/libs/helper";
 import DisplayNoData from "~/app/(student)/_components/Courses/DisplayNoData";
 const getTeacher = cache(async (id: number) => {
     const teacher = await teacherApi.getDetailTeacher(id);

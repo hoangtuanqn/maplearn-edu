@@ -31,7 +31,7 @@ export function DangerConfirm({
                 <AlertDialogFooter>
                     <AlertDialogCancel>Hủy thao tác</AlertDialogCancel>
                     <AlertDialogAction className="bg-red-500 text-white hover:bg-red-500/90" onClick={action}>
-                        Vẫn thực hiện
+                        Thực hiện
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

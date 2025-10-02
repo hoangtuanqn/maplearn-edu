@@ -4,7 +4,7 @@ import "~/styles/global.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import "@smastrom/react-rating/style.css";
 import "katex/dist/katex.min.css";
-
+import "driver.js/dist/driver.css";
 import "swiper/css";
 import "swiper/css/pagination";
 import QueryProvider from "~/wrapper/QueryProvider";

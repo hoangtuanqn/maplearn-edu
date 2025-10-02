@@ -18,16 +18,16 @@ class LessonViewHistorySeeder extends Seeder
             $course = $payment->course;
             $lessons = $course->lessons;
             foreach ($lessons as $indexLessson => $lesson) {
-                // chỉ cần add data mẫu vừa phải thôi
-                // if ($indexPayment >= 4 && $indexLessson >= 10) {
-                //     break;
+                // if ($indexPayment >= 4 && rand(1, 200) % 2 == 0) {
+                //     continue; // ko phải bài học nào cũng học
                 // }
+
                 LessonViewHistory::create([
                     'user_id' => $payment->user_id,
                     'lesson_id' => $lesson->id,
                     'progress' => $lesson->duration,
                     'is_completed' => true,
-                    'created_at' => now(),
+                    'updated_at' => now()->subDays(rand(1, 7)),
                 ]);
             }
         }

@@ -44,7 +44,7 @@ class CourseReviewSeeder extends Seeder
         $faker = \Faker\Factory::create();
         for ($i = 0; $i < 200; $i++) {
             CourseReview::create([
-                'course_id' => Course::inRandomOrder()->first()->id,
+                'course_id' => Course::where("start_date", "<=", now())->inRandomOrder()->first()->id,
                 'user_id'   => User::where('role', 'student')->inRandomOrder()->first()->id,
                 'rating'    => rand(2, 5),
                 'comment'   => $faker->randomElement($comments),

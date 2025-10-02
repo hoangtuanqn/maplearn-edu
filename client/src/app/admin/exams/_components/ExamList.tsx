@@ -1,6 +1,6 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Trash2, Clock, Users, Target } from "lucide-react";
+import { Trash2, Clock, Users, Target, Lock } from "lucide-react";
 import Link from "next/link";
 import React, { Suspense } from "react";
 import { toast } from "sonner";
@@ -11,7 +11,7 @@ import { DangerConfirm } from "~/components/DangerConfirm";
 import { Button } from "~/components/ui/button";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
 import { formatter } from "~/libs/format";
-import { buildLaravelFilterQuery } from "~/libs/hepler";
+import { buildLaravelFilterQuery, highlightKeyword } from "~/libs/helper";
 import { getStatusBadge } from "~/libs/statusBadge";
 import { examCategories } from "~/mockdata/exam/examCategories.data";
 import { gradeLevelsMock } from "~/mockdata/gradeLevels";
@@ -150,7 +150,12 @@ const ExamList = () => {
 
                                       <td className="px-4 py-3 align-top text-zinc-500">
                                           <div className="space-y-1">
-                                              <p className="text-base font-semibold text-gray-900">{exam.title}</p>
+                                              <p
+                                                  className="text-base font-semibold text-gray-900"
+                                                  dangerouslySetInnerHTML={{
+                                                      __html: highlightKeyword(exam.title, search),
+                                                  }}
+                                              ></p>
                                               <div className="mt-1 flex flex-wrap items-center gap-2">
                                                   {getDifficultyBadge(exam.difficulty)}
                                                   {getExamTypeBadge(exam.exam_type)}
@@ -184,6 +189,12 @@ const ExamList = () => {
                                                       </span>
                                                   </div>
                                               </div>
+                                              {exam.is_password_protected && (
+                                                  <span className="inline-flex items-center gap-1 rounded border border-yellow-300 bg-gradient-to-r from-yellow-200 to-yellow-400 px-2 py-0.5 text-xs font-semibold text-yellow-900 shadow-sm">
+                                                      <Lock />
+                                                      Có mật khẩu
+                                                  </span>
+                                              )}
                                           </div>
                                       </td>
 
@@ -239,7 +250,7 @@ const ExamList = () => {
                                       </td>
 
                                       <td className="px-4 py-3">
-                                          {getStatusBadge("active_inactive", exam.status ? "1" : "0")}
+                                          {getStatusBadge("public_private", exam.status ? "1" : "0")}
                                       </td>
 
                                       <td className="px-4 py-3">

@@ -66,17 +66,12 @@ export function PaymentMethodsDialog({
                         {course.price === 0 ? (
                             <ApplyCourseFree slug={course.slug} />
                         ) : (
-                            <>
-                                {isCheckPrerequisite ? (
-                                    <Button className="w-full" variant={"primary"}>
-                                        <span>Vẫn tiếp tục mua</span>
-                                    </Button>
-                                ) : (
-                                    <Button className="text-primary w-full" variant={"outline"}>
-                                        <span>Mua ngay</span>
-                                    </Button>
-                                )}
-                            </>
+                            <Button
+                                className={`w-full ${isCheckPrerequisite ? "" : "text-primary"}`}
+                                variant={isCheckPrerequisite ? "primary" : "outline"}
+                            >
+                                <span>{isCheckPrerequisite ? "Vẫn tiếp tục mua" : "Mua ngay"}</span>
+                            </Button>
                         )}
                     </DialogTrigger>
 

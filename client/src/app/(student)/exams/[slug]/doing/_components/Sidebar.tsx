@@ -88,10 +88,14 @@ const Sidebar = ({
                         <div className="rounded-lg border border-gray-200 bg-white p-4">
                             <div className="mb-2 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                    <Clock className="h-4 w-4 text-red-500" />
+                                    <Clock
+                                        className={`h-4 w-4 ${timeLeft <= 600 ? "text-red-500" : "text-gray-500"}`}
+                                    />
                                     <span className="text-sm font-medium text-gray-600">Thời gian còn lại</span>
                                 </div>
-                                <span className="text-lg font-bold text-red-600">
+                                <span
+                                    className={`text-lg font-bold ${timeLeft <= 600 ? "text-red-600" : "text-gray-900"}`}
+                                >
                                     {formatter.parseMinutesSeconds(timeLeft)}
                                 </span>
                             </div>

@@ -5,7 +5,6 @@ import {
     Play,
     CheckCircle,
     Clock,
-    MessageCircle,
     BookOpen,
     Award,
     FileText,
@@ -24,8 +23,6 @@ import { CourseDetailResponse, LessonDetailResponse } from "~/schemaValidate/cou
 import { formatter } from "~/libs/format";
 import Link from "next/link";
 import ChatBotAI from "./ChatBotAI";
-import { useAuth } from "~/hooks/useAuth";
-import CertificateButton from "./CertificateButton";
 
 const Sidebar = ({
     course,
@@ -34,7 +31,6 @@ const Sidebar = ({
     course: CourseDetailResponse["data"];
     lesson: LessonDetailResponse["data"];
 }) => {
-    const { user } = useAuth();
     const [openChapter, setOpenChapter] = useState(lesson.chapter_id);
     const [activeTab, setActiveTab] = useState("lessons"); // "lessons" | "comments" | "resources"
 
@@ -70,19 +66,7 @@ const Sidebar = ({
                         <span>Nội dung</span>
                     </div>
                 </button>
-                <button
-                    onClick={() => setActiveTab("comments")}
-                    className={`relative flex-1 cursor-pointer px-4 py-4 text-sm font-semibold ${
-                        activeTab === "comments"
-                            ? "text-primary bg-white"
-                            : "text-gray-600 hover:bg-white/60 hover:text-gray-900"
-                    }`}
-                >
-                    <div className="flex items-center justify-center gap-2">
-                        <MessageCircle className="h-4 w-4" />
-                        <span>Bình luận</span>
-                    </div>
-                </button>
+
                 <button
                     onClick={() => setActiveTab("resources")}
                     className={`relative flex-1 cursor-pointer px-4 py-4 text-sm font-semibold ${
@@ -120,7 +104,7 @@ const Sidebar = ({
                     </div>
 
                     {/* Certificate Button - Only show when course is 100% completed */}
-                    {course.code_certificate && user?.email_verified_at && (
+                    {course.code_certificate && (
                         <div className="mt-4">
                             <Link
                                 href={`/certificate/${course.code_certificate}`}
@@ -133,7 +117,6 @@ const Sidebar = ({
                             </Link>
                         </div>
                     )}
-                    {course.code_certificate && !user?.email_verified_at && <CertificateButton />}
 
                     {/* Exam Section */}
                     {course.exam && course.percent_completed == 100 && (
@@ -437,15 +420,6 @@ const Sidebar = ({
                                     </AnimatePresence>
                                 </div>
                             ))}
-                        </div>
-                    </div>
-                )}
-
-                {activeTab === "comments" && (
-                    <div className="p-4">
-                        <div className="py-8 text-center">
-                            <MessageCircle className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-                            <p className="text-gray-600">Chức năng bình luận đang được phát triển</p>
                         </div>
                     </div>
                 )}

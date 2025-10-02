@@ -23,7 +23,9 @@ class DatabaseSeeder extends Seeder
             ExamQuestionSeeder::class,
 
             PaymentSeeder::class,
-            LessonViewHistorySeeder::class
+            LessonViewHistorySeeder::class,
+            ExamAttemptSeeder::class,
+            CertificateSeeder::class,
 
         ]);
     }

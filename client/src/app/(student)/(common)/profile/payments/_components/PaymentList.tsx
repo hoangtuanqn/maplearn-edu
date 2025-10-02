@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { getStatusBadge } from "~/libs/statusBadge";
 import { formatter } from "~/libs/format";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
-import { buildLaravelFilterQuery } from "~/libs/hepler";
+import { buildLaravelFilterQuery } from "~/libs/helper";
 import profileApi, { PAYMENT_PER_PAGE } from "~/apiRequest/profile";
 import TableSkeleton from "../../_components/TableSkeleton";
 import DisplayNoData from "~/app/(student)/_components/Courses/DisplayNoData";

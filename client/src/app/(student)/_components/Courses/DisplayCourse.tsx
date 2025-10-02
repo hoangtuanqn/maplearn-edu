@@ -7,10 +7,11 @@ import React, { memo, useEffect, useRef, useState } from "react";
 import { formatter } from "~/libs/format";
 import { motion, AnimatePresence } from "framer-motion";
 import { CourseType } from "~/schemaValidate/course.schema";
+import { highlightKeyword } from "~/libs/helper";
 
 const tooltipOffset = 210;
 
-const DisplayCourse = ({ course }: { course: CourseType }) => {
+const DisplayCourse = ({ course, keyword = null }: { course: CourseType; keyword?: string | null }) => {
     const [showInfo, setShowInfo] = useState(false);
     const [position, setPosition] = useState<"left" | "right">("right");
     const [isDesktop, setIsDesktop] = useState(false);
@@ -108,7 +109,12 @@ const DisplayCourse = ({ course }: { course: CourseType }) => {
                     )}
                 </div>
 
-                <h3 className="mt-4 w-full font-medium lg:line-clamp-2">{course.name}</h3>
+                <h3
+                    className="mt-4 w-full font-medium lg:line-clamp-2"
+                    dangerouslySetInnerHTML={{
+                        __html: highlightKeyword(course.name, keyword ?? null),
+                    }}
+                />
 
                 <div className="my-1 flex items-center gap-1 text-xs font-medium">
                     <User style={{ fill: "currentColor" }} />

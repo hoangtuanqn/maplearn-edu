@@ -140,6 +140,7 @@ class UserSeeder extends Seeder
                 'role'          => $teacher['role'] ?? "teacher",
                 'bio'           => $teacher['bio'],
                 'degree'        => $teacher['degree'],
+                'email_verified_at' => now(),
                 'avatar'        => $teacher['image'],
                 'created_at'    => now()->subDays(rand(0, 60)),
                 'updated_at'    => now(),
@@ -148,6 +149,6 @@ class UserSeeder extends Seeder
 
         User::insert($insertData);
 
-        User::factory(50)->create();
+        User::factory(600)->create();
     }
 }

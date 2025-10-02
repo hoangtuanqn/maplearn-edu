@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\Course\CompletionStatusPersonFilter;
+use App\Filters\Course\ProgressRangePersonFilter;
 use App\Filters\Invoice\DateFilter;
 use App\Filters\Invoice\StatusFilter;
 use App\Http\Controllers\Api\BaseApiController;
@@ -67,7 +69,11 @@ class ProfileController extends BaseApiController
         $limit = $request->input('limit', 10); // số item mỗi trang, mặc định 10
 
         $courses = QueryBuilder::for($user->purchasedCourses()->orderBy('payments.id', 'desc'))
-            ->allowedFilters(['title']) // lọc theo title nếu cần
+            ->allowedFilters([
+                'name',
+                AllowedFilter::custom('progress_range', new ProgressRangePersonFilter),
+                AllowedFilter::custom('completion_status', new CompletionStatusPersonFilter)
+            ])
 
             // ->latest('created_at')
             ->paginate($limit)
@@ -132,7 +138,7 @@ class ProfileController extends BaseApiController
         $user = $request->user();
 
         // Generate new 2FA secret and QR code
-        $google2fa = GoogleAuthenService::generateSecret2FA($user->email);
+        $google2fa = GoogleAuthenService::generateSecret2FA("MapLearn - " . $user->email);
 
         if (!$google2fa || empty($google2fa['secret']) || empty($google2fa['qr_base64'])) {
             return $this->errorResponse(null, "Không thể tạo mã 2FA. Vui lòng thử lại.", 500);

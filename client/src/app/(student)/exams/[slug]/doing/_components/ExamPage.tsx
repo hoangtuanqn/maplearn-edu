@@ -17,8 +17,10 @@ import { toast } from "sonner";
 import { useUnsavedChangesWarning } from "~/hooks/useUnsavedChangesWarning";
 import Loading from "~/app/(student)/_components/Loading";
 import { useRouter } from "next/navigation";
-import { exitFullscreen } from "~/libs/hepler";
+import { exitFullscreen } from "~/libs/helper";
 import { AlertTriangle, Clock, Shield } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import { notificationErrorApi } from "~/libs/apis/http";
 
 const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: QuestionsExamResponse["data"] }) => {
     const [mounted, setMounted] = useState(false);
@@ -68,20 +70,51 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
                             (_, i) => prev?.[questionId]?.[i],
                         ).filter((ans) => ans);
                         newAnswers[idx - 1] = answer; // idx - 1 vì mảng bắt đầu từ 0
-                        return { ...prev, [questionId]: newAnswers };
+                        const dataNew = { ...prev, [questionId]: newAnswers };
+
+                        // Nếu đáp án rỗng thì xóa luôn key đó đi (nếu là kéo thả từ ô đáp án ra bên ngoài)
+                        // if (newAnswers.every((ans) => !ans)) {
+                        //     delete dataNew[questionId];
+                        // }
+
+                        return dataNew;
                     });
                 }
                 break;
             default:
                 toast.error("Loại câu hỏi không hợp lệ!");
         }
+
+        setAnswers((prev) =>
+            Object.fromEntries(Object.entries(prev).filter(([_, v]) => v && v.length > 0 && v[0] !== "")),
+        );
+    };
+
+    // Xóa sự lựa chọn sau khi đã chọn nhầm
+    const handleRemoveAnswer = (questionId: number) => {
+        setAnswers((prev) => {
+            const newAnswers = { ...prev };
+            delete newAnswers[questionId];
+
+            // Xóa luôn khỏi localStorage
+            const dataStr = getLocalStorage(slug);
+            if (dataStr) {
+                const data: AnswerLocalStorage = JSON.parse(dataStr);
+                if (data.answers) {
+                    delete data.answers[questionId];
+                    setLocalStorage(slug, JSON.stringify(data));
+                }
+            }
+
+            return newAnswers;
+        });
     };
 
     // Submit bài thi
     const submitAnswerMutation = useMutation({
         mutationFn: (data: AnswerLocalStorage) => examApi.submitAnswer(slug, data),
         onSuccess: (data) => {
-            console.log("Nộp bài rồi: ", data);
+            // console.log("Nộp bài rồi: ", data);
 
             toast.success("Đã nộp bài làm thành công");
             exitFullscreen();
@@ -111,13 +144,11 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
                 removeLocalStorage(slug);
                 alert(data.note || "Bài thi đã bị hủy do vi phạm quy chế thi.");
                 exitFullscreen();
-                router.push(`/exams/${slug}/results`);
+                router.push(`/exams/${slug}/results/${data.id}`);
             }
             setViolationCount(data.violation_count ?? 0);
         },
-        onError: () => {
-            // router.push(`/exams/${slug}`);
-        },
+        onError: notificationErrorApi,
     });
     // Function sẽ được gọi nếu phát hiện gian lận
     const handleCheatingDetected = () => {
@@ -139,7 +170,7 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
             setAnswers(data.answers || {});
             setQuestionActive(data.questionActive || 0);
             // ! Không xóa: mở lại khi đi bảo vệ
-            // setCountdownSubmit(1 * 60 - Math.floor((Date.now() - data.start) / 1000)); // tính thời gian còn lại
+            setCountdownSubmit(2 * 60 - Math.floor((Date.now() - data.start) / 1000)); // tính thời gian còn lại
         } else {
             const startTime = Date.now();
             const newData: AnswerLocalStorage = { answers: {}, start: startTime, questionActive: 0 };
@@ -147,7 +178,7 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
             setLocalStorage(slug, JSON.stringify(newData));
             // setCountdownSubmit(5 * 60);
             // ! Không xóa: mở lại khi đi bảo vệ
-            // setCountdownSubmit(1 * 60); // test thì 1p thôi
+            setCountdownSubmit(2 * 60); // test thì 1p thôi
         }
     }, [setCountdownSubmit, slug]);
 
@@ -182,6 +213,27 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
             handleSubmitExam();
         }
     }, [timeLeft, handleSubmitExam, submitAnswerMutation]);
+
+    // Demo bảo về đồ án (cái nhận 10 điểm bài thi)
+    const mutationRecievePoints = useMutation({
+        mutationFn: () => examApi.getAnswerExam(slug),
+        onSuccess: (res) => {
+            if (infoExam) {
+                setAnswers(res.data.data);
+                setLocalStorage(
+                    slug,
+                    JSON.stringify({
+                        answers: res.data.data,
+                        start: infoExam.start, // Giữ nguyên start ban đầu
+                        questionActive, // Giữ nguyên questionActive ban đầu
+                    }),
+                );
+            }
+            toast.success("Bạn đã nhận được 10 điểm!");
+        },
+        onError: notificationErrorApi,
+    });
+
     return (
         <>
             {submitAnswerMutation.isPending && <Loading />}
@@ -193,10 +245,23 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
                 <div className="mx-auto px-4 py-6">
                     {/* Header */}
                     <div className="mb-6 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
-                        <h2 className="text-primary text-2xl font-bold">{questionsRes.title}</h2>
+                        <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
+                            <h2 className="text-primary tẽ text-2xl font-bold">{questionsRes.title}</h2>
+                            <Button
+                                variant={"outline"}
+                                onClick={
+                                    mutationRecievePoints.isPending ? undefined : () => mutationRecievePoints.mutate()
+                                }
+                            >
+                                Nhận 10 điểm
+                            </Button>
+                        </div>
                         <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
                             <Shield className="text-primary h-4 w-4" />
-                            <span>Đang làm bài thi - Vui lòng không rời khỏi trang</span>
+                            <span>
+                                Vui lòng không rời khỏi trang khi làm bài. Hệ thống sẽ tự động lưu lại câu trả lời của
+                                bạn.
+                            </span>
                         </div>
                     </div>
 
@@ -222,7 +287,7 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
                             </div>
                         )}
 
-                        {timeLeft > 1 && timeLeft <= 180 && (
+                        {timeLeft > 1 && timeLeft <= 600 && (
                             <div className="rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm">
                                 <div className="flex items-center gap-3">
                                     <Clock className="h-5 w-5 text-red-600" />
@@ -234,7 +299,8 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
                                             </span>
                                         </div>
                                         <p className="mt-1 text-sm text-red-700">
-                                            Hệ thống sẽ tự động nộp bài khi hết giờ.
+                                            Hệ thống sẽ tự động nộp bài khi hết giờ. Bạn nên nộp bài trước khi hết giờ
+                                            để tránh xảy ra sự cố ngoài ý muốn.
                                         </p>
                                     </div>
                                 </div>
@@ -253,6 +319,7 @@ const ExamPage = ({ slug, questionsRes }: { slug: string; questionsRes: Question
                                 handleChoiceAnswer,
                                 mounted,
                                 setQuestionActive,
+                                handleRemoveAnswer,
                             }}
                         />
 

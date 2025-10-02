@@ -730,7 +730,11 @@ class CourseSeeder extends Seeder
         $gradeLevel = ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'];
         $categories = ['2k8-xuat-phat-som-lop-12', '2k9-xuat-phat-som-lop-11', '2k10-xuat-phat-som-lop-10', 'hoc-tot-sach-giao-khoa', 'khoa-hoc-trung-hoc-co-so'];
         foreach ($data as $key => $item) {
-            $start_date =  $faker->dateTimeBetween('-1 month', '+1 month');
+            if ($key <= 2) {
+                $start_date =  $faker->dateTimeBetween('-1 month', '+1 month');
+            } else {
+                $start_date =  now()->subDays(rand(1, 5));
+            }
             $end_date   =  $faker->dateTimeBetween('+2 months', '+6 months');
             $updated_at = $faker->dateTimeBetween($start_date, $end_date);
             Course::create([
@@ -742,13 +746,14 @@ class CourseSeeder extends Seeder
                 'user_id'     => $item['user_id'],
                 'price'       => $faker->numberBetween(100, 400) * 1000,
                 'description' => 'Khóa học được thiết kế nhằm cung cấp cho học sinh nền tảng kiến thức vững chắc, hệ thống hóa toàn bộ nội dung trọng tâm theo chương trình chuẩn, kết hợp với phương pháp học hiệu quả giúp rèn luyện tư duy, nâng cao kỹ năng làm bài và tự tin chinh phục các kỳ thi quan trọng như thi học kỳ, thi chuyển cấp hay kỳ thi THPT Quốc gia.',
-                'intro_video' => '/video.mp4',
+                'intro_video' => env('APP_URL_FRONT_END', 'http://localhost:3000') . '/video.mp4',
                 'start_date'  => $start_date,
                 'end_date'    => $end_date,
                 'updated_at'  => $updated_at,
                 'status'      => 1,
                 'prerequisite_course_id' => $key > 0 ? $key : null,
-                
+                'created_at'  => $start_date,
+
                 // ran dom ngẫu nhiên paper status = 0 và ko dc trùng với các khóa đã tạo
                 'exam_paper_id' =>  ExamPaper::where('status', 0)->whereNotIn('id', Course::pluck('exam_paper_id'))->inRandomOrder()->first()->id,
             ]);

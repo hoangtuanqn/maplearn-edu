@@ -9,7 +9,7 @@ import { PaginationNav } from "~/app/(student)/_components/Pagination";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
 import { formatter } from "~/libs/format";
 import DisplayTotalResult from "../../_components/DisplayTotalResult";
-import { buildLaravelFilterQuery } from "~/libs/hepler";
+import { buildLaravelFilterQuery } from "~/libs/helper";
 
 const allowedFields = [
     "search",

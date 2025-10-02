@@ -6,14 +6,15 @@ import examApi from "~/apiRequest/exam";
 import Loading from "~/app/(student)/_components/Loading";
 import { Checkbox } from "~/components/ui/checkbox";
 import { notificationErrorApi } from "~/libs/apis/http";
-import { Play, Shield, CheckCircle } from "lucide-react";
+import { Shield, CheckCircle, Play } from "lucide-react";
+import { ConfirmPasswordExam } from "./ConfirmPasswordExam";
 
-const StartExam = ({ slug }: { slug: string }) => {
+const StartExam = ({ slug, isPasswordProtected }: { slug: string; isPasswordProtected: boolean }) => {
     const router = useRouter();
     const [agree, setAgree] = useState(false);
     const startExamMutation = useMutation({
-        mutationFn: async () => {
-            const res = await examApi.startExam(slug);
+        mutationFn: async (password: string | null = null) => {
+            const res = await examApi.startExam(slug, password);
             return res.data.data;
         },
         onSuccess: () => {
@@ -66,23 +67,27 @@ const StartExam = ({ slug }: { slug: string }) => {
 
                 {/* Start Button */}
                 <div className="flex justify-center">
-                    <button
-                        onClick={() => {
-                            if (agree) {
-                                startExamMutation.mutate();
-                            }
-                        }}
-                        disabled={!agree}
-                        className={`flex h-14 items-center justify-center gap-3 rounded-full px-8 font-semibold text-white shadow-lg transition-all duration-200 ${
-                            agree
-                                ? "bg-primary hover:bg-primary/90 transform cursor-pointer hover:scale-105 hover:shadow-xl"
-                                : "cursor-not-allowed bg-gray-300"
-                        }`}
-                    >
-                        <Play className="h-5 w-5" />
-                        <span className="text-lg">Bắt đầu làm bài</span>
-                        {agree && <CheckCircle className="h-5 w-5" />}
-                    </button>
+                    {!isPasswordProtected ? (
+                        <button
+                            onClick={() => {
+                                if (agree) {
+                                    startExamMutation.mutate(null);
+                                }
+                            }}
+                            disabled={!agree}
+                            className={`flex h-14 items-center justify-center gap-3 rounded-full px-8 font-semibold text-white shadow-lg transition-all duration-200 ${
+                                agree
+                                    ? "bg-primary hover:bg-primary/90 transform cursor-pointer hover:scale-105 hover:shadow-xl"
+                                    : "cursor-not-allowed bg-gray-300"
+                            }`}
+                        >
+                            <Play className="h-5 w-5" />
+                            <span className="text-lg">Bắt đầu làm bài</span>
+                            {agree && <CheckCircle className="h-5 w-5" />}
+                        </button>
+                    ) : (
+                        <ConfirmPasswordExam agree={agree} onSubmit={startExamMutation.mutate} />
+                    )}
                 </div>
 
                 {/* Additional Info */}

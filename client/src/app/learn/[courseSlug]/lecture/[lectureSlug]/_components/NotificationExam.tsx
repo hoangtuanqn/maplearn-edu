@@ -16,12 +16,6 @@ interface NotificationExamProps {
     course: CourseDetailResponse["data"];
 }
 
-/**
- * Primary-themed Notification for Exam
- * - Uses shadcn/ui tokens (primary, background, ring, muted-foreground)
- * - Accessible roles/labels
- * - Subtle motion via CSS utilities (no extra deps)
- */
 export function NotificationExam({ course }: NotificationExamProps) {
     const [open, setOpen] = useState(false);
 
@@ -80,17 +74,13 @@ export function NotificationExam({ course }: NotificationExamProps) {
 
                             <div className="border-border/60 bg-muted/40 flex flex-col items-center rounded-xl border px-3 py-3">
                                 <Target className="text-primary mb-1 h-5 w-5" aria-hidden="true" />
-                                <span className="text-foreground font-semibold">
-                                    {course.exam?.pass_score}/{course.exam?.max_score}
-                                </span>
-                                <span className="text-muted-foreground text-xs">Điểm qua</span>
+                                <span className="text-foreground font-semibold">{course.exam?.pass_score} điểm</span>
+                                <span className="text-muted-foreground text-xs">Điểm tối thiếu đạt</span>
                             </div>
 
                             <div className="border-border/60 bg-muted/40 flex flex-col items-center rounded-xl border px-3 py-3">
                                 <PenTool className="text-primary mb-1 h-5 w-5" aria-hidden="true" />
-                                <span className="text-foreground font-semibold">
-                                    {course.exam?.question_count} câu hỏi
-                                </span>
+                                <span className="text-foreground font-semibold">{course.exam?.question_count}</span>
                                 <span className="text-muted-foreground text-xs">Số câu</span>
                             </div>
                         </div>

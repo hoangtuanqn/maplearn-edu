@@ -191,25 +191,33 @@ const ResultExamPage = async ({ params }: { params: Promise<{ slug: string; id: 
                         </div>
                         <div className="rounded-lg border bg-white p-4">
                             <h3 className="mb-4 text-base font-semibold text-gray-900">Hành động</h3>
-                            <div className="flex flex-col gap-3">
+                            <div className="flex flex-col items-center gap-3">
                                 <Link href={`/exams/${slug}`} className="w-full">
                                     <Button variant="outline" className="w-full justify-start gap-2">
                                         <CalendarDays className="size-4" />
                                         Về trang đề thi
                                     </Button>
                                 </Link>
-                                <Link href={`/exams/${slug}/start`} className="w-full">
-                                    <Button className="w-full justify-start gap-2 bg-[#12AD50] text-white hover:bg-[#0f9a47]">
-                                        <RefreshCcw className="size-4" />
-                                        Làm lại từ đầu
-                                    </Button>
-                                </Link>
-                                <Link href={`/exams/${slug}/results/${result.results.id}/detail`} className="w-full">
-                                    <Button variant="outline" className="w-full justify-start gap-2">
-                                        <ListChecks className="size-4" />
-                                        Xem đáp án chi tiết
-                                    </Button>
-                                </Link>
+                                {(result.max_attempts == null || result.attempt_count < result.max_attempts) && (
+                                    <Link href={`/exams/${slug}/start`} className="w-full">
+                                        <Button className="w-full justify-start gap-2 bg-[#12AD50] text-white hover:bg-[#0f9a47]">
+                                            <RefreshCcw className="size-4" />
+                                            Làm lại từ đầu
+                                        </Button>
+                                    </Link>
+                                )}
+
+                                {result.status && (
+                                    <Link
+                                        href={`/exams/${slug}/results/${result.results.id}/detail`}
+                                        className="w-full"
+                                    >
+                                        <Button variant="outline" className="w-full justify-start gap-2">
+                                            <ListChecks className="size-4" />
+                                            Xem đáp án chi tiết
+                                        </Button>
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </div>

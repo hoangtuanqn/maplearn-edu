@@ -1,4 +1,4 @@
-import { LayoutDashboard, GraduationCap, ClipboardList, Receipt, History, Undo2 } from "lucide-react";
+import { LayoutDashboard, GraduationCap, ClipboardList, History, Undo2 } from "lucide-react";
 const menuItems = [
     {
         type: "title",
@@ -10,6 +10,7 @@ const menuItems = [
                 icon: LayoutDashboard,
                 href: "/teacher",
                 matcher: ["/teacher"],
+                id: "dashboard-stats",
             },
         ],
     },
@@ -23,7 +24,14 @@ const menuItems = [
                 label: "Khóa học",
                 icon: GraduationCap,
                 href: "/teacher/courses",
-                matcher: ["/teacher/courses", "/teacher/courses/:slug"],
+                matcher: [
+                    "/teacher/courses",
+                    "/teacher/courses/edit/:slug",
+                    "/teacher/courses/:slug",
+                    "/teacher/courses/:slug/students/:id",
+                    "/teacher/courses/:slug/:id/compare/:id2",
+                ],
+                id: "courses",
             },
         ],
     },
@@ -36,21 +44,8 @@ const menuItems = [
                 label: "Đề thi",
                 icon: ClipboardList,
                 href: "/teacher/exams",
-                matcher: ["/teacher/exams", "/teacher/exams/:slug"],
-            },
-        ],
-    },
-
-    {
-        type: "title",
-        label: "Thanh toán",
-        children: [
-            {
-                type: "link",
-                label: "Thanh toán",
-                icon: Receipt,
-                href: "/teacher/payments",
-                matcher: ["/teacher/payments"],
+                matcher: ["/teacher/exams", "/teacher/exams/:slug", "/teacher/exams/:slug/edit"],
+                id: "exams",
             },
         ],
     },
@@ -65,6 +60,15 @@ const menuItems = [
                 icon: History,
                 href: "/teacher/history/exams",
                 matcher: ["/teacher/history/exams"],
+                id: "history-exams",
+            },
+            {
+                type: "link",
+                label: "Học bài",
+                icon: History,
+                href: "/teacher/history/learns",
+                matcher: ["/teacher/history/learns"],
+                id: "history-learns",
             },
         ],
     },

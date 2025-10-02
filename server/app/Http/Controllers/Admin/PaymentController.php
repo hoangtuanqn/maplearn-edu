@@ -59,7 +59,7 @@ class PaymentController extends BaseApiController
 
         $payments = $paymentsQuery
             ->with(['user:id,full_name,username', 'course:id,name,slug']) // Eager load relationships if needed
-            ->orderByDesc('id')
+            ->orderByDesc('paid_at')
             ->paginate($limit);
 
         return $this->successResponse($payments, 'Lấy danh sách thanh toán thành công!');

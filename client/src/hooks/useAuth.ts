@@ -62,6 +62,7 @@ export function useAuth() {
             if (typeof window !== "undefined") {
                 removeLocalStorage("user"); // Xoá user khỏi localStorage
             }
+            router.refresh();
             router.push("/auth/login");
             toast.success("Đăng xuất thành công!");
         },

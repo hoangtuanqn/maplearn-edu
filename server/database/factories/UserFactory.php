@@ -23,18 +23,20 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $fake = fake("vi_VN");
+        $username = $fake->unique()->userName();
         return [
-            'username'      => fake()->unique()->userName(),
-            'password'      => static::$password ??= Hash::make('password'),
-            'full_name'     => fake()->name(),
-            'email'         => fake()->unique()->safeEmail(),
-            'phone_number'  => fake()->unique()->numerify('0##########'),
-            'gender'        => fake()->randomElement(['male', 'female', 'other']),
+            'username'      => $username,
+            'password'      => Hash::make('password'),
+            'full_name'     => $fake->name(),
+            'email'         => $username . '@gmail.com',
+            'phone_number'  => $fake->unique()->numerify('0##########'),
+            'gender'        => $fake->randomElement(['male', 'female', 'other']),
             'avatar'        => 'https://res.cloudinary.com/dbu1zfbhv/image/upload/v1755729796/avatars/ccrlg1hkjtc6dyeervsv.jpg',
-            'birth_year'    => fake()->optional()->numberBetween(1995, 2013),
-            'facebook_link' => fake()->optional()->url(),
-            'school'        => fake()->optional()->company(),
-            'city' => fake()->randomElement([
+            'birth_year'    => $fake->optional()->numberBetween(1995, 2013),
+            'facebook_link' => $fake->optional()->url(),
+            'school'        => $fake->optional()->company(),
+            'city' => $fake->randomElement([
                 "An Giang",
                 "Bắc Ninh",
                 "Cao Bằng",
@@ -70,12 +72,12 @@ class UserFactory extends Factory
                 "Đồng Nai",
                 "Đồng Tháp",
             ]),
-            // 'role' => fake()->randomElement(['admin', 'student']),
+            // 'role' => $fake ->randomElement(['admin', 'student']),
             'role'              => 'student',
             'banned'            => 0,
             'email_verified_at' => now(),
             'remember_token'    => Str::random(10),
-            'created_at'        => now()->subDays(rand(0, 60)),
+            'created_at'        => now()->subDays(rand(0, 365)),
         ];
     }
 

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React from "react";
 import { useAuth } from "~/hooks/useAuth";
-import { getFormattedVietnameseDate } from "~/libs/hepler";
+import { getFormattedVietnameseDate } from "~/libs/helper";
 
 const DashboardStats = () => {
     const { user } = useAuth();

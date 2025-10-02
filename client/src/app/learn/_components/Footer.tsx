@@ -13,7 +13,6 @@ const Footer = () => {
             <FooterMobile />
             <Tooltip anchorSelect=".view_tooltip" className="z-300" />
             <ScrollToTopButton />
-
             <Toaster position="top-center" expand={true} richColors duration={5000} />
         </>
     );

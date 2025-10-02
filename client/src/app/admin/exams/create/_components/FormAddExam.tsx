@@ -7,7 +7,6 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { Textarea } from "~/components/ui/textarea";
 
 import { subjectsMock } from "~/mockdata/subject.data";
 import { gradeLevelsMock } from "~/mockdata/gradeLevels";
@@ -21,6 +20,9 @@ import { provinces } from "~/mockdata/other/provinces.data";
 import SingleSelectDropdown from "~/app/(student)/_components/SingleSelectDropdown";
 import formSchema from "../schema/formAddExam.schema";
 import FormAddQuestion from "./FormAddQuestion";
+import { toast } from "sonner";
+import { Checkbox } from "~/components/ui/checkbox";
+import { Label } from "~/components/ui/label";
 
 // Difficulty levels
 const difficultyLevels = [
@@ -66,22 +68,18 @@ const FormAddExam = () => {
             duration_minutes: 60,
             start_time: "",
             end_time: "",
-            description: "",
-            instructions: "",
             is_active: true,
-            is_shuffle_questions: false,
-            is_shuffle_answers: false,
-            is_show_result: true,
-            is_retakeable: false,
             max_attempts: 1,
+            is_password_protected: false,
+            anti_cheat_enabled: false,
         },
         mode: "onBlur",
     });
 
     const mutationExam = useMutation({
         mutationFn: examAdminApi.addPaperExam,
-        onSuccess: () => {
-            router.push("/admin/exams");
+        onSuccess: (data) => {
+            router.push(`/admin/exams/${data.data.data.slug}`);
         },
         onError: notificationErrorApi,
     });
@@ -92,22 +90,22 @@ const FormAddExam = () => {
         const maxScore = data.max_score || 10;
 
         if (questions.length === 0) {
-            alert("❌ Vui lòng thêm ít nhất một câu hỏi");
+            toast.error("Vui lòng thêm ít nhất một câu hỏi");
             return;
         }
 
         // Strict score validation
         if (totalScore > maxScore) {
-            alert(
-                `❌ Tổng điểm câu hỏi (${totalScore.toFixed(2)}) vượt quá điểm tối đa (${maxScore})\nVui lòng giảm điểm các câu hỏi hoặc tăng điểm tối đa`,
+            toast.error(
+                `Tổng điểm câu hỏi (${totalScore.toFixed(2)}) vượt quá điểm tối đa (${maxScore}). Vui lòng giảm điểm các câu hỏi hoặc tăng điểm tối đa.`,
             );
             return;
         }
 
         if (Math.abs(totalScore - maxScore) > 0.01) {
             // Allow small floating point differences
-            alert(
-                `⚠️ Tổng điểm câu hỏi (${totalScore.toFixed(2)}) không bằng điểm tối đa (${maxScore})\nTổng điểm các câu hỏi phải bằng chính xác điểm tối đa của đề thi`,
+            toast.error(
+                `Tổng điểm câu hỏi (${totalScore.toFixed(2)}) không bằng điểm tối đa (${maxScore}). Tổng điểm các câu hỏi phải bằng chính xác điểm tối đa của đề thi.`,
             );
             return;
         }
@@ -118,12 +116,12 @@ const FormAddExam = () => {
             const questionNumber = i + 1;
 
             if (!question.content.trim()) {
-                alert(`❌ Câu hỏi ${questionNumber}: Vui lòng nhập nội dung câu hỏi`);
+                toast.error(`Câu hỏi ${questionNumber}: Vui lòng nhập nội dung câu hỏi`);
                 return;
             }
 
             if (question.score <= 0) {
-                alert(`❌ Câu hỏi ${questionNumber}: Điểm số phải lớn hơn 0`);
+                toast.error(`Câu hỏi ${questionNumber}: Điểm số phải lớn hơn 0`);
                 return;
             }
 
@@ -133,35 +131,35 @@ const FormAddExam = () => {
                     question.correct_answer.length === 0 ||
                     !question.correct_answer[0]?.trim()
                 ) {
-                    alert(`❌ Câu hỏi ${questionNumber}: Vui lòng nhập đáp án số`);
+                    toast.error(`Câu hỏi ${questionNumber}: Vui lòng nhập đáp án số`);
                     return;
                 }
             } else if (question.type === "DRAG_DROP") {
                 if (question.options.length < 2) {
-                    alert(`❌ Câu hỏi ${questionNumber}: Phải có ít nhất 2 phần tử kéo thả`);
+                    toast.error(`Câu hỏi ${questionNumber}: Phải có ít nhất 2 phần tử kéo thả`);
                     return;
                 }
                 const hasEmptyOptions = question.options.some((opt) => !opt.content.trim());
                 if (hasEmptyOptions) {
-                    alert(`❌ Câu hỏi ${questionNumber}: Tất cả phần tử kéo thả phải có nội dung`);
+                    toast.error(`Câu hỏi ${questionNumber}: Tất cả phần tử kéo thả phải có nội dung`);
                     return;
                 }
             } else {
                 // Single choice, multiple choice, true/false
                 if (question.options.length < 2) {
-                    alert(`❌ Câu hỏi ${questionNumber}: Phải có ít nhất 2 lựa chọn`);
+                    toast.error(`Câu hỏi ${questionNumber}: Phải có ít nhất 2 lựa chọn`);
                     return;
                 }
 
                 const hasEmptyOptions = question.options.some((opt) => !opt.content.trim());
                 if (hasEmptyOptions) {
-                    alert(`❌ Câu hỏi ${questionNumber}: Tất cả lựa chọn phải có nội dung`);
+                    toast.error(`Câu hỏi ${questionNumber}: Tất cả lựa chọn phải có nội dung`);
                     return;
                 }
 
                 const hasCorrectAnswer = question.options.some((opt) => opt.is_correct);
                 if (!hasCorrectAnswer) {
-                    alert(`❌ Câu hỏi ${questionNumber}: Vui lòng chọn ít nhất một đáp án đúng`);
+                    toast.error(`Câu hỏi ${questionNumber}: Vui lòng chọn ít nhất một đáp án đúng`);
                     return;
                 }
 
@@ -169,8 +167,8 @@ const FormAddExam = () => {
                 if (question.type === "SINGLE_CHOICE" || question.type === "TRUE_FALSE") {
                     const correctCount = question.options.filter((opt) => opt.is_correct).length;
                     if (correctCount !== 1) {
-                        alert(
-                            `❌ Câu hỏi ${questionNumber}: ${question.type === "TRUE_FALSE" ? "Đúng/Sai" : "Trắc nghiệm một đáp án"} chỉ được có một đáp án đúng`,
+                        toast.error(
+                            `Câu hỏi ${questionNumber}: ${question.type === "TRUE_FALSE" ? "Đúng/Sai" : "Trắc nghiệm một đáp án"} chỉ được có một đáp án đúng`,
                         );
                         return;
                     }
@@ -190,7 +188,7 @@ const FormAddExam = () => {
             })),
         };
 
-        // console.log("✅ Dữ liệu đề thi hợp lệ:", examData);
+        // console.log(examData);
         mutationExam.mutate(examData);
     };
 
@@ -215,17 +213,10 @@ const FormAddExam = () => {
         const nowVN = new Date(Date.now() + 7 * 60 * 60 * 1000);
         form.setValue("start_time", new Date(nowVN.getTime() + 60 * 60 * 1000).toISOString().slice(0, 16)); // 1h sau giờ VN
         form.setValue("end_time", new Date(nowVN.getTime() + 2 * 60 * 60 * 1000).toISOString().slice(0, 16)); // 2h sau giờ VN
-        form.setValue(
-            "description",
-            "Đề thi thử môn Toán học lớp 10 học kỳ 1, gồm các câu hỏi trắc nghiệm và tự luận.",
-        );
-        form.setValue("instructions", "Thí sinh đọc kỹ đề trước khi làm bài. Không sử dụng tài liệu.");
         form.setValue("is_active", true);
-        form.setValue("is_shuffle_questions", true);
-        form.setValue("is_shuffle_answers", true);
-        form.setValue("is_show_result", true);
-        form.setValue("is_retakeable", false);
         form.setValue("max_attempts", 1);
+        form.setValue("is_password_protected", true);
+        form.setValue("anti_cheat_enabled", true);
 
         // Add sample questions
         const sampleQuestions: Question[] = [
@@ -298,24 +289,23 @@ const FormAddExam = () => {
                             name="title"
                             render={({ field }) => (
                                 <FormItem className="md:col-span-2 lg:col-span-3">
-                                    <FormLabel>Tên đề thi</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Tên đề thi</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Nhập tên đề thi" {...field} />
+                                        <Input className="mb-2" placeholder="Nhập tên đề thi" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="exam_category"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Loại đề thi</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Loại đề thi</FormLabel>
                                     <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger>
+                                            <SelectTrigger className="mb-1">
                                                 <SelectValue placeholder="Chọn loại đề thi" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -331,16 +321,15 @@ const FormAddExam = () => {
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="subject"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Môn học</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Môn học</FormLabel>
                                     <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger>
+                                            <SelectTrigger className="mb-1">
                                                 <SelectValue placeholder="Chọn môn học" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -356,16 +345,15 @@ const FormAddExam = () => {
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="grade_level"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Cấp bậc</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Cấp bậc</FormLabel>
                                     <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger>
+                                            <SelectTrigger className="mb-1">
                                                 <SelectValue placeholder="Chọn cấp bậc" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -381,13 +369,12 @@ const FormAddExam = () => {
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="province"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Tỉnh thành</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Tỉnh thành</FormLabel>
                                     <SingleSelectDropdown
                                         onChange={field.onChange}
                                         label="Tỉnh thành ra đề"
@@ -401,16 +388,15 @@ const FormAddExam = () => {
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="difficulty"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Độ khó</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Độ khó</FormLabel>
                                     <Select onValueChange={(value) => field.onChange(value)} value={field.value}>
                                         <FormControl>
-                                            <SelectTrigger>
+                                            <SelectTrigger className="mb-1">
                                                 <SelectValue placeholder="Chọn độ khó" />
                                             </SelectTrigger>
                                         </FormControl>
@@ -426,13 +412,12 @@ const FormAddExam = () => {
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="max_score"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Điểm tối đa (Thang điểm)</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Điểm tối đa (Thang điểm)</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="number"
@@ -440,39 +425,46 @@ const FormAddExam = () => {
                                             {...field}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             value={form.watch("max_score") ?? 10}
+                                            className="mb-2"
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="pass_score"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Điểm qua môn</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Điểm qua môn</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="number"
-                                            placeholder="Nhập điểm qua môn"
-                                            {...field}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                            value={form.watch("pass_score") ?? 5}
-                                        />
+                                        <Select
+                                            onValueChange={(value) => field.onChange(Number(value))}
+                                            value={String(field.value)}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger className="mb-1">
+                                                    <SelectValue placeholder="Chọn điểm qua môn" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="3">Trên 30%</SelectItem>
+                                                <SelectItem value="4">Trên 40%</SelectItem>
+                                                <SelectItem value="5">Trên 50%</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="duration_minutes"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Thời gian làm bài (phút)</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Thời gian làm bài (phút)</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="number"
@@ -480,19 +472,19 @@ const FormAddExam = () => {
                                             {...field}
                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                             value={form.watch("duration_minutes") ?? 60}
+                                            className="mb-2"
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="start_time"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Thời gian bắt đầu</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Thời gian mở đề</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="datetime-local"
@@ -500,19 +492,19 @@ const FormAddExam = () => {
                                             min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
                                                 .toISOString()
                                                 .slice(0, 16)}
+                                            className="mb-2"
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="end_time"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Thời gian đóng đề</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Thời gian đóng đề</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="datetime-local"
@@ -523,6 +515,7 @@ const FormAddExam = () => {
                                                     .toISOString()
                                                     .slice(0, 16)
                                             }
+                                            className="mb-2"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -532,28 +525,27 @@ const FormAddExam = () => {
                                 </FormItem>
                             )}
                         />
-
                         <FormField
                             control={form.control}
                             name="max_attempts"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Số lần làm tối đa</FormLabel>
+                                    <FormLabel className="mb-0.5 block">Số lần làm tối đa</FormLabel>
                                     <FormControl>
                                         <Select
                                             onValueChange={(value) => field.onChange(Number(value))}
                                             value={field.value === null ? "unlimited" : String(field.value)}
                                         >
-                                            <SelectTrigger className="w-full">
+                                            <SelectTrigger className="mb-2 w-full">
                                                 <SelectValue placeholder="Số lần làm tối đa" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="999">Không giới hạn</SelectItem>
                                                 {[...Array(3)].map((_, index) => (
                                                     <SelectItem key={index + 1} value={`${index + 1}`}>
                                                         {index + 1} lần
                                                     </SelectItem>
                                                 ))}
+                                                <SelectItem value="999">Không giới hạn</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </FormControl>
@@ -561,20 +553,53 @@ const FormAddExam = () => {
                                 </FormItem>
                             )}
                         />
+                        <div className="grid grid-cols-2 gap-2">
+                            <FormField
+                                control={form.control}
+                                name="is_password_protected"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950">
+                                            <Checkbox
+                                                id="toggle-2"
+                                                checked={field.value}
+                                                onCheckedChange={(checked) => field.onChange(checked === true)}
+                                                className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+                                            />
+                                            <div className="grid gap-1.5 font-normal">
+                                                <p className="text-sm leading-none font-medium">Mật khẩu đề thi</p>
+                                                <p className="text-muted-foreground text-sm">
+                                                    Bảo vệ đề thi bằng mật khẩu (TOTP)
+                                                </p>
+                                            </div>
+                                        </Label>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="anti_cheat_enabled"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950">
+                                            <Checkbox
+                                                id="toggle-2"
+                                                checked={field.value}
+                                                onCheckedChange={(checked) => field.onChange(checked === true)}
+                                                className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+                                            />
+                                            <div className="grid gap-1.5 font-normal">
+                                                <p className="text-sm leading-none font-medium">Chống gian lận</p>
+                                                <p className="text-muted-foreground text-sm">
+                                                    Khóa màn hình của thí sinh khi làm bài
+                                                </p>
+                                            </div>
+                                        </Label>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                     </div>
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Mô tả đề thi</FormLabel>
-                                <FormControl>
-                                    <Textarea placeholder="Nhập mô tả chi tiết về đề thi..." rows={3} {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
 
                     {/* Questions Section */}
                     <FormAddQuestion

@@ -64,4 +64,13 @@ class CourseController extends BaseApiController
 
         return $this->successResponse($courses, 'Lấy danh sách khóa học thành công!');
     }
+    // get tất cả học sinh của khóa học (ko phân trang)
+    public function getAllStudents(Course $course)
+    {
+        $students = $course->students()->select(['users.id', 'username', 'full_name', 'email'])->get();
+        $students->transform(function ($student) {
+            return $student->makeHidden(['pivot']);
+        });
+        return $this->successResponse($students, 'Lấy danh sách học sinh thành công!');
+    }
 }

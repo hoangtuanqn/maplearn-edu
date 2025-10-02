@@ -13,7 +13,7 @@ import {
     DialogTrigger,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -146,6 +146,10 @@ export function AddChapterDialog({
                                                 />
                                             </FormControl>
                                             <FormMessage />
+                                            <FormDescription>
+                                                Nếu có hai chương cùng vị trí, chương được thêm sau sẽ hiển thị trước
+                                                chương cũ.
+                                            </FormDescription>
                                         </FormItem>
                                     )}
                                 />

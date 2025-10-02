@@ -135,6 +135,11 @@ const DragDrop = ({
 
     const handleRemoveItem = (dropId: string, itemId: string) => {
         setDroppedItems((prev) => ({ ...prev, [dropId]: null }));
+        Object.entries({ ...droppedItems, [dropId]: null }).forEach(([a, b]) => {
+            if (b?.content && b.content.length > 0) {
+                handleChoiceAnswer(idQuestion, b.content, Number(a.split("drop")[1]));
+            }
+        });
         const removedItem = initialItems.find((i) => `${i.content}` === itemId);
         if (removedItem) setItems((prev) => [...prev, removedItem]);
     };
@@ -143,9 +148,17 @@ const DragDrop = ({
         Object.entries(droppedItems).forEach(([a, b]) => {
             if (b?.content && b.content.length > 0) {
                 handleChoiceAnswer(idQuestion, b.content, Number(a.split("drop")[1]));
+                // console.log("kéo vào");
+            } else {
+                handleChoiceAnswer(idQuestion, "", Number(a.split("drop")[1]));
+                // console.log("kéo ra");
             }
         });
-    }, [droppedItems, handleChoiceAnswer, idQuestion]);
+
+        // console.log("gọi ");
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [droppedItems, idQuestion]);
 
     useEffect(() => {
         setItems(initialItems.filter((item) => !activeAnswers?.includes(item.content)));
@@ -153,14 +166,37 @@ const DragDrop = ({
 
     const questionParts = parseQuestion(question);
 
+    // hàm cập nhật nếu activeAnswers thay đổi (vd: xóa lựa chọn thì sẽ gọi hàm này để cập nhật lại giao diện)
+    useEffect(() => {
+        // console.log("active", activeAnswers);
+        // setItems(initialItems.filter((item) => !activeAnswers?.includes(item.content)));
+        setDroppedItems(() => {
+            const initial: Record<string, ValueType | null> = {};
+            activeAnswers?.forEach((val, index) => {
+                if (val) {
+                    const dropId = `drop${index + 1}`;
+                    initial[dropId] = { id: index + 1, content: val };
+                }
+            });
+            return initial;
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeAnswers.length]);
+
     return (
         <div>
             <div className="border-primary/30 mb-4 flex flex-wrap gap-3 rounded border-2 p-2">
-                {items.map((item) => (
-                    <DraggableItem key={item.content} id={`${item.content}`} disabled={disabled}>
-                        <RenderLatex content={item.content} />
-                    </DraggableItem>
-                ))}
+                {items.length > 0 ? (
+                    <>
+                        {items.map((item, index) => (
+                            <DraggableItem key={index} id={`${item.content}`} disabled={disabled}>
+                                <RenderLatex content={item.content} />
+                            </DraggableItem>
+                        ))}
+                    </>
+                ) : (
+                    <span className="text-xs text-gray-500 italic">Đã hết sự lựa chọn</span>
+                )}
             </div>
 
             <div className="mb-4 flex items-end">
@@ -169,9 +205,9 @@ const DragDrop = ({
                         <RenderLatex key={`question-part-${index}`} content={part} />
                     ) : (
                         <DropZone
-                            disabled={disabled}
-                            key={part.id}
                             id={part.id}
+                            disabled={disabled}
+                            key={`drop-zone-${part.id}`}
                             droppedItem={droppedItems[part.id] || null}
                             onDropItem={handleDropItem}
                             onRemoveItem={handleRemoveItem}

@@ -34,6 +34,9 @@ const DetailExamPage = async ({ params }: { params: Promise<{ slug: string }> })
         redirect(`/exams`);
     }
     const isMaxAttempt: boolean = exam.max_attempts ? exam.attempt_count >= exam.max_attempts : false;
+    const now = new Date();
+    const startTime = new Date(exam.start_time);
+    const isNotYetOpen = startTime > now;
     return (
         <div className="min-h-screen">
             <div className="mx-auto px-4 py-6">
@@ -94,31 +97,41 @@ const DetailExamPage = async ({ params }: { params: Promise<{ slug: string }> })
                                 </div>
                             </div>
 
-                            {/* Action Buttons */}
-                            <div className="flex justify-end gap-3">
-                                {exam.is_in_progress && (
-                                    <Link
-                                        className="bg-primary hover:bg-primary/90 flex items-center gap-2 rounded-full px-6 py-3 text-white transition-colors"
-                                        href={`/exams/${slug}/doing`}
-                                    >
-                                        <Disc className="h-5 w-5" />
-                                        <span className="font-medium">Tiếp tục làm bài</span>
-                                    </Link>
+                            {/* Action Buttons & Not Yet Open Warning */}
+                            <div className="flex flex-col items-end gap-3">
+                                {isNotYetOpen && (
+                                    <div className="mb-2 flex items-center gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+                                        <AlertCircle className="h-4 w-4 text-yellow-500" />
+                                        <span className="text-sm font-medium text-yellow-700">
+                                            Đề thi chưa mở. Thời gian mở đề: {formatter.date(exam.start_time, true)}
+                                        </span>
+                                    </div>
                                 )}
-                                {!exam.is_in_progress && (
-                                    <Link
-                                        className={`flex items-center gap-2 rounded-full px-6 py-3 font-medium transition-colors ${
-                                            isMaxAttempt
-                                                ? "cursor-not-allowed bg-gray-300 text-gray-500"
-                                                : "bg-emerald-500 text-white hover:bg-emerald-600"
-                                        }`}
-                                        href={`${isMaxAttempt ? "#" : `/exams/${slug}/start`}`}
-                                        aria-disabled={isMaxAttempt ? "true" : "false"}
-                                    >
-                                        <CirclePlay className="h-5 w-5" />
-                                        <span>Vào phòng thi</span>
-                                    </Link>
-                                )}
+                                <div className="flex gap-3">
+                                    {exam.is_in_progress && !isNotYetOpen && (
+                                        <Link
+                                            className="bg-primary hover:bg-primary/90 flex items-center gap-2 rounded-2xl px-6 py-3 text-white transition-colors"
+                                            href={`/exams/${slug}/doing`}
+                                        >
+                                            <Disc className="h-5 w-5" />
+                                            <span className="font-medium">Tiếp tục làm bài</span>
+                                        </Link>
+                                    )}
+                                    {!exam.is_in_progress && !isNotYetOpen && (
+                                        <Link
+                                            className={`flex items-center gap-2 rounded-2xl px-6 py-3 font-medium transition-colors ${
+                                                isMaxAttempt
+                                                    ? "cursor-not-allowed bg-gray-300 text-gray-500"
+                                                    : "bg-emerald-500 text-white hover:bg-emerald-600"
+                                            }`}
+                                            href={`${isMaxAttempt ? "#" : `/exams/${slug}/start`}`}
+                                            aria-disabled={isMaxAttempt ? "true" : "false"}
+                                        >
+                                            <CirclePlay className="h-5 w-5" />
+                                            <span>Vào phòng thi</span>
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Max Attempt Warning */}

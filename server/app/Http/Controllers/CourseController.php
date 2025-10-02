@@ -7,6 +7,7 @@ use App\Filters\Course\PriceFilter;
 use App\Filters\Course\TeacherFilter;
 use App\Filters\Course\IsActiveFilter;
 use App\Filters\Course\ProgressRangeFilter;
+use App\Filters\Course\RatingFilter;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Models\Certificate;
 use App\Models\Course;
@@ -64,6 +65,7 @@ class CourseController extends BaseApiController
                 AllowedFilter::custom('price_range', new PriceFilter),
                 AllowedFilter::custom('teachers', new TeacherFilter),
                 AllowedFilter::custom('is_active', new IsActiveFilter),
+                AllowedFilter::custom('rating', new RatingFilter),
 
             ])
             ->where(function ($query) {
@@ -395,7 +397,7 @@ class CourseController extends BaseApiController
         $data = $course->payments()
             ->where('status', 'paid')
             ->where('paid_at', '>=', Carbon::now()->subDays(7))
-            ->selectRaw('DATE(paid_at) as date, COUNT(*) as student_count')
+            ->selectRaw('DATE(paid_at) as date, COUNT(*) as student_count, sum(amount) as revenue')
             ->groupBy('date')
             ->orderBy('date', 'ASC')
             ->get();
@@ -403,6 +405,7 @@ class CourseController extends BaseApiController
         // Format date
         $data->transform(function ($item) {
             $item->date = Carbon::parse($item->date)->format('d-m');
+            $item->revenue = (int)$item->revenue;
             return $item;
         });
 
@@ -452,6 +455,7 @@ class CourseController extends BaseApiController
         // Sử dụng QueryBuilder để lấy danh sách học viên với các filter
         $students = QueryBuilder::for($course->students())
             ->allowedFilters([
+                'full_name',
                 AllowedFilter::callback('search', function ($query, $value) {
                     // search sẽ tìm kiếm trong full_name, email
                     $query->where(function ($q) use ($value) {
@@ -533,7 +537,7 @@ class CourseController extends BaseApiController
                 ->first();
 
             $lessonsInWeek = $recentActivity->lessons_count ?? 0;
-            $hoursInWeek = $recentActivity->total_progress ? round($recentActivity->total_progress / 60, 2) : 0;
+            $hoursInWeek = $recentActivity->total_progress ? round($recentActivity->total_progress / 60) : 0;
 
             // Xác định trạng thái
             $status = 'Đang học';

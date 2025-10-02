@@ -5,17 +5,25 @@ import React from "react";
 import courseApi from "~/apiRequest/course";
 import DisplayCourse from "~/app/(student)/_components/Courses/DisplayCourse";
 import CourseSkeleton from "../../_components/CourseSkeleton";
+import { buildLaravelFilterQuery } from "~/libs/helper";
 
 const RelatedCourses = ({ category }: { category: string }) => {
     const { data: courses, isLoading } = useQuery({
         queryKey: ["courses", "related", category],
         queryFn: async () => {
-            const res = await courseApi.getCourses(1, 5, "", "", "filter[category]=" + category);
+            const res = await courseApi.getCourses(
+                1,
+                5,
+                "",
+                "",
+                buildLaravelFilterQuery({
+                    category,
+                }),
+            );
             return res.data.data.data;
         },
         staleTime: 1000 * 60 * 5, // 5 minutes
     });
-
 
     return (
         <div className="mt-4 rounded-xl bg-white p-4 shadow-sm sm:p-8">

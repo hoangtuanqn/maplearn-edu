@@ -30,6 +30,7 @@ return new class extends Migration
             $table->boolean('anti_cheat_enabled')->default(false); // Bật/tắt chống gian lận
             $table->integer('max_violation_attempts')->default(3);   // Số lần vi phạm tối đa sẽ bị khóa này (nếu anti_cheat_enabled bật)
             $table->integer('max_attempts')->nullable()->default(null); // lượt làm bài tối đa, null nghĩa là không giới hạn
+            $table->string('password')->nullable()->default(null); // mật khẩu đề thi (token 2fa)  hoặc null là không có
             $table->boolean('status')->default(true); // Có public hay không
             // Ngày bắt đầu kì thi + kết thức kỳ thi
             $table->timestamp('start_time')->default(now());

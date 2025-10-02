@@ -7,10 +7,11 @@ import studentApi, { USERS_PER_PAGE } from "~/apiRequest/admin/student";
 import TableSkeleton from "~/app/(student)/(common)/profile/_components/TableSkeleton";
 import { PaginationNav } from "~/app/(student)/_components/Pagination";
 import { Button } from "~/components/ui/button";
-import { buildLaravelFilterQuery, getGender } from "~/libs/hepler";
+import { buildLaravelFilterQuery, getGender } from "~/libs/helper";
 import { getStatusBadge } from "~/libs/statusBadge";
 import DisplayTotalResult from "../../_components/DisplayTotalResult";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
+import { formatter } from "~/libs/format";
 const allowedFields = [
     "sort",
     "page",
@@ -66,7 +67,7 @@ const StudentList = () => {
         queryFn: async () => {
             const res = await studentApi.getStudents(
                 +page || 1,
-                20,
+                USERS_PER_PAGE,
                 search || "",
                 sort,
                 buildLaravelFilterQuery({
@@ -100,8 +101,9 @@ const StudentList = () => {
                             <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">
                                 Thông tin cơ bản
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Email</th>
-                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Số điện thoại</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">
+                                Thông tin học tập
+                            </th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-600">Trạng thái</th>
                             <th className="px-4 py-3 text-right text-xs font-semibold text-zinc-600">Thao tác</th>
                         </tr>
@@ -143,20 +145,51 @@ const StudentList = () => {
                                                   {getGender(student.gender)}
                                               </p>
                                           )}
-                                      </td>
-                                      <td className="px-4 py-3 text-zinc-500">
-                                          <Link href={`mailto:${student.email}`} className="underline">
-                                              {student.email}
-                                          </Link>
-                                      </td>
-                                      <td className="px-4 py-3 text-zinc-500">
-                                          {student.phone_number ? (
-                                              <Link href={`tel:${student.phone_number}`} className="underline">
-                                                  {student.phone_number}
-                                              </Link>
-                                          ) : (
-                                              "Chưa cập nhật"
+                                          {student.email && (
+                                              <p>
+                                                  <span className="font-bold">Email:</span> {student.email}
+                                              </p>
                                           )}
+                                          {student.phone_number && (
+                                              <p>
+                                                  <span className="font-bold">Số điện thoại:</span>{" "}
+                                                  {student.phone_number}
+                                              </p>
+                                          )}
+                                          <p>
+                                              <span className="font-bold">Tham gia:</span>{" "}
+                                              {formatter.date(student.created_at)}
+                                          </p>
+                                      </td>
+                                      <td className="px-4 py-3 text-zinc-500">
+                                          <p>
+                                              <span className="font-bold text-blue-700">Bài đã học trong tuần:</span>{" "}
+                                              <span className="font-semibold text-blue-600">
+                                                  {student.learning_info.lessons}
+                                              </span>
+                                          </p>
+                                          <p>
+                                              <span className="font-bold text-green-700">
+                                                  Tổng số giờ học trong tuần:
+                                              </span>{" "}
+                                              <span className="font-semibold text-green-600">
+                                                  {student.learning_info.hours}
+                                              </span>
+                                          </p>
+                                          <p>
+                                              <span className="font-bold text-purple-700">Số khóa học đã mua:</span>{" "}
+                                              <span className="font-semibold text-purple-600">
+                                                  {student.learning_info.enrollments_count}
+                                              </span>
+                                          </p>
+                                          <p>
+                                              <span className="font-bold text-orange-700">
+                                                  Số khóa học đã hoàn thành:
+                                              </span>{" "}
+                                              <span className="font-semibold text-orange-600">
+                                                  {student.learning_info.completed_courses_count}
+                                              </span>
+                                          </p>
                                       </td>
 
                                       <td className="px-4 py-3">

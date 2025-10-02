@@ -14,8 +14,8 @@ class PaymentSeeder extends Seeder
      */
     public function run(): void
     {
-
-        for ($i = 1; $i <= 100; ++$i) {
+        $maxPayments = 2000;
+        for ($i = 1; $i <= $maxPayments; ++$i) {
             $course = Course::where('start_date', '<=', now())
                 // ->whereNotIn('id', Payment::pluck('course_id'))
                 ->inRandomOrder()
@@ -29,16 +29,16 @@ class PaymentSeeder extends Seeder
             if (Payment::where('user_id', $user->id)->where('course_id', $course->id)->exists()) {
                 continue;
             }
+            $paid_at = $i > ($maxPayments / 2) ? now()->subDays(rand(0, 7)) : now()->subDays(rand(0, 365));
             Payment::create([
                 'user_id'          => $user->id,
-
                 // Select a random course with start_date <= now() and not duplicated
                 'course_id' => $course?->id,
                 'amount'           => $course?->price ?? 0,
                 'payment_method'   => ['transfer', 'vnpay', 'momo', 'zalopay'][array_rand(['transfer', 'vnpay', 'momo', 'zalopay'])],
                 'transaction_code' => 'TXN' . strtoupper(bin2hex(random_bytes(5))),
                 'status'           => 'paid',
-                'paid_at'          => now()->subDays(rand(0, 365)), // random date within the past year
+                'paid_at'          => $paid_at,
             ]);
         }
     }

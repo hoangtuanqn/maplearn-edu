@@ -10,6 +10,7 @@ use App\Models\Certificate;
 use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
 use App\Notifications\CourseCompletedNotification;
+use App\Services\GoogleAuthenService;
 use App\Traits\AuthorizesOwnerOrAdmin;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class ExamPaperController extends BaseApiController
     {
         $limit = (int)($request->limit ?? 20);
         // Filter môn học, phân loại học, độ khóa
-        $posts = QueryBuilder::for(ExamPaper::class)
+        $exams = QueryBuilder::for(ExamPaper::class)
             ->where('status', true)
             ->where(function ($query) {
                 $query->whereNull('end_time')
@@ -44,8 +45,13 @@ class ExamPaperController extends BaseApiController
             ])
             ->orderByDesc('id')
             ->paginate($limit);
+        // loại bỏ những đề thi nếu tổng số câu hỏi != max_score
+        $filtered = $exams->getCollection()->filter(function ($exam) {
+            return $exam->questions()->count() > 0 && $exam->questions()->sum('marks') == $exam->max_score;
+        })->values();
+        $exams->setCollection($filtered);
 
-        return $this->successResponse($posts, 'Lấy danh sách đề thi thành công!');
+        return $this->successResponse($exams, 'Lấy danh sách đề thi thành công!');
     }
 
     /**
@@ -98,6 +104,17 @@ class ExamPaperController extends BaseApiController
         if ($exam->max_attempts && $exam->attempt_count >= $exam->max_attempts) {
             return $this->errorResponse(null, 'Bạn đã vượt quá số lần làm bài thi cho phép!');
         }
+
+        if ($exam->getIsPasswordProtectedAttribute()) {
+            // Validate input
+            $data = $request->validate([
+                'password' => 'required|string',
+            ]);
+            $isValid = GoogleAuthenService::verify2FA($exam->password, $data['password']);
+            if (!$isValid) {
+                return $this->errorResponse(null, 'Mật khẩu đề thi không đúng!');
+            }
+        }
         if (!ExamAttempt::where('exam_paper_id', $exam->id)->where('user_id', $user->id)->where('status', 'in_progress')->exists()) {
             // Chưa có bài làm nào, tạo mới
             ExamAttempt::create([
@@ -114,16 +131,18 @@ class ExamPaperController extends BaseApiController
         }
     }
 
-    // Xem chi tiết thông tin bài thi (bài thi cuối cùng, thi gần nhất)
+    // Xem chi tiết thông tin bài thi
     public function detailResultExam(Request $request, ExamPaper $exam, $id = null)
     {
         $user = $request->user();
-        // Kiểm tra id này có phải của người dùng này hay k
-
-        $this->authorize('admin-teacher-owner', $exam);
-        $query = ExamAttempt::where('exam_paper_id', $exam->id)
-            ->where('user_id', $user->id)
-            ->whereIn('status', ['submitted', 'detected']);
+        if ($user->hasRole(['admin', 'teacher'])) {
+            $query = ExamAttempt::where('exam_paper_id', $exam->id)
+                ->whereIn('status', ['submitted', 'detected']);
+        } else {
+            $query = ExamAttempt::where('exam_paper_id', $exam->id)
+                ->where('user_id', $user->id)
+                ->whereIn('status', ['submitted', 'detected']);
+        }
         if ($id) {
             $query->where('id', $id);
         }
@@ -279,5 +298,17 @@ class ExamPaperController extends BaseApiController
             'id_attempt' => $attempt->id,
             'scores' => $scores,
         ], 'Bài làm đã được nộp thành công');
+    }
+
+    // get đáp án bài thi (làm tính năng demo để bảo vệ đồ án)
+    public function getAnswersExam(Request $request, ExamPaper $exam)
+    {
+
+        // lấy đáp án đề thi
+        $answers = [];
+        foreach ($exam->questions as $question) {
+            $answers[$question->id] =  $question->correct;
+        }
+        return $this->successResponse($answers, 'Lấy đáp án đề thi thành công!');
     }
 }

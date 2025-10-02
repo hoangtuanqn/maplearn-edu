@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { ChevronDown, ChevronRight, Edit } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import courseApi from "~/apiRequest/course";
 import { formatter } from "~/libs/format";
@@ -10,6 +9,9 @@ import { AddLessonDialog } from "./AddLessonDialog";
 import DeleteLessonButton from "./DeleteLessonButton";
 import DeleteChapterButton from "./DeleteChapterButton";
 import Loading from "~/app/(student)/_components/Loading";
+import { EditChapterButton } from "./EditChapterButton";
+import { EditLessonDialog } from "./EditLessonDialog";
+
 const ChaptersList = ({ slug }: { slug: string }) => {
     const { data: chapters } = useQuery({
         queryKey: ["course", "chapters", slug],
@@ -19,12 +21,20 @@ const ChaptersList = ({ slug }: { slug: string }) => {
         },
         staleTime: 1000 * 60 * 5, // 5 phút
     });
-    const [expandedChapters, setExpandedChapters] = useState<number[]>([1]);
+
+    // State để theo dõi các chapter đang mở
+    const [expandedChapters, setExpandedChapters] = useState<number[]>([]);
+
+    // Hàm toggle chapter
     const toggleChapter = (chapterId: number) => {
-        setExpandedChapters((prev) =>
-            prev.includes(chapterId) ? prev.filter((id) => id !== chapterId) : [...prev, chapterId],
+        setExpandedChapters(
+            (prev) =>
+                prev.includes(chapterId)
+                    ? prev.filter((id) => id !== chapterId) // Đóng nếu đã mở
+                    : [...prev, chapterId], // Mở nếu chưa mở
         );
     };
+
     if (!chapters) {
         return <Loading />;
     }
@@ -35,30 +45,28 @@ const ChaptersList = ({ slug }: { slug: string }) => {
                 <h2 className="text-xl font-semibold text-gray-900">Nội dung khóa học</h2>
                 <AddChapterDialog courseSlug={slug} maxPosition={chapters.length || 0} style={1} />
             </div>
+
             <div className="space-y-4">
-                {chapters?.map((chapter, chapterIndex) => (
-                    <div key={chapter.id} className="overflow-hidden rounded-lg border border-gray-200">
+                {chapters.map((chapter, chapterIndex) => (
+                    <div key={chapter.id} className="overflow-hidden rounded-lg border border-gray-200 shadow-xs">
                         {/* Chapter Header */}
-                        <div
-                            className="flex cursor-pointer items-center justify-between bg-gray-50 p-4 transition-colors hover:bg-gray-100"
-                            onClick={(e) => {
-                                if (e.target === e.currentTarget) {
-                                    toggleChapter(chapter.id);
-                                }
-                            }}
-                        >
-                            <div className="flex items-center gap-3">
-                                {expandedChapters.includes(chapter.id) ? (
-                                    <ChevronDown className="h-5 w-5 text-gray-500" />
-                                ) : (
-                                    <ChevronRight className="h-5 w-5 text-gray-500" />
-                                )}
-                                <div>
-                                    <h3 className="font-medium text-gray-900">
-                                        {" "}
-                                        Chương {chapterIndex + 1}: {chapter.title}
-                                    </h3>
-                                    <p className="text-sm text-gray-500">{chapter.lessons.length} bài học</p>
+                        <div className="bg-gray-80 flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-blue-50">
+                            <div
+                                className="w-full"
+                                onClick={() => toggleChapter(chapter.id)} // Sửa lại sự kiện onClick cho logic toggle
+                            >
+                                <div className="flex items-center gap-3">
+                                    {expandedChapters.includes(chapter.id) ? (
+                                        <ChevronDown className="h-5 w-5 text-blue-600" />
+                                    ) : (
+                                        <ChevronRight className="h-5 w-5 text-gray-600" />
+                                    )}
+                                    <div>
+                                        <h3 className="font-medium text-gray-900">
+                                            Chương {chapterIndex + 1}: {chapter.title}
+                                        </h3>
+                                        <p className="text-sm text-gray-500">{chapter.lessons.length} bài học</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -67,12 +75,15 @@ const ChaptersList = ({ slug }: { slug: string }) => {
                                     slugCourse={slug}
                                     chapterId={chapter.id}
                                     nameChapterCourse={chapter.title}
-                                    maxPosition={chapter.lessons.length}
+                                    maxPosition={chapter.lessons.length || 0}
                                     style={1}
                                 />
-                                <Button variant="ghost" size="sm" onClick={(e) => e.stopPropagation()}>
-                                    <Edit className="h-4 w-4" />
-                                </Button>
+
+                                <EditChapterButton
+                                    chapterId={chapter.id}
+                                    nameChapterCourse={chapter.title}
+                                    currentPosition={chapter.position ?? 0}
+                                />
                                 <DeleteChapterButton slugCourse={slug} name={chapter.title} chapterId={chapter.id} />
                             </div>
                         </div>
@@ -92,7 +103,6 @@ const ChaptersList = ({ slug }: { slug: string }) => {
                                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-medium text-blue-600">
                                                     {lessonIndex + 1}
                                                 </div>
-                                                {/* {getLessonIcon("")} */}
                                                 <div>
                                                     <h4 className="font-medium text-gray-900">
                                                         Bài {lessonIndex + 1}: {lesson.title}
@@ -105,9 +115,17 @@ const ChaptersList = ({ slug }: { slug: string }) => {
                                         </div>
 
                                         <div className="flex items-center gap-2">
-                                            <Button variant="ghost" size="sm">
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
+                                            <EditLessonDialog
+                                                lesson={{
+                                                    slug: lesson.slug,
+                                                    title: lesson.title,
+                                                    content: lesson.content,
+                                                    position: lesson.position,
+                                                    duration: lesson.duration,
+                                                    is_free: lesson.is_free,
+                                                    video_url: lesson.video_url,
+                                                }}
+                                            />
                                             <DeleteLessonButton
                                                 slugCourse={slug}
                                                 slugLesson={lesson.slug}
@@ -123,7 +141,7 @@ const ChaptersList = ({ slug }: { slug: string }) => {
                                         slugCourse={slug}
                                         chapterId={chapter.id}
                                         nameChapterCourse={chapter.title}
-                                        maxPosition={chapter.lessons.length + 1}
+                                        maxPosition={chapter.lessons.length || 0}
                                         style={2}
                                     />
                                 </div>
@@ -132,6 +150,7 @@ const ChaptersList = ({ slug }: { slug: string }) => {
                     </div>
                 ))}
             </div>
+
             <div className="mt-6 border-t border-gray-200 pt-6">
                 <AddChapterDialog courseSlug={slug} maxPosition={chapters.length || 0} style={2} />
             </div>

@@ -3,6 +3,7 @@ import FormLogin from "./_components/FormLogin";
 
 import Link from "next/link";
 import ActionLogin from "../_components/ActionLogin";
+import { Suspense } from "react";
 export const metadata: Metadata = {
     title: "Đăng nhập tài khoản",
 };
@@ -11,7 +12,9 @@ const Login = () => {
         <>
             <div className="w-full">
                 <h3 className="mb-10 text-center text-xl font-semibold uppercase">Đăng nhập</h3>
-                <FormLogin />
+                <Suspense>
+                    <FormLogin />
+                </Suspense>
                 <ActionLogin />
                 <div className="mt-10 text-center text-sm">
                     <span>Chưa có tài khoản? </span>

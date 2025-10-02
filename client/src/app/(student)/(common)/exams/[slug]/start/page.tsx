@@ -58,10 +58,12 @@ const DetailExamPage = async ({ params }: { params: Promise<{ slug: string }> })
                 <div className="mb-6 rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
                     <div className="mb-4">
                         <h1 className="text-2xl font-bold text-gray-900">{exam.title}</h1>
-                        <div className="mt-2 flex items-center gap-2 text-sm text-green-700">
-                            <ShieldCheck className="h-4 w-4" />
-                            <span>Bài thi tiêu chuẩn - Chống gian lận cơ bản</span>
-                        </div>
+                        {exam.anti_cheat_enabled && (
+                            <div className="mt-2 flex items-center gap-2 text-sm text-green-700">
+                                <ShieldCheck className="h-4 w-4" />
+                                <span>Bài thi tiêu chuẩn - Chống gian lận cơ bản</span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Exam Stats Grid */}
@@ -146,7 +148,7 @@ const DetailExamPage = async ({ params }: { params: Promise<{ slug: string }> })
 
                 {/* Start Exam Section */}
                 <div className="mb-6">
-                    <StartExam slug={slug} />
+                    <StartExam slug={slug} isPasswordProtected={exam.is_password_protected} />
                 </div>
 
                 {/* Instructions Card */}

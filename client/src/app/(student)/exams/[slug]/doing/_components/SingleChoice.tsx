@@ -28,7 +28,7 @@ const SingleChoice = ({
                     return (
                         <div key={answer.content} className="relative">
                             <div
-                                className={`flex cursor-pointer items-start gap-3 rounded-lg border-2 p-4 transition-all ${
+                                className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-all ${
                                     isSelected
                                         ? "border-primary bg-primary/5"
                                         : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50"
@@ -65,7 +65,7 @@ const SingleChoice = ({
 
                                 <div className="flex-1">
                                     <Label htmlFor={answer.content} className="cursor-pointer">
-                                        <div className="flex items-start gap-2">
+                                        <div className="flex items-center gap-2">
                                             <span
                                                 className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
                                                     isSelected ? "bg-primary text-white" : "bg-gray-100 text-gray-600"

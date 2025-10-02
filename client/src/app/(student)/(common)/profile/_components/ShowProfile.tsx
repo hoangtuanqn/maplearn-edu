@@ -3,7 +3,7 @@ import Link from "next/link";
 import React from "react";
 import { Button } from "~/components/ui/button";
 import { useAuth } from "~/hooks/useAuth";
-import { getGender } from "~/libs/hepler";
+import { getGender } from "~/libs/helper";
 import Loading from "~/app/(student)/_components/Loading";
 import { Active2Fa } from "./Active2Fa";
 import { UnActive2Fa } from "./UnActive2Fa";

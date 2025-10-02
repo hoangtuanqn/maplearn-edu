@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { FileDown } from "lucide-react";
+import { FileUp } from "lucide-react";
 import React from "react";
 import paymentApi from "~/apiRequest/admin/payment";
 import Loading from "~/app/(student)/_components/Loading";
@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
 import { exportExcel } from "~/libs/exportExcel";
 import { formatter } from "~/libs/format";
-import { buildLaravelFilterQuery } from "~/libs/hepler";
+import { buildLaravelFilterQuery } from "~/libs/helper";
 const allowedFields = [
     "search",
     "page",
@@ -76,7 +76,11 @@ const ExportDataInvoices = () => {
                 "course.name": payment.course.name,
             }));
 
-            exportExcel(exportData, "Payments_Report.xlsx", headerMap);
+            exportExcel(
+                exportData,
+                `Payments_Report_${new Date(date_from).toLocaleDateString("vn-VN")}_to_${new Date(date_to).toLocaleDateString("vn-VN")}.xlsx`,
+                headerMap,
+            );
         },
     });
 
@@ -91,7 +95,7 @@ const ExportDataInvoices = () => {
                     exportMutation.mutate();
                 }}
             >
-                <FileDown />
+                <FileUp />
                 <span>Xuất dữ liệu</span>
             </Button>
         </>

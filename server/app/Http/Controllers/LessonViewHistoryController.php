@@ -7,9 +7,11 @@ use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\LessonViewHistory;
+use App\Models\User;
 use App\Notifications\CourseCompletedNotification;
 use App\Notifications\CourseCompletionExamRequiredNotification;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class LessonViewHistoryController extends BaseApiController
 {
@@ -58,16 +60,21 @@ class LessonViewHistoryController extends BaseApiController
             $query->where('course_id', $courseId);
         })->where('is_completed', true)->count();
 
-        $lessonView = LessonViewHistory::updateOrCreate(
-            [
-                'user_id'   => $user->id,
-                'lesson_id' => $data['lesson_id'],
-            ],
-            [
-                'progress'     => $data['progress'],
-                'is_completed' => $existingView && $existingView->is_completed ? true : ($courseLesson->duration - 30 <= $data['progress']),
-            ]
-        );
+        // nếu đã xem video xong rồi thì k có update gì nữa
+        if ($existingView && $existingView->is_completed) {
+            $lessonView = $existingView;
+        } else {
+            $lessonView = LessonViewHistory::updateOrCreate(
+                [
+                    'user_id'   => $user->id,
+                    'lesson_id' => $data['lesson_id'],
+                ],
+                [
+                    'progress'     => $data['progress'],
+                    'is_completed' => ($courseLesson->duration - 30 <= $data['progress']),
+                ]
+            );
+        }
         // Check xem người dùng đã có chứng chỉ chưa
         $isCertificateExist = Certificate::where('user_id', $user->id)->where('course_id', $courseId)->exists();
         if ($completedLessons == $totalLessons - 1 && $lessonView->is_completed && !$isCertificateExist) {
@@ -127,5 +134,21 @@ class LessonViewHistoryController extends BaseApiController
     public function destroy(LessonViewHistory $lesson)
     {
         //
+    }
+
+    // get lịch sử học của học sinh bất kỳ
+    public function getHistoriesLearning(Request $request, Course $course,  User $user)
+    {
+
+        $lessonIds = $course->lessons->pluck('id')->toArray();
+        $histories = QueryBuilder::for(LessonViewHistory::class)
+            ->where('user_id', $user->id)
+            ->whereIn('lesson_id', $lessonIds)
+            ->with('lesson')
+            ->orderBy('updated_at', 'DESC')
+            ->paginate();
+
+
+        return $this->successResponse($histories, 'Lấy lịch sử học  thành công!', 200);
     }
 }

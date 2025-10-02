@@ -8,9 +8,10 @@ import Image from "next/image";
 import NumericInput from "./NumericInput";
 import TrueFalseAnswer from "./TrueFalseAnswer";
 import RenderLatex from "~/components/RenderLatex";
+import { RotateCcw } from "lucide-react";
 
 const Questions = ({
-    payload: { questions, questionActive, answers, handleChoiceAnswer, mounted, setQuestionActive },
+    payload: { questions, questionActive, answers, handleChoiceAnswer, mounted, setQuestionActive, handleRemoveAnswer },
 }: {
     payload: {
         questions: Question[];
@@ -19,6 +20,7 @@ const Questions = ({
         handleChoiceAnswer: (questionId: number, answer: string, idx?: number) => void;
         mounted: boolean;
         setQuestionActive: React.Dispatch<React.SetStateAction<number>>;
+        handleRemoveAnswer: (questionId: number) => void;
     };
 }) => {
     useEffect(() => {
@@ -43,7 +45,7 @@ const Questions = ({
     }, [questionActive, answers, questions, setQuestionActive]);
     return (
         <section className="flex-1">
-            <section className="space-y-4 rounded-lg bg-white px-6 py-8 shadow-xs">
+            <section className="sticky top-20 space-y-4 rounded-lg bg-white px-6 py-8 shadow-xs">
                 <h1 className="text-primary text-base font-bold">Câu hỏi:</h1>
                 <div className="flex flex-col items-start gap-4 xl:flex-row">
                     <div className="t1-flex-center size-8.5 shrink-0 rounded-full bg-slate-300 font-bold">
@@ -116,6 +118,16 @@ const Questions = ({
                                             )}
                                         </div>
                                     </>
+                                )}
+                                {answers[questions[questionActive].id] && (
+                                    <button
+                                        className="mt-4 flex w-fit cursor-pointer items-center gap-2 rounded-md bg-slate-100 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
+                                        type="button"
+                                        onClick={() => handleRemoveAnswer(questions[questionActive].id)}
+                                    >
+                                        <RotateCcw className="size-4" />
+                                        <span>Xóa lựa chọn</span>
+                                    </button>
                                 )}
                             </>
                         )}

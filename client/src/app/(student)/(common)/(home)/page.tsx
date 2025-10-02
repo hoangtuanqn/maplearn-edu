@@ -6,7 +6,7 @@ import ListCourseRecommended from "./_components/ListCourseRecommended";
 import SidebarLeft from "../../_components/SidebarLeft";
 import SidebarRight from "../../_components/SidebarRight";
 import TopStudents from "../../_components/SidebarRight/TopStudents";
-import TutorialUsing from "~/components/TutorialUsing";
+import TutorialUsing from "~/app/(student)/(common)/(home)/_components/TutorialUsing";
 import { Suspense } from "react";
 
 const StudentHomePage = () => {

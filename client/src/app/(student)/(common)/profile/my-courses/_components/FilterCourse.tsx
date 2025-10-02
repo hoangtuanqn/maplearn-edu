@@ -33,7 +33,7 @@ const progressRanges = [
     { value: "26-50", label: "26% - 50%" },
     { value: "51-75", label: "51% - 75%" },
     { value: "76-99", label: "76% - 99%" },
-    { value: "100", label: "100% (Hoàn thành)" },
+    { value: "100", label: "100%" },
 ];
 
 // Completion status
@@ -62,19 +62,19 @@ export function FilterCourses() {
                 </DialogTrigger>
                 <DialogContent className="max-h-[80vh] overflow-y-auto bg-white sm:max-w-[700px]">
                     <DialogHeader>
-                        <DialogTitle>Tìm kiếm và lọc học viên</DialogTitle>
+                        <DialogTitle>Tìm kiếm khóa học đã mua</DialogTitle>
                         <DialogDescription>
-                            Lọc và tìm kiếm học viên đăng ký khóa học bằng cách nhập thông tin bên dưới.
+                            Lọc và tìm kiếm khóa học đã mua bằng cách nhập thông tin bên dưới.
                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="grid gap-6">
-                        {/* Tìm kiếm học viên */}
+                        {/* Tìm kiếm khóa học */}
                         <div className="grid gap-3">
-                            <Label>Tìm kiếm học viên</Label>
+                            <Label>Tìm kiếm tên khóa học</Label>
                             <Input
                                 type="text"
-                                placeholder="Nhập tên, email học viên..."
+                                placeholder="Nhập tên khóa học..."
                                 value={formValues.filter.search || ""}
                                 onChange={(e) => setFieldValue("search", e.target.value, "filter")}
                             />

@@ -23,7 +23,7 @@ const EditStudentPage = async ({ params }: { params: Promise<{ id: string }> }) 
         redirect("/admin/students");
     }
     return (
-        <section className="mt-5 bg-[#F5F5F5] p-2">
+        <section className="mt-5 bg-[#F5F5F5]">
             <Breadcrumb breadcrumbData={breadcrumbData} />
             <div className="mt-8">
                 <FormEditStudent studentData={student} />

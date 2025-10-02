@@ -1,5 +1,6 @@
 import React from "react";
 import { Edit3 } from "lucide-react";
+import { Input } from "~/components/ui/input";
 
 const NumericInput = ({
     idQuestion,
@@ -19,9 +20,9 @@ const NumericInput = ({
                 </div>
 
                 <div className="relative">
-                    <input
+                    <Input
                         type="text"
-                        className="focus:border-primary focus:bg-primary/5 w-full rounded-lg border-2 border-gray-200 px-4 py-3 text-lg font-medium transition-colors outline-none"
+                        className="focus:border-primary focus:bg-primary/5 w-full rounded-lg px-4 py-3 text-lg font-medium transition-colors outline-none"
                         value={activeAnswer[0] || ""}
                         onChange={(e) => handleChoiceAnswer(idQuestion, e.target.value)}
                         placeholder="Nhập đáp án..."

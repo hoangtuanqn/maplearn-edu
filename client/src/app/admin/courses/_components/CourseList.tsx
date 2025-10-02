@@ -16,7 +16,7 @@ import { formatter } from "~/libs/format";
 import { getStatusBadge } from "~/libs/statusBadge";
 import { subjectsMock } from "~/mockdata/subject.data";
 import DisplayTotalResult from "../../_components/DisplayTotalResult";
-import { buildLaravelFilterQuery } from "~/libs/hepler";
+import { buildLaravelFilterQuery, highlightKeyword } from "~/libs/helper";
 const CourseList = () => {
     const queryClient = useQueryClient();
     const { page, search, sort, rating, price_range, duration, teachers, is_active } = useGetSearchQuery([
@@ -87,7 +87,12 @@ const CourseList = () => {
                                               {Math.max(0, +page - 1) * COURSE_PER_PAGE + idx + 1}
                                           </td>
                                           <td className="px-4 py-3 text-zinc-500">
-                                              <p className="text-base font-semibold text-gray-900">{course.name}</p>
+                                              <p
+                                                  className="text-base font-semibold text-gray-900"
+                                                  dangerouslySetInnerHTML={{
+                                                      __html: highlightKeyword(course.name, search),
+                                                  }}
+                                              />
                                               <p>
                                                   <span className="font-bold">Môn học:</span>{" "}
                                                   {subjectsMock.find((s) => s.slug === course.subject)?.name}
@@ -106,7 +111,7 @@ const CourseList = () => {
                                               </p>
                                           </td>
                                           <td
-                                              className={`px-4 py-3 font-bold ${course.price === 0 ? "text-green-600" : "text-blue-600"}`}
+                                              className={`px-4 py-3 font-semibold ${course.price === 0 ? "text-green-600" : ""}`}
                                           >
                                               {course.price === 0 ? "Miễn phí" : formatter.number(course.price) + "đ"}
                                           </td>

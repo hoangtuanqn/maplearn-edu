@@ -11,7 +11,7 @@ import DisplayTotalResult from "~/app/admin/_components/DisplayTotalResult";
 import { Button } from "~/components/ui/button";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
 import { formatter } from "~/libs/format";
-import { buildLaravelFilterQuery } from "~/libs/hepler";
+import { buildLaravelFilterQuery } from "~/libs/helper";
 import { gradeLevelsMock } from "~/mockdata/gradeLevels";
 import { subjectsMock } from "~/mockdata/subject.data";
 const HistoryExamList = () => {
@@ -31,7 +31,7 @@ const HistoryExamList = () => {
     // Gọi API để lấy lịch sử làm bài thi
     const { data: examAttempts, isLoading } = useQuery({
         queryKey: [
-            "admin",
+            "teacher",
             "exam-attempts",
             { page, search, min_score, max_score, status, violation_count, time_spent, full_name, sort },
         ],
@@ -108,7 +108,7 @@ const HistoryExamList = () => {
 
                                       {/* Thông tin học sinh */}
                                       <td className="px-4 py-3 text-zinc-500">
-                                          <Link href={`/admin/students/${attempt.user.id}`}>
+                                          <Link href={`/teacher/students/${attempt.user.id}`}>
                                               <div className="flex cursor-pointer items-center space-x-3 rounded p-1 transition hover:bg-blue-50">
                                                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                                                       <User className="h-5 w-5 text-blue-600" />
@@ -130,7 +130,7 @@ const HistoryExamList = () => {
                                               <FileText className="mt-0.5 h-4 w-4 text-gray-400" />
                                               <div className="space-y-1">
                                                   <Link
-                                                      href={`/admin/exams/${attempt.paper.slug}`}
+                                                      href={`/teacher/exams/${attempt.paper.slug}`}
                                                       className="text-sm font-medium text-gray-900 hover:text-blue-600"
                                                   >
                                                       {attempt.paper.title}
@@ -154,6 +154,7 @@ const HistoryExamList = () => {
                                                               (diff) => diff.slug === attempt.paper.exam_type,
                                                           )?.name || attempt.paper.exam_type}
                                                       </p>
+
                                                       <p className="text-xs text-gray-500">
                                                           <span className="font-medium">Độ khó:</span>
                                                           <span
@@ -259,20 +260,22 @@ const HistoryExamList = () => {
                                       {/* Thao tác */}
                                       <td className="px-4 py-3">
                                           <div className="flex items-center justify-end gap-2">
-                                              <Link
-                                                  href={`/exams/${attempt.paper.slug}/results/${attempt.id}`}
-                                                  target="_blank"
-                                              >
-                                                  <Button variant="outlineBlack" size="sm">
-                                                      Chi tiết
-                                                  </Button>
-                                              </Link>
+                                              {attempt.status !== "in_progress" && (
+                                                  <Link
+                                                      href={`/exams/${attempt.paper.slug}/results/${attempt.id}`}
+                                                      target="_blank"
+                                                  >
+                                                      <Button variant="outlineBlack" size="sm">
+                                                          Chi tiết
+                                                      </Button>
+                                                  </Link>
+                                              )}
                                               {attempt.note && (
                                                   <Button
+                                                      className="view_tooltip hover:bg-blue-50"
+                                                      data-tooltip-content={attempt.note}
                                                       variant="ghost"
                                                       size="sm"
-                                                      className="hover:bg-blue-50"
-                                                      title={attempt.note}
                                                   >
                                                       <AlertCircle className="h-4 w-4 text-blue-500" />
                                                   </Button>
@@ -286,7 +289,7 @@ const HistoryExamList = () => {
             </div>
             <div className="ml-auto w-fit">
                 <Suspense>
-                    <PaginationNav totalPages={totalPages} basePath="/admin/history/exams" />
+                    <PaginationNav totalPages={totalPages} basePath="/teacher/history/exams" />
                 </Suspense>
             </div>
         </>

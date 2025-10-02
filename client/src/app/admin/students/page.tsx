@@ -13,7 +13,7 @@ const breadcrumbData = [
 ];
 const StudentPage = () => {
     return (
-        <section className="mt-5 bg-[#F5F5F5] p-2">
+        <section className="mt-5 bg-[#F5F5F5]">
             <Breadcrumb breadcrumbData={breadcrumbData} />
             <div className="mt-3 rounded-lg bg-white p-4 pb-8 shadow-sm">
                 <div className="flex items-center justify-between">
@@ -25,7 +25,9 @@ const StudentPage = () => {
                         <FilterStudents />
                     </Suspense>
                 </div>
-                <StudentList />
+                <Suspense>
+                    <StudentList />
+                </Suspense>
             </div>
         </section>
     );

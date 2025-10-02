@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Api\BaseApiController;
+use App\Models\LessonViewHistory;
 use App\Models\User;
 use App\Notifications\PasswordResetNotification;
 use Illuminate\Http\Request;
@@ -28,12 +29,13 @@ class StudentController extends BaseApiController
                 'full_name',
                 'email',
                 'phone_number',
-                'gender',
+
                 'birth_year',
                 'city',
                 'school',
                 'banned',
                 'email_verified_at',
+                AllowedFilter::exact('gender'), // tìm chính xác giá trị. Tránh tìm male mà vẫn ra fe"male"
                 AllowedFilter::callback('email_verified', function ($query, $value) {
                     if ($value === 'verified') {
                         $query->whereNotNull('email_verified_at');
@@ -43,10 +45,36 @@ class StudentController extends BaseApiController
                 }),
             ])
             ->allowedSorts(['created_at'])
-            ->where('role', 'student')
+            // ->where('role', 'student')
             ->orderBy('id', 'desc')
             ->paginate($limit);
 
+        // gắn thêm thống tin thống kê học tập (tổng số bài học và giờ học trong tuần)
+        $students->getCollection()->transform(function ($student) {
+            $totalLessonsInWeek = 0;
+            $totalHoursInWeek = 0;
+            foreach ($student->purchasedCourses as $course) {
+                $lessonIds = $course->lessons()->pluck('course_lessons.id');
+                $recentActivity = LessonViewHistory::where('user_id', $student->id)
+                    ->where('created_at', '>=', now()->subDays(7))
+                    ->whereIn('lesson_id', $lessonIds)
+                    ->selectRaw('COUNT(*) as lessons_count, SUM(progress) as total_progress')
+                    ->first();
+
+                $totalLessonsInWeek += $recentActivity->lessons_count ?? 0;
+                $totalHoursInWeek += $recentActivity->total_progress ? $recentActivity->total_progress : 0;
+            }
+            $student->setAttribute('learning_info', [
+                'lessons' => $totalLessonsInWeek,
+                'hours'   => round($totalHoursInWeek / 60),
+                'enrollments_count' => $student->purchasedCourses()->count(),
+                'completed_courses_count' => $student->certificates()->count(),
+            ]);
+            unset($student->purchasedCourses);
+            return $student;
+        });
+
+        // tôi muốn ẩn purchased_courses ra khỏi response
         return $this->successResponse($students, "Lấy danh sách học sinh thành công!");
     }
 

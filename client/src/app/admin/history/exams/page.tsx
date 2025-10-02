@@ -14,7 +14,7 @@ const breadcrumbData = [
 ];
 const CoursePage = () => {
     return (
-        <section className="mt-5 bg-[#F5F5F5] p-2">
+        <section className="mt-5 bg-[#F5F5F5]">
             <div className="mb-6 flex flex-col gap-5">
                 <Breadcrumb breadcrumbData={breadcrumbData} />
             </div>

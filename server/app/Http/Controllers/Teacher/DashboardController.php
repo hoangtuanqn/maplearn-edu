@@ -3,191 +3,112 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Api\BaseApiController;
-use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\CourseReview;
+use App\Models\ExamAttempt;
 use App\Models\ExamPaper;
 use App\Models\Payment;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends BaseApiController
 {
-    // Dashboard data cho teacher - chỉ hiển thị dữ liệu của chính teacher đó
+
     public function getDashboardData(Request $request)
     {
-        $teacher = $request->user();
+        $user = $request->user();
+        // Validate start_date và end_date nếu có
+        $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
 
-        // Kiểm tra quyền teacher
-        if (!$teacher->isTeacher()) {
-            return $this->errorResponse('Bạn không có quyền truy cập', 403);
-        }
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
 
         $data = [
-            'total'               => $this->getTotal($teacher),
-            'total_in_12_months'  => $this->getTotalIn12Months($teacher),
-            'total_last_month'    => $this->getTotalLastMonth($teacher),
-            'total_in_this_year'  => $this->getTotalInThisYear($teacher),
-            'total_courses'       => $this->getTotalCourses($teacher),
-            'total_exams'         => $this->getTotalExams($teacher),
-            'total_students'      => $this->getTotalStudents($teacher),
-            'payment_methods'     => $this->getPaymentMethods($teacher),
-            'courses_by_category' => $this->getCoursesByCategory($teacher),
-            'new_students'        => $this->getNewStudents($teacher),
-            'new_payments'        => $this->getNewPayments($teacher),
-            'top_courses'         => $this->getTopCourses($teacher),
-            'activity_in_4_weeks' => $this->getActivityIn4Weeks($teacher),
-        ];
+            // số khóa học đang giảng dạy
+            'total_courses'       => $this->getTotalCourses($user),
+            // số học viên đang theo học
+            'total_students'      => $this->getTotalStudents($user),
 
+            // số đề thi đã tạo
+            'total_exams'         => $this->getTotalExams($user),
+
+            // thu thập tháng này
+            'total_in_this_month' => $this->getTotalInThisMonth($startDate, $endDate),
+
+            // top khóa học phổ biến ( nhiều sinh viên đăng ký )
+            'top_courses'         => $this->getTopCourses($user),
+
+            // top khóa học ít phổ biến
+            'least_popular_courses' => $this->getLeastPopularCourses($user),
+
+            // học sinh mới đăng ký khóa học
+            'top_4_new_students'        => $this->getTop4NewStudents($user),
+
+            // 4 feedback mới nhất
+            'new_feedbacks'      => $this->getNewFeedbacks($user),
+
+            // Thống kê phân bố học viên theo khóa học
+            'students_per_course' => $this->getStudentsPerCourse($user),
+
+            // 4 lượt nộp bài thi gần nhất
+            'recent_exam_submissions' => $this->getRecentExamSubmissions($user),
+
+        ];
         return $this->successResponse($data, 'Lấy dữ liệu dashboard thành công');
     }
 
-    // Tính tổng doanh thu của teacher
-    public function getTotal(User $teacher): int
+
+
+    private function getTotalCourses(User $user): int
     {
-        $courseIds = $teacher->courses()->pluck('id');
-        $total = Payment::where('status', 'paid')
-            ->whereIn('course_id', $courseIds)
-            ->sum('amount');
-        return (int)$total;
+        // Nếu có start_date và end_date thì filter theo khoảng thời gian đó
+        return Course::where('user_id', $user->id)->count();
     }
 
-    // Tính tổng doanh thu trong 12 tháng của teacher
-    public function getTotalIn12Months(User $teacher): int
+    private function getTotalStudents(User $user): int
     {
-        $courseIds = $teacher->courses()->pluck('id');
-        $total = Payment::where('status', 'paid')
-            ->whereIn('course_id', $courseIds)
-            ->whereYear('paid_at', now()->year)
-            ->sum('amount');
-        return (int)$total;
+        // lọc ra id của các khóa học do teacher này tạo
+        $courseIds = Course::where('user_id', $user->id)->pluck('id');
+
+        // lặp qua payment (lịch sử mua đã dc thanh toán)
+        return Payment::whereIn('course_id', $courseIds)->where('status', 'paid')->distinct('user_id')->count('user_id');
     }
 
-    // Tính doanh thu tháng trước của teacher
-    public function getTotalLastMonth(User $teacher): int
+    private function getTotalExams(User $user): int
     {
-        $courseIds = $teacher->courses()->pluck('id');
-        $total = Payment::where('status', 'paid')
-            ->whereIn('course_id', $courseIds)
-            ->whereYear('paid_at', now()->year)
-            ->whereMonth('paid_at', now()->subMonth()->month)
-            ->sum('amount');
-        return (int)$total;
+        return ExamPaper::where('user_id', $user->id)->count();
     }
 
-    // Tính doanh thu từng tháng trong năm của teacher
-    public function getTotalInThisYear(User $teacher): array
+    private function getTotalInThisMonth($startDate = null, $endDate = null): int
     {
-        $courseIds = $teacher->courses()->pluck('id');
-        $totals = [];
-        for ($month = 1; $month <= 12; $month++) {
-            $total = Payment::where('status', 'paid')
-                ->whereIn('course_id', $courseIds)
-                ->whereYear('paid_at', now()->year)
-                ->whereMonth('paid_at', $month)
+        // Nếu không truyền start_date và end_date thì filter trong tháng hiện tại
+        if (!$startDate || !$endDate) {
+            $startOfMonth = now()->startOfMonth();
+            $endOfMonth = now()->endOfMonth();
+            return Payment::where('status', 'paid')
+                ->whereBetween('paid_at', [$startOfMonth, $endOfMonth])
                 ->sum('amount');
-            $totals[] = (int)$total;
         }
-        return $totals;
-    }
 
-    // Tính tổng khóa học của teacher
-    public function getTotalCourses(User $teacher): int
-    {
-        return $teacher->courses()->count();
-    }
-
-    // Tính tổng đề thi của teacher
-    public function getTotalExams(User $teacher): int
-    {
-        return ExamPaper::where('user_id', $teacher->id)->count();
-    }
-
-    // Tính tổng học sinh của teacher (qua các khóa học đã bán)
-    public function getTotalStudents(User $teacher): int
-    {
-        $courseIds = $teacher->courses()->pluck('id');
+        // Nếu có start_date và end_date thì filter theo khoảng thời gian đó
         return Payment::where('status', 'paid')
-            ->whereIn('course_id', $courseIds)
-            ->distinct('user_id')
-            ->count('user_id');
+            ->whereBetween('paid_at', [$startDate, $endDate])
+            ->sum('amount');
     }
 
-    // Thống kê phương thức thanh toán của các khóa học teacher
-    public function getPaymentMethods(User $teacher): array
+    private function getTopCourses(User $user): array
     {
-        $courseIds = $teacher->courses()->pluck('id');
-        $methods = Payment::where('status', 'paid')
-            ->whereIn('course_id', $courseIds)
-            ->select('payment_method')
-            ->selectRaw('COUNT(*) as count')
-            ->groupBy('payment_method')
-            ->get()
-            ->pluck('count', 'payment_method')
-            ->toArray();
-        return $methods;
-    }
-
-    // Phân bổ khóa học theo danh mục của teacher
-    public function getCoursesByCategory(User $teacher): array
-    {
-        $categories = $teacher->courses()
-            ->select('category')
-            ->selectRaw('COUNT(*) as count')
-            ->groupBy('category')
-            ->get()
-            ->pluck('count', 'category')
-            ->toArray();
-        return $categories;
-    }
-
-    // Lấy 4 học sinh mới nhất của teacher
-    public function getNewStudents(User $teacher): array
-    {
-        $courseIds = $teacher->courses()->pluck('id');
-        $studentIds = Payment::where('status', 'paid')
-            ->whereIn('course_id', $courseIds)
-            ->orderBy('paid_at', 'desc')
-            ->limit(4)
-            ->pluck('user_id');
-
-        $students = User::whereIn('id', $studentIds)
-            ->select('id', 'full_name', 'avatar', 'email')
-            ->get();
-        return $students->toArray();
-    }
-
-    // Lấy 4 hóa đơn mới nhất của teacher
-    public function getNewPayments(User $teacher): array
-    {
-        $courseIds = $teacher->courses()->pluck('id');
-        $payments = Payment::where('status', 'paid')
-            ->whereIn('course_id', $courseIds)
-            ->with(['user:id,full_name,avatar', 'course:id,name'])
-            ->orderBy('paid_at', 'desc')
-            ->limit(4)
-            ->get()
-            ->map(function ($payment) {
-                return [
-                    'full_name'   => $payment->user->full_name ?? null,
-                    'course_name' => $payment->course->name ?? null,
-                    'amount'      => $payment->amount,
-                    'avatar'      => $payment->user->avatar ?? null,
-                ];
-            })
-            ->toArray();
-        return $payments;
-    }
-
-    // Lấy top 4 khóa học có nhiều học viên nhất của teacher
-    public function getTopCourses(User $teacher): array
-    {
-        $courses = $teacher->courses()
-            ->withCount('students')
+        $courses = Course::where(['user_id' => $user->id])->withCount('students')
             ->withSum('payments', 'amount')
             ->has('students')
             ->orderBy('students_count', 'desc')
+
             ->limit(4)
-            ->get(['id', 'name', 'slug'])
+            ->get(['id', 'name'])
             ->map(function ($course) {
                 return [
                     'name'           => $course->name,
@@ -200,43 +121,129 @@ class DashboardController extends BaseApiController
         return $courses;
     }
 
-    // Lịch sử hoạt động trong 4 tuần gần đây của teacher
-    public function getActivityIn4Weeks(User $teacher): array
+    private function getLeastPopularCourses(User $user): array
     {
-        $activities = [];
-        for ($week = 0; $week < 4; $week++) {
-            $startOfWeek = now()->subWeeks($week)->startOfWeek();
-            $endOfWeek   = now()->subWeeks($week)->endOfWeek();
+        // Lấy ID các khóa học phổ biến nhất (top 4)
+        $topCourseIds = $this->getTopCourses($user);
+        $topCourseIds = array_column($topCourseIds, 'id');
 
-            $newCourses = $teacher->courses()
-                ->whereBetween('start_date', [$startOfWeek, $endOfWeek])
-                ->count();
+        // Lấy các khóa học ít phổ biến, loại bỏ các khóa học đã nằm trong top
+        $courses = Course::where('user_id', $user->id)
+            ->whereNotIn('id', $topCourseIds)
+            ->withCount('students')
+            ->withSum('payments', 'amount')
+            ->orderBy('students_count', 'asc')
+            ->limit(4)
+            ->get(['id', 'name'])
+            ->map(function ($course) {
+                return [
+                    'name'           => $course->name,
+                    'students_count' => $course->students_count,
+                    'slug'           => $course->slug,
+                    'revenue'        => (int)$course->payments_sum_amount ?? 0,
+                ];
+            })
+            ->toArray();
 
-            $courseIds = $teacher->courses()->pluck('id');
-            $newStudents = Payment::where('status', 'paid')
-                ->whereIn('course_id', $courseIds)
-                ->whereBetween('paid_at', [$startOfWeek, $endOfWeek])
-                ->distinct('user_id')
-                ->count('user_id');
-
-            $newExams = ExamPaper::where('user_id', $teacher->id)
-                ->whereBetween('start_time', [$startOfWeek, $endOfWeek])
-                ->count();
-
-            $activities[] = [
-                'week'        => "Tuần " . (4 - $week),
-                'new_courses' => $newCourses,
-                'new_students' => $newStudents,
-                'new_exams'   => $newExams,
-            ];
-        }
-        return array_reverse($activities);
+        return $courses;
     }
 
-    // get số học sinh của giáo viên (compatibility method)
-    public function getStudentCount(Request $request): int
+    private function getTop4NewStudents(User $user): array
     {
-        $teacher = $request->user();
-        return $this->getTotalStudents($teacher);
+        // Lấy ID các khóa học do giáo viên này tạo
+        $courseIds = Course::where('user_id', $user->id)->pluck('id');
+
+        // Lấy 4 học viên mới đăng ký các khóa học này gần đây nhất
+        $students = Payment::whereIn('course_id', $courseIds)
+            ->where('status', 'paid')
+            ->with('user:id,full_name,email,avatar') // Chỉ lấy các trường cần thiết
+            ->orderBy('paid_at', 'desc')
+            ->distinct('user_id')
+            ->limit(4)
+            ->get()
+            ->map(function ($payment) {
+                return [
+                    'full_name' => $payment->user->full_name ?? null,
+                    'email'     => $payment->user->email ?? null,
+                    'avatar'    => $payment->user->avatar ?? null,
+                    'paid_at'   => $payment->paid_at,
+                ];
+            })
+            ->toArray();
+
+        return $students;
+    }
+
+    private function getNewFeedbacks(User $user): array
+    {
+        // Lấy ID các khóa học do giáo viên này tạo
+        $courseIds = Course::where('user_id', $user->id)->pluck('id');
+
+        // Lấy 4 feedback mới nhất cho các khóa học này
+        $feedbacks = CourseReview::whereIn('course_id', $courseIds)
+            ->with('user:id,full_name,email,avatar') // Chỉ lấy các trường cần thiết
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get()
+            ->map(function ($feedback) {
+                return [
+                    'course_id' => $feedback->course_id,
+                    'course_name' => $feedback->course->name ?? null,
+                    'full_name' => $feedback->user->full_name ?? null,
+                    'email'     => $feedback->user->email ?? null,
+                    'avatar'    => $feedback->user->avatar ?? null,
+                    'rating'    => $feedback->rating,
+                    'comment'   => $feedback->comment,
+                    'created_at' => $feedback->created_at,
+                ];
+            })
+            ->toArray();
+
+        return $feedbacks;
+    }
+
+    private function getStudentsPerCourse(User $user): array
+    {
+        // Lấy ID các khóa học do giáo viên này tạo
+        $courseIds = Course::where('user_id', $user->id)->pluck('id');
+
+        // Lấy số lượng học viên cho mỗi khóa học
+        $studentsPerCourse = Course::whereIn('id', $courseIds)
+            ->withCount('students')
+            ->get()
+            ->map(function ($course) {
+                return [
+                    'course_name'   => $course->name,
+                    'students_count' => $course->students_count,
+                ];
+            })
+            ->toArray();
+
+        return $studentsPerCourse;
+    }
+
+    private function getRecentExamSubmissions(User $user): array
+    {
+        // get tất cả bài thi của teacher
+        $examPaperIds = ExamPaper::where('user_id', $user->id)->pluck('id');
+        // trong exam attempt lấy 4 bài thi gần nhất
+        $recentSubmissions = ExamAttempt::whereIn('exam_paper_id', $examPaperIds)
+            ->with(['user:id,full_name,email,avatar', 'paper:id,title'])
+            ->orderBy('created_at', 'desc')
+            ->limit(4)
+            ->get()
+            ->map(function ($attempt) {
+                return [
+                    'full_name'   => $attempt->user->full_name ?? null,
+                    'email'       => $attempt->user->email ?? null,
+                    'avatar'      => $attempt->user->avatar ?? null,
+                    'exam_title'  => $attempt->examPaper->title ?? null,
+                    'score'       => $attempt->score,
+                    'submitted_at' => $attempt->created_at,
+                ];
+            })
+            ->toArray();
+
+        return $recentSubmissions;
     }
 }

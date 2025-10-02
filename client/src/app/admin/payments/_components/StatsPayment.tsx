@@ -129,7 +129,8 @@ const StatsPayment = () => {
                 <div>
                     <h2 className="text-3xl font-bold text-gray-900">Thống Kê Thanh Toán</h2>
                     <p className="mt-1 text-gray-600">
-                        Phân tích chi tiết và hiệu suất thanh toán từ {getDateRangeText()}.
+                        Phân tích chi tiết và hiệu suất thanh toán từ{" "}
+                        <span className="text-primary font-bold">{getDateRangeText()}</span>.
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -147,7 +148,7 @@ const StatsPayment = () => {
                     <CardHeader className="pb-2">
                         <CardTitle className="flex items-center text-sm font-medium text-blue-700">
                             <DollarSign className="mr-2 h-4 w-4" />
-                            Tổng Doanh Thu
+                            Tổng Thanh Toán
                         </CardTitle>
                     </CardHeader>
                     <CardContent>

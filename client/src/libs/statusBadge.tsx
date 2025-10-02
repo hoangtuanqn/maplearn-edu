@@ -53,7 +53,16 @@ export function getStatusBadge(type: string, status: string) {
                 case "0":
                     return <Badge variant="warning">Tạm ngưng</Badge>;
             }
-        default:
-            return <Badge variant="secondary">Không xác định</Badge>;
+        // dạng công khai, riêng tư
+        case "public_private":
+            switch (status) {
+                case "1":
+                    return <Badge variant="success">Công khai</Badge>;
+                case "0":
+                    return <Badge variant="warning">Riêng tư</Badge>;
+
+                default:
+                    return <Badge variant="secondary">Không xác định</Badge>;
+            }
     }
 }

@@ -42,6 +42,21 @@ export const formatter = {
         const s = seconds % 60;
         return `${m}:${s.toString().padStart(2, "0")}`;
     },
+    timeAgo: (date: Date | string | null): string => {
+        if (!date) return "Không xác định";
+
+        const now = new Date();
+        const inputDate = new Date(date);
+        const diff = Math.floor((now.getTime() - inputDate.getTime()) / 1000);
+
+        if (diff < 5) return "Vừa xong";
+        if (diff < 60) return `${diff} giây trước`;
+        if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
+        if (diff < 2592000) return `${Math.floor(diff / 86400)} ngày trước`;
+        if (diff < 31536000) return `${Math.floor(diff / 2592000)} tháng trước`;
+        return `${Math.floor(diff / 31536000)} năm trước`;
+    },
 };
 
 export const formatPhoneNumber = (phone: string | number): string => {

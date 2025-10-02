@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import React from "react";
-import { getCharacterName } from "~/libs/hepler";
+import { getCharacterName } from "~/libs/helper";
 
 const DisplayAvatar = ({
     ratio = "24",

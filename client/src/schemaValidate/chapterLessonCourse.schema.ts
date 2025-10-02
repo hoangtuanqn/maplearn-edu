@@ -4,11 +4,14 @@ const lessonSchema = z.object({
     id: z.number(),
     chapter_id: z.number(),
     title: z.string(),
+    content: z.string(),
     slug: z.string(),
     position: z.number(),
     duration: z.number(),
     is_free: z.boolean(),
     video_url: z.string(), // chỉ tồn tại nếu is_free = true
+    created_at: z.string(),
+    updated_at: z.string(),
 });
 const chapterSchema = z.object({
     id: z.number(),

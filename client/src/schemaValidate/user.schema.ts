@@ -9,8 +9,8 @@ export const userSchema = z.object({
     phone_number: z.string().nullable(),
     gender: z.enum(["male", "female", "other"]),
     avatar: z.string(),
-    birth_year: z.number().optional(),
-    facebook_link: z.string(),
+    birth_year: z.number().optional().nullable(),
+    facebook_link: z.string().nullable(),
     school: z.string().nullable(),
     city: z.string().nullable(),
     bio: z.string().nullable(),
@@ -24,6 +24,12 @@ export const userSchema = z.object({
     hours_in_week: z.number().min(0),
     created_at: z.string(),
     updated_at: z.string(),
+    learning_info: z.object({
+        lessons: z.number().min(0),
+        hours: z.number().min(0),
+        enrollments_count: z.number().min(0),
+        completed_courses_count: z.number().min(0),
+    }),
 });
 
 export type UserType = z.infer<typeof userSchema>;

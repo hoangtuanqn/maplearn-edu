@@ -1,8 +1,10 @@
 import privateApi from "~/libs/apis/privateApi";
+import publicApi from "~/libs/apis/publicApi";
 import {
     ActivityHistorySchema,
     ImportStudentErrorSchema,
     ImportStudentSuccessSchema,
+    StudyProgress7DaysResponse,
     UpdateProfileSchema,
 } from "~/schemaValidate/admin/student.schema";
 import { StudentDetailResponseType, StudentListResponseType, UserType } from "~/schemaValidate/user.schema";
@@ -43,5 +45,11 @@ const studentApi = {
             error_handling,
             data,
         }),
+    // get thông tin học tập trong 7 ngày của học viên
+    getLearningStats: (course: string, id: string, headers?: { [key: string]: string }) =>
+        publicApi.get<StudyProgress7DaysResponse>(
+            `/courses-admin/${course}/student/${id}/stats`,
+            headers ? { headers } : undefined,
+        ),
 };
 export default studentApi;

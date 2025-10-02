@@ -7,7 +7,7 @@ import PostIItem from "./PostIItem";
 import PostSkeleton from "../../../_components/SidebarRight/PostSkeleton";
 import { PaginationNav } from "../../../_components/Pagination";
 import postApi, { POSTS_PER_PAGE } from "~/apiRequest/post";
-import { buildLaravelFilterQuery } from "~/libs/hepler";
+import { buildLaravelFilterQuery } from "~/libs/helper";
 
 async function fetchPosts(page: number, limit: number, search: string, sort: string, queryOther: string) {
     const res = await postApi.getPosts(page, limit, search, sort, queryOther);

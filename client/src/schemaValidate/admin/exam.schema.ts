@@ -24,6 +24,7 @@ const examSchema = z.object({
     created_at: z.string(),
     updated_at: z.string(),
     registered_count: z.number(),
+    is_password_protected: z.boolean(),
 });
 
 const _examSchemaResponse = z.object({

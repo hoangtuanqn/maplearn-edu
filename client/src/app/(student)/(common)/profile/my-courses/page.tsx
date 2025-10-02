@@ -13,7 +13,9 @@ const MyCoursesPage = () => {
         <>
             <div className="flex items-start justify-between">
                 <h3 className="block-heading mb-6 uppercase">Khóa học của tôi</h3>
-                <FilterCourses />
+                <Suspense>
+                    <FilterCourses />
+                </Suspense>
             </div>
             <div className="flex flex-col gap-4 font-medium">
                 <Suspense fallback={<Loading />}>

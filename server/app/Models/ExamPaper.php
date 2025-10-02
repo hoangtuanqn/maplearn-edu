@@ -29,6 +29,9 @@ class ExamPaper extends Model
         'status',
         'start_time',
         'end_time',
+        'max_attempts',
+        'password',
+        'created_at'
     ];
     protected $casts = [
         'max_score'              => 'float',
@@ -45,6 +48,11 @@ class ExamPaper extends Model
         'question_count',
         'total_attempt_count',  // tổng số lượt thi của đề thi
         'attempt_count', // số lượt thi của user đang gọi request
+        'is_password_protected', // Đề thi có được bảo vệ bằng mật khẩu (2FA) hay không
+    ];
+
+    protected $hidden = [
+        'password', // Ẩn trường password (mã 2FA) khi trả về JSON
     ];
 
     public function getRouteKeyName()
@@ -88,6 +96,12 @@ class ExamPaper extends Model
             return 0;
         }
         return $user->examAttempts()->where('exam_paper_id', $this->id)->count();
+    }
+
+    // Kiểm tra đề thi có được bảo vệ bằng mật khẩu (2FA) hay không
+    public function getIsPasswordProtectedAttribute()
+    {
+        return !empty($this->password);
     }
 
     // Các sự kiện event

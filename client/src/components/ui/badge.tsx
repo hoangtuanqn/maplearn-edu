@@ -17,6 +17,7 @@ const badgeVariants = cva(
                 warning: "border border-yellow-400 bg-yellow-100 px-4 py-1 text-xs text-yellow-700 shadow",
                 success: "border border-green-200 bg-green-100 px-4 py-1 text-xs text-green-700 shadow",
                 danger: "border border-red-200 bg-red-100 px-4 py-1 text-xs text-red-700 shadow",
+                primary: "border border-blue-200 bg-primary px-4 py-1 text-xs text-white shadow",
             },
         },
         defaultVariants: {

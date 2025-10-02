@@ -15,7 +15,7 @@ const formSchema = z
         }),
         max_score: z
             .number()
-            .min(1, { message: "Điểm tối đa phải lớn hơn 0." })
+            .min(10, { message: "Điểm thiểu phải từ 10 trở lên." })
             .max(100, { message: "Điểm tối đa không được vượt quá 100." }),
         pass_score: z.number().min(0, { message: "Điểm qua môn phải lớn hơn hoặc bằng 0." }),
         duration_minutes: z
@@ -24,14 +24,10 @@ const formSchema = z
             .max(300, { message: "Thời gian làm bài không được vượt quá 300 phút." }),
         start_time: z.string().min(1, { message: "Vui lòng chọn thời gian bắt đầu." }),
         end_time: z.string(),
-        description: z.string().optional(),
-        instructions: z.string().optional(),
         is_active: z.boolean(),
-        is_shuffle_questions: z.boolean(),
-        is_shuffle_answers: z.boolean(),
-        is_show_result: z.boolean(),
-        is_retakeable: z.boolean(),
         max_attempts: z.number().min(0, { message: "Số lần làm bài tối đa phải lớn hơn 0." }).optional(),
+        is_password_protected: z.boolean().optional(),
+        anti_cheat_enabled: z.boolean().optional(),
     })
     .refine(
         (data) => {

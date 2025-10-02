@@ -76,9 +76,20 @@ class CourseLessonController extends BaseApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CourseLesson $courseLesson)
+    public function update(Request $request, CourseLesson $lesson)
     {
-        //
+        Gate::authorize('admin-teacher');
+        $data = $request->validate([
+            'title'      => 'sometimes|required|string|max:255',
+            'content'    => 'sometimes|nullable|string',
+            'video_url'  => 'sometimes|nullable|url',
+            'position'   => 'sometimes|required|integer|min:1',
+            'duration'   => 'sometimes|nullable|integer|min:0', // duration in seconds
+            'is_free'    => 'sometimes|boolean',
+        ]);
+
+        $lesson->update($data);
+        return $this->successResponse($lesson, 'Cập nhật bài học thành công!', 200);
     }
 
     /**

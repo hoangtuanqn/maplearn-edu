@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormLoginType, loginSchema } from "../../auth.schema";
@@ -19,6 +19,7 @@ const FormLogin = () => {
     const { isCapsLockOn, handleKeyEvent, handleFocus } = useCapsLockWarning();
     const { login } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
     const form = useForm<FormLoginType>({
         mode: "onBlur",
         resolver: zodResolver(loginSchema),
@@ -40,7 +41,11 @@ const FormLogin = () => {
                 router.push("/auth/verify-otp/" + res.data?.token);
             } else {
                 login(res.data.data);
-                router.push("/");
+                if (searchParams.get("redirect")) {
+                    router.push(searchParams.get("redirect") || "/");
+                } else {
+                    router.push("/");
+                }
                 toast.success("Đăng nhập thành công!");
             }
         },

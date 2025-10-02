@@ -8,7 +8,26 @@ export const PAYMENT_PER_PAGE = 20;
 const profileApi = {
     update: (data: ProfileType) => privateApi.post("/profile/update", data),
     changePassword: (data: FormChangePasswordType) => privateApi.post("/profile/change-password", data),
-    getCourseMe: () => privateApi.get<CourseListResponse>("/profile/courses"),
+    getCourseMe: (
+        page: number = 1,
+        limit: number = PAYMENT_PER_PAGE,
+        search: string = "",
+        querySortOther: string = "",
+        queryOther: string = "",
+    ) => {
+        let query = `/profile/courses?page=${page}&limit=${limit}`;
+
+        if (search) {
+            query += `&filter[name]=${search}`;
+        }
+        if (querySortOther) {
+            query += `&sort=${querySortOther}`; // Các value cần sort: -created_at, download_count, ...
+        }
+        if (queryOther) {
+            query += `&${queryOther}`; // Các value khác nếu cần
+        }
+        return privateApi.get<CourseListResponse>(query);
+    },
     getPayments: async (
         page: number = 1,
         limit: number = PAYMENT_PER_PAGE,

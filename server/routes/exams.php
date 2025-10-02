@@ -30,6 +30,9 @@ Route::prefix('exams')->middleware('auth.jwt')->group(function () {
 
     // Get bài làm của người dùng (câu hỏi đề thi + đáp án)
     Route::get("/{exam}/{id}/my-attempts", [ExamAttemptController::class, 'myAttempts']);
+
+    // lấy đáp án bài thi (chỉ demo bảo vệ đồ án)
+    Route::get("/{exam}/answers", [ExamPaperController::class, 'getAnswersExam']);
 });
 
 // Ko cần login
@@ -47,3 +50,4 @@ Route::prefix('exams-admin')->middleware(['auth.jwt', 'check.role:admin,teacher'
     Route::get('/{exam}/history', [ExamController::class, 'history']);
 });
 Route::apiResource('exams-admin', ExamController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);
+Route::apiResource('exam-questions', ExamQuestionController::class)->middleware(['auth.jwt', 'check.role:admin,teacher']);

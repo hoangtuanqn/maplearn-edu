@@ -7,8 +7,16 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Button } from "~/components/ui/button";
 
 import { Input } from "~/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { getGender } from "~/libs/hepler";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "~/components/ui/select";
+import { getGender } from "~/libs/helper";
 import { StudentDetailResponseType } from "~/schemaValidate/user.schema";
 import { useMutation } from "@tanstack/react-query";
 import studentApi from "~/apiRequest/admin/student";
@@ -74,7 +82,6 @@ const FormEditStudent = ({ studentData }: FormEditStudentProps) => {
         if (file) {
             setFile(file);
             setPreview(URL.createObjectURL(file)); // tạo link preview
-            // Gửi file lên server hoặc preview
         }
     };
 
@@ -82,7 +89,7 @@ const FormEditStudent = ({ studentData }: FormEditStudentProps) => {
         <>
             {updateStudentMutation.isPending && <Loading />}
 
-            <div className="mt-6 flex gap-5">
+            <div className="mt-6 flex flex-col gap-5 2xl:flex-row">
                 <div className="flex flex-1/5 flex-col items-center rounded-lg bg-white p-6 pb-8 shadow-sm">
                     <div className="relative mb-4 h-24 w-24 rounded-full border">
                         <DisplayAvatar avatar={preview} fullName={studentData.full_name} ratio="28" />
@@ -243,14 +250,29 @@ const FormEditStudent = ({ studentData }: FormEditStudentProps) => {
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Năm sinh</FormLabel>
+
                                             <FormControl>
-                                                <Input
-                                                    placeholder="Năm sinh"
-                                                    type="number"
-                                                    {...field}
-                                                    onChange={(e) => field.onChange(Number(e.target.value))}
-                                                    value={form.watch("birth_year") ?? ""}
-                                                />
+                                                <Select
+                                                    value={field.value ? String(field.value) : undefined}
+                                                    onValueChange={(val) => field.onChange(Number(val))}
+                                                >
+                                                    <SelectTrigger className="w-full">
+                                                        <SelectValue placeholder="Chọn năm sinh" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectGroup>
+                                                            <SelectLabel>Năm sinh</SelectLabel>
+                                                            {[...Array(20)].map((_, index) => {
+                                                                const year = 1995 + index;
+                                                                return (
+                                                                    <SelectItem key={year} value={String(year)}>
+                                                                        {year}
+                                                                    </SelectItem>
+                                                                );
+                                                            })}
+                                                        </SelectGroup>
+                                                    </SelectContent>
+                                                </Select>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

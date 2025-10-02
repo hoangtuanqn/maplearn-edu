@@ -5,7 +5,7 @@ import React from "react";
 
 import TableSkeleton from "~/app/(student)/(common)/profile/_components/TableSkeleton";
 import { Button } from "~/components/ui/button";
-import { getGender } from "~/libs/hepler";
+import { getGender } from "~/libs/helper";
 import { getStatusBadge } from "~/libs/statusBadge";
 import DisplayTotalResult from "../../_components/DisplayTotalResult";
 import teacherApi from "~/apiRequest/teachers";
@@ -81,9 +81,13 @@ const TeacherList = () => {
                                           </Link>
                                       </td>
                                       <td className="px-4 py-3 text-zinc-500">
-                                          <Link href={`tel:${student.phone_number}`} className="underline">
-                                              {student.phone_number}
-                                          </Link>
+                                          {student.phone_number ? (
+                                              <Link href={`tel:${student.phone_number}`} className="underline">
+                                                  {student.phone_number}
+                                              </Link>
+                                          ) : (
+                                              "Chưa cập nhật"
+                                          )}
                                       </td>
 
                                       <td className="px-4 py-3">

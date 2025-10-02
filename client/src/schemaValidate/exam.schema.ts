@@ -18,8 +18,8 @@ export type ExamCategoriesResponse = z.infer<typeof _examCategoriesResponseSchem
 
 const examSchema = z.object({
     id: z.number(),
-    exam_category_id: z.number(),
-    subject_id: z.number(),
+    exam_category: z.string(),
+    subject: z.string(),
     grade_level: z.string(),
     title: z.string(),
     slug: z.string(),
@@ -36,6 +36,7 @@ const examSchema = z.object({
     total_attempt_count: z.number(), // tổng số lượt thi của đề thi
     question_count: z.number(),
     is_in_progress: z.boolean(),
+    is_password_protected: z.boolean(),
     status: z.boolean(),
     start_time: z.string(),
     end_time: z.string(),
@@ -72,6 +73,7 @@ const questionSchema = z.object({
     images: z.array(z.string()).nullable(),
     marks: z.number(),
     options: z.array(answersSchema),
+    correct: z.array(z.string()),
 });
 export type Question = z.infer<typeof questionSchema>;
 
@@ -80,6 +82,7 @@ const _questionsExamSchema = z.object({
     message: z.string(),
     data: examSchema.extend({
         questions: z.array(questionSchema),
+        url_qr_code_password: z.string().nullable(), // link qr code nếu có
     }),
 });
 

@@ -11,7 +11,7 @@ import DisplayTotalResult from "~/app/admin/_components/DisplayTotalResult";
 import { Button } from "~/components/ui/button";
 import useGetSearchQuery from "~/hooks/useGetSearchQuery";
 import { formatter } from "~/libs/format";
-import { buildLaravelFilterQuery } from "~/libs/hepler";
+import { buildLaravelFilterQuery } from "~/libs/helper";
 import { gradeLevelsMock } from "~/mockdata/gradeLevels";
 import { subjectsMock } from "~/mockdata/subject.data";
 const HistoryExamList = () => {
@@ -260,20 +260,22 @@ const HistoryExamList = () => {
                                       {/* Thao tác */}
                                       <td className="px-4 py-3">
                                           <div className="flex items-center justify-end gap-2">
-                                              <Link
-                                                  href={`/exams/${attempt.paper.slug}/results/${attempt.id}`}
-                                                  target="_blank"
-                                              >
-                                                  <Button variant="outlineBlack" size="sm">
-                                                      Chi tiết
-                                                  </Button>
-                                              </Link>
+                                              {attempt.status !== "in_progress" && (
+                                                  <Link
+                                                      href={`/exams/${attempt.paper.slug}/results/${attempt.id}`}
+                                                      target="_blank"
+                                                  >
+                                                      <Button variant="outlineBlack" size="sm">
+                                                          Chi tiết
+                                                      </Button>
+                                                  </Link>
+                                              )}
                                               {attempt.note && (
                                                   <Button
+                                                      className="view_tooltip hover:bg-blue-50"
+                                                      data-tooltip-content={attempt.note}
                                                       variant="ghost"
                                                       size="sm"
-                                                      className="hover:bg-blue-50"
-                                                      title={attempt.note}
                                                   >
                                                       <AlertCircle className="h-4 w-4 text-blue-500" />
                                                   </Button>

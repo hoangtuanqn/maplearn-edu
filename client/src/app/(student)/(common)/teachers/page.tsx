@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import teacherApi from "~/apiRequest/teachers";
 import Link from "next/link";
 import Image from "next/image";
-import { getFullName } from "~/libs/hepler";
+import { getFullName } from "~/libs/helper";
 
 export const metadata: Metadata = {
     title: "Tất cả các giáo viên",

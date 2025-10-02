@@ -49,8 +49,6 @@ const VideoPage = async ({ params }: { params: Promise<{ courseSlug: string; lec
                         {/* Video Player */}
                         <div className="bg-black">
                             <DisplayVideoLearn course={course} lesson={lesson} />
-
-                            {/* Simple Video Info Overlay */}
                         </div>
                         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
                             <div className="flex items-center justify-between">

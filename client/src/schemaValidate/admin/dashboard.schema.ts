@@ -1,19 +1,17 @@
 import z from "zod";
 
 const dashboardSchema = z.object({
-    total: z.number(),
-    total_in_12_months: z.number(),
-    total_last_month: z.number(),
-    total_in_this_year: z.array(z.number()).length(12),
+    total_in_this_year: z.record(z.string(), z.number()),
     total_courses: z.number(),
     total_exams: z.number(),
     total_users: z.number(),
-    payment_methods: z.object({
-        zalopay: z.number(),
-        momo: z.number(),
-        transfer: z.number(),
-        vnpay: z.number(),
-    }),
+    payment_methods: z.record(
+        z.string(),
+        z.object({
+            count: z.number(),
+            total: z.number(),
+        }),
+    ),
     courses_by_category: z.record(z.string(), z.number()),
     new_users: z.array(
         z.object({
@@ -39,14 +37,19 @@ const dashboardSchema = z.object({
             revenue: z.string(),
         }),
     ),
-    activity_in_4_weeks: z.array(
+    activity_in_12_months: z.array(
         z.object({
-            week: z.string(),
+            month: z.string(),
             new_courses: z.number(),
             new_users: z.number(),
             new_exams: z.number(),
         }),
     ),
+    recent_activity: z.object({
+        new_courses: z.number(),
+        new_users: z.number(),
+        new_exams: z.number(),
+    }),
 });
 const _dashboardResponseSchema = z.object({
     success: z.boolean(),

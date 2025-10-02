@@ -47,14 +47,18 @@ class CourseChapterController extends BaseApiController
      */
     public function show(Request $request, $slug)
     {
-        // Lấy slug của chương học từ route
+        $user = $request->user();
         // Eager load lessons qua quan hệ
         $course = Course::with(['chapters' => function ($query) {
-            $query->orderBy('position', 'desc')->orderBy('created_at', 'desc');
+            $query->orderBy('position', 'desc')->orderBy('updated_at', 'desc');
         }, 'chapters.lessons'])->where('slug', $slug)->firstOrFail();
 
-        $course->chapters->each(function ($chapter) {
-            $chapter->lessons->each(function ($lesson) {
+        $course->chapters->each(function ($chapter) use ($user) {
+            $chapter->lessons->each(function ($lesson) use ($user) {
+                if ($user->hasRole(['admin', 'teacher'])) {
+                    // admin và teacher xem được tất cả nội dung
+                    return;
+                }
                 if ($lesson->is_free) {
                     $lesson->makeHidden(['content', 'created_at', 'updated_at']);
                 } else {
@@ -69,9 +73,16 @@ class CourseChapterController extends BaseApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, CourseChapter $courseChapter)
+    public function update(Request $request, CourseChapter $chapter)
     {
-        //
+        // dữ liệu truyền lên gồm title, position
+        Gate::authorize('admin-teacher');
+        $data = $request->validate([
+            'title'    => 'required|string|max:255',
+            'position' => 'required|integer|min:1',
+        ]);
+        $chapter->update($data);
+        return $this->successResponse($chapter, 'Cập nhật chương học thành công');
     }
 
     /**

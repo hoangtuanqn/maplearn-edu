@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\ExamPaper;
-
+use App\Services\GoogleAuthenService;
 use Illuminate\Database\Seeder;
 
 class ExamPaperSeeder extends Seeder
@@ -84,7 +84,7 @@ class ExamPaperSeeder extends Seeder
         ];
 
         $count = count($examPapers);
-        $maxCount = 200;
+        $maxCount = 1000;
         for ($i = $count + 1; $i <= $maxCount; $i++) {
             $subject = $subjectsForName[array_rand($subjectsForName)];
             $type = $examTypes[array_rand($examTypes)];
@@ -96,21 +96,26 @@ class ExamPaperSeeder extends Seeder
         $gradeLevels = ['dg-td', 'dg-nl', 'lop-12', 'lop-11', 'lop-10'];
         $categories  = ['dgnl-hsa', 'dgnl-v-act', 'dgtd-tsa', 'tot-nghiep-thpt', 'thi-cuoi-ki-1', 'thi-cuoi-ki-2', 'thi-giua-ki-1', 'thi-giua-ki-2'];
         foreach ($examPapers as $key => $paper) {
-            $status = ($maxCount - $key) > 81;
-
+            // 81 ở đây là 81 khóa học
+            $status = $key < 81;
+            $rand = rand(0, 365);
             ExamPaper::create([
-                'title'            => $paper,
-                'user_id'          => 8,
-                'max_score'        => 10,
-                'duration_minutes' => 120,
-                'exam_category'    => $categories[array_rand($categories)],
-                'subject'          => $subjects[array_rand($subjects)],
-                'grade_level'      => $gradeLevels[array_rand($gradeLevels)],
-                'difficulty'       => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
-                'province'         => collect(['Quảng Ngãi', 'Bình Định', 'Hà Nội', 'TP Hồ Chí Minh'])->random(),
-                'exam_type'        => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random(),
-                'status'           => $status,
-                'start_time'       => now()->subDays(rand(0, 28)),
+                'title'                     => $paper,
+                'user_id'                   => 8,
+                'max_score'                 => 10,
+                'duration_minutes'          => 120,
+                'exam_category'             => $categories[array_rand($categories)],
+                'subject'                   => $subjects[array_rand($subjects)],
+                'grade_level'               => $gradeLevels[array_rand($gradeLevels)],
+                'difficulty'                => collect(['easy', 'normal', 'hard', 'very_hard'])->random(),
+                'province'                  => collect(['Quảng Ngãi', 'Phú Thọ', 'Thành phố Hà Nội', 'Thành phố Hồ Chí Minh'])->random(),
+                'exam_type'                 => collect(['HSA', 'V-ACT', 'TSA', 'THPT', 'OTHER'])->random(),
+                'status'                    => $status,
+                'anti_cheat_enabled'        => !$status,
+                'max_attempts'              => $status ? null : 3,
+                'start_time'                => now()->subDays(max(0, $rand - 40)),
+                'password'                  => $status ? null : GoogleAuthenService::generateSecret2FA($paper)['secret'],
+                'created_at'                => now()->subDays($rand),
             ]);
         }
     }

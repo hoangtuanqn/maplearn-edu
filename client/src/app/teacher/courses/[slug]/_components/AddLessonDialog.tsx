@@ -24,19 +24,27 @@ import { Plus } from "lucide-react";
 import { Textarea } from "~/components/ui/textarea";
 import { Switch } from "~/components/ui/switch";
 import courseAdminApi from "~/apiRequest/admin/course";
+import { formatter } from "~/libs/format";
 // Schema validation
 const addLessonSchema = z.object({
     title: z
         .string()
-        .min(2, { message: "Tiêu đề bài học phải có ít nhất 2 ký tự." })
+        .min(15, { message: "Tiêu đề bài học phải có ít nhất 15 ký tự." })
         .max(255, { message: "Tiêu đề không được vượt quá 255 ký tự." }),
-    content: z.string().min(10, { message: "Nội dung bài học phải có ít nhất 10 ký tự." }).optional(),
+    content: z
+        .string()
+        .min(10, { message: "Nội dung bài học phải có ít nhất 10 ký tự." })
+        .max(10000, { message: "Nội dung không được vượt quá 10000 ký tự." })
+        .optional(),
     video_url: z.string().url({ message: "Vui lòng nhập URL hợp lệ." }),
-    position: z.number().min(1, { message: "Vị trí phải lớn hơn 0." }),
+    position: z
+        .number()
+        .min(1, { message: "Vị trí phải lớn hơn 0." })
+        .max(30, { message: "Vị trí không được vượt quá 30." }),
     duration: z
         .number()
-        .min(15, { message: "Thời lượng phải lớn hơn hoặc bằng 15 giây." })
-        .max(86400, { message: "Thời lượng không được vượt quá 86400 giây." }),
+        .min(60, { message: "Thời lượng phải lớn hơn hoặc bằng 60 giây." })
+        .max(86400, { message: "Thời lượng không được vượt quá 86400 giây (24 giờ)." }),
     is_free: z.boolean(),
 });
 
@@ -87,6 +95,18 @@ export function AddLessonDialog({
         addLessonMutation.mutate(values);
     };
 
+    const fillSampleData = () => {
+        form.setValue("title", "Tổng hợp kiến thức Vật lý 12");
+        form.setValue(
+            "content",
+            "Trong bài học này, chúng ta sẽ tổng hợp các kiến thức trọng tâm của môn Vật lý lớp 12 như điện xoay chiều, sóng cơ, sóng âm, lượng tử ánh sáng và hạt nhân nguyên tử. Bài học giúp học sinh chuẩn bị tốt cho kỳ thi THPT Quốc gia.",
+        );
+        form.setValue("video_url", "http://localhost:3000/video.mp4");
+        form.setValue("position", maxPosition + 1);
+        form.setValue("duration", 2700); // 45 phút
+        form.setValue("is_free", false);
+    };
+
     const handleOpenChange = (newOpen: boolean) => {
         setOpen(newOpen);
         if (!newOpen) {
@@ -133,6 +153,9 @@ export function AddLessonDialog({
                             Thêm bài học mới vào chương{" "}
                             <span className="text-primary font-bold uppercase">{nameChapterCourse}</span>
                         </DialogDescription>
+                        <Button className="mb-2 ml-auto text-white" onClick={fillSampleData}>
+                            Điền dữ liệu mẫu
+                        </Button>
                     </DialogHeader>
 
                     <Form {...form}>
@@ -157,9 +180,16 @@ export function AddLessonDialog({
                                     name="content"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Nội dung</FormLabel>
+                                            <FormLabel>
+                                                Nội dung ({formatter.number(form.watch("content")?.length || 0)}/10.000)
+                                            </FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="Nhập nội dung bài học..." rows={4} {...field} />
+                                                <Textarea
+                                                    placeholder="Nhập nội dung bài học..."
+                                                    maxLength={10000}
+                                                    rows={4}
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormDescription>
                                                 Mô tả chi tiết về nội dung bài học (tùy chọn)
@@ -182,7 +212,7 @@ export function AddLessonDialog({
                                                     {...field}
                                                 />
                                             </FormControl>
-                                            <FormDescription>Link video bài học (tùy chọn)</FormDescription>
+
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -239,14 +269,20 @@ export function AddLessonDialog({
                                             <FormControl>
                                                 <div className="flex items-center space-x-2">
                                                     <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                                    <FormDescription>Cho phép học thử miễn phí</FormDescription>
+                                                    <FormDescription>Được phép học thử</FormDescription>
                                                 </div>
                                             </FormControl>
                                         </FormItem>
                                     )}
                                 />
                             </div>
-
+                            {/* Alert thông báo: Sẽ gửi email cho tất cả học viên đã đăng ký */}
+                            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+                                <p className="text-sm text-yellow-800">
+                                    Hệ thống sẽ tự động gửi email cho tất cả học viên đã đăng ký khi bài giảng được thêm
+                                    mới.
+                                </p>
+                            </div>
                             <DialogFooter>
                                 <DialogClose asChild>
                                     <Button type="button" variant="outline" disabled={addLessonMutation.isPending}>
